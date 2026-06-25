@@ -168,13 +168,13 @@ Buat ringkasan eksekutif mingguan dalam Bahasa Indonesia yang profesional dan ri
 ## OPK KRITIS TERATAS:
 {$this->sanitize($stats['opk_kritis_list'])}
 
-Tulis ringkasan eksekutif dengan format:
+Tulis ringkasan eksekutif dengan format berikut (tanpa markdown, tanpa bold/italic, plain text saja):
 1. Kondisi Umum (2 kalimat)
-2. Temuan Penting (2–3 poin)
-3. Rekomendasi Tindakan (2–3 poin)
+2. Temuan Penting (2-3 poin, gunakan tanda strip "-" di awal)
+3. Rekomendasi Tindakan (2-3 poin, gunakan tanda strip "-" di awal)
 4. Prioritas Minggu Ini (1 poin)
 
-Maksimal 200 kata, nada formal dan faktual.
+Maksimal 200 kata, nada formal dan faktual. JANGAN gunakan formatting markdown (**bold**, *italic*, dll).
 PROMPT;
 
         $result = $this->callApi($prompt, 600);

@@ -65,9 +65,13 @@
                     <span class="ai-blink" style="width:8px;height:8px;border-radius:50%;background:#E8B84B;display:inline-block;"></span>
                     <span style="font-size:0.72rem;font-weight:700;color:#E8B84B;text-transform:uppercase;letter-spacing:0.1em;">AI · Ringkasan Eksekutif</span>
                 </div>
+                <button onclick="loadCached()" id="btnCached"
+                        style="background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.3);color:#E8B84B;padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;display:none;">
+                    📋 Lihat Tersimpan
+                </button>
                 <button onclick="loadRingkasan()" id="btnLoad"
                         style="background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.3);color:#E8B84B;padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;">
-                    Generate Ringkasan
+                    ⚡ Generate Ringkasan
                 </button>
             </div>
             <div id="ringkasanArea" style="padding:1.25rem;min-height:260px;color:#f7f1e8;">
@@ -192,12 +196,57 @@
 
 @push('scripts')
 <script>
+function cleanMarkdown(text) {
+    return text
+        .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/^[-•]\s+/gm, '→ ')
+        .replace(/^\d+\.\s+\*\*(.+?)\*\*/gm, '<h4>$1</h4>')
+        .replace(/^\d+\.\s+(.+)$/gm, '<h4>$1</h4>');
+}
+
+function renderRingkasan(ringkasan) {
+    return ringkasan
+        .split('\n')
+        .filter(l => l.trim())
+        .map(l => {
+            const t = l.trim();
+            if (t.startsWith('<h4>')) return t;
+            if (/^\d+\./.test(t)) return `<div style="margin-top:10px;font-weight:600;color:#E8B84B;">${cleanMarkdown(t)}</div>`;
+            if (t.startsWith('→')) return `<div style="padding-left:12px;margin-top:4px;font-size:0.8rem;opacity:0.9;">${t}</div>`;
+            return `<div style="font-size:0.83rem;line-height:1.8;opacity:0.9;margin-top:6px;">${cleanMarkdown(t)}</div>`;
+        }).join('');
+}
+
+function showCached(data) {
+    const area = document.getElementById('ringkasanArea');
+    const meta = document.getElementById('ringkasanMeta');
+    area.innerHTML = renderRingkasan(data.ringkasan);
+    meta.style.display = 'block';
+    meta.innerHTML = `Dihasilkan oleh ${data.provider} · ${data.cached_at}`;
+    document.getElementById('btnCached').style.display = 'none';
+}
+
+function loadCached() {
+    fetch("{{ route('admin.ai.ringkasan') }}", {
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success && data.from_cache) {
+            showCached(data);
+        } else {
+            document.getElementById('ringkasanArea').innerHTML =
+                '<div style="opacity:0.5;font-size:0.82rem;text-align:center;margin-top:3rem;">Belum ada ringkasan tersimpan. Klik Generate.</div>';
+        }
+    });
+}
+
 function loadRingkasan() {
     const btn  = document.getElementById('btnLoad');
     const area = document.getElementById('ringkasanArea');
     const meta = document.getElementById('ringkasanMeta');
 
-    btn.textContent = 'Memproses...';
+    btn.textContent = '⏳ Memproses...';
     btn.disabled    = true;
     area.innerHTML  = '<div style="opacity:0.5;font-size:0.82rem;text-align:center;margin-top:3rem;">⏳ AI sedang menganalisis data OPK minggu ini...<br><small>Mohon tunggu 10–20 detik</small></div>';
 
@@ -207,30 +256,31 @@ function loadRingkasan() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            // Format teks ringkasan menjadi paragraf
-            const html = data.ringkasan
-                .split('\n')
-                .filter(l => l.trim())
-                .map(l => {
-                    if (/^\d+\./.test(l.trim())) return `<div style="margin-top:10px;font-weight:600;color:#E8B84B;">${l}</div>`;
-                    if (l.startsWith('-') || l.startsWith('•')) return `<div style="padding-left:12px;margin-top:4px;font-size:0.8rem;opacity:0.9;">→ ${l.slice(1).trim()}</div>`;
-                    return `<div style="font-size:0.83rem;line-height:1.8;opacity:0.9;margin-top:6px;">${l}</div>`;
-                }).join('');
-
-            area.innerHTML  = html;
+            cleanMarkdown(data.ringkasan);
+            area.innerHTML  = renderRingkasan(data.ringkasan);
             meta.style.display = 'block';
-            document.getElementById('cacheTime').textContent = data.cached_at;
+            meta.innerHTML = `Dihasilkan oleh ${data.provider} · ${data.cached_at}`;
+            document.getElementById('btnCached').style.display = 'inline-block';
         } else {
-            area.innerHTML = '<div style="color:#f08080;font-size:0.82rem;">Gagal mendapatkan ringkasan AI. Periksa CLAUDE_API_KEY di .env</div>';
+            area.innerHTML = `<div style="color:#f08080;font-size:0.82rem;text-align:center;margin-top:2rem;">
+                <i class="bi bi-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
+                ${data.message.replace(/\n/g,'<br>') || 'Gagal mendapatkan ringkasan.'}
+                <br><small style="color:#9ca3af;margin-top:8px;display:block;">Provider terkonfigurasi: ${data.provider || 'tidak diketahui'}</small>
+            </div>`;
         }
     })
     .catch(() => {
         area.innerHTML = '<div style="color:#f08080;font-size:0.82rem;">Koneksi gagal. Periksa jaringan dan API key.</div>';
     })
     .finally(() => {
-        btn.textContent = '🔄 Refresh';
-        btn.disabled    = false;
+        btn.textContent = '⚡ Generate Baru';
+        btn.disabled = false;
     });
 }
+
+// Auto-load cached ringkasan jika ada
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => loadCached(), 300);
+});
 </script>
 @endpush

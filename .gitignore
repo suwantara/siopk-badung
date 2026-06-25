@@ -23,6 +23,7 @@
 /storage/*.key
 /storage/pail
 /vendor
+/docs
 *Controller1.php
 *1.php
 *.bak

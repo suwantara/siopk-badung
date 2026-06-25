@@ -37,61 +37,50 @@
 </div>
 
 <div class="row g-3 mb-4">
-    {{-- Per Kategori --}}
+    {{-- Tren Bulanan --}}
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-header-custom"><span class="title">OPK per Jenis</span></div>
-            <div class="card-body p-0">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th style="padding-left:1rem;">Jenis OPK</th>
-                            <th class="text-center">Total</th>
-                            <th class="text-center">Kritis</th>
-                            <th class="text-center">Waspada</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($perKategori as $kat)
-                        <tr>
-                            <td style="padding-left:1rem;font-size:0.83rem;">{{ $kat->ikon }} {{ $kat->nama }}</td>
-                            <td class="text-center"><strong>{{ $kat->total }}</strong></td>
-                            <td class="text-center" style="color:#C0392B;font-weight:600;">{{ $kat->kritis ?: '—' }}</td>
-                            <td class="text-center" style="color:#D4A017;font-weight:600;">{{ $kat->waspada ?: '—' }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="card-header-custom"><span class="title">Tren Laporan 6 Bulan Terakhir</span></div>
+            <div class="card-body">
+                <canvas id="chartTren" height="200"></canvas>
             </div>
         </div>
     </div>
 
-    {{-- Per Kecamatan --}}
+    {{-- Per Kategori (Chart) --}}
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-header-custom"><span class="title">OPK per Kecamatan</span></div>
+            <div class="card-header-custom"><span class="title">Distribusi OPK per Jenis</span></div>
             <div class="card-body">
-                @foreach($perKecamatan as $kec)
-                @php $pct = $stats['total'] > 0 ? round($kec->total / $stats['total'] * 100) : 0; @endphp
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1" style="font-size:0.82rem;">
-                        <span>{{ $kec->nama }}</span>
-                        <div>
-                            <strong>{{ $kec->total }}</strong>
-                            @if($kec->kritis > 0)
-                                <span style="color:#C0392B;font-size:0.72rem;margin-left:6px;">{{ $kec->kritis }} kritis</span>
-                            @endif
-                        </div>
-                    </div>
-                    <div style="height:6px;background:#e5e0d8;border-radius:3px;overflow:hidden;">
-                        <div style="height:100%;width:{{ $pct }}%;background:{{ $kec->kritis > 0 ? '#C0392B' : '#C8922A' }};border-radius:3px;transition:width 0.5s;"></div>
-                    </div>
-                </div>
-                @endforeach
+                <canvas id="chartKategori" height="200"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+<div class="row g-3 mb-4">
+    {{-- Per Kecamatan (Chart) --}}
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header-custom"><span class="title">OPK per Kecamatan</span></div>
+            <div class="card-body">
+                <canvas id="chartKecamatan" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {{-- Kondisi Breakdown --}}
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header-custom"><span class="title">Kondisi OPK</span></div>
+            <div class="card-body">
+                <canvas id="chartKondisi" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4"> </div><div class="card"> </div>
 
 {{-- Top Urgensi --}}
 <div class="card">
@@ -121,7 +110,7 @@
                     <td>
                         <a href="{{ route('admin.opk.show', $opk) }}" style="font-weight:600;font-size:0.85rem;color:var(--tanah);text-decoration:none;">{{ $opk->nama_opk }}</a>
                     </td>
-                    <td><span style="background:rgba(200,146,42,0.1);color:#7a5c1e;padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span></td>
+                    <td><span style="background:rgba(var(--emas-rgb),0.1);color:#7a5c1e;padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span></td>
                     <td style="font-size:0.82rem;">{{ $opk->kecamatan?->nama }}</td>
                     <td><span class="badge badge-{{ $opk->kondisi }} rounded-pill px-2" style="font-size:0.68rem;">{{ ucfirst($opk->kondisi) }}</span></td>
                     <td>
@@ -141,3 +130,108 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+const ds = {
+    emas:   getComputedStyle(document.documentElement).getPropertyValue('--emas').trim() || '#C8922A',
+    merah:  getComputedStyle(document.documentElement).getPropertyValue('--merah').trim() || '#C0392B',
+    kuning: getComputedStyle(document.documentElement).getPropertyValue('--kuning').trim() || '#D4A017',
+    hijau:  getComputedStyle(document.documentElement).getPropertyValue('--hijau').trim() || '#2D5A27',
+    tanah:  getComputedStyle(document.documentElement).getPropertyValue('--tanah').trim() || '#2C1A0E',
+};
+
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 11;
+
+// Tren Bulanan
+new Chart(document.getElementById('chartTren'), {
+    type: 'line',
+    data: {
+        labels: @json($tren->pluck('label')),
+        datasets: [{
+            label: 'Laporan Masuk',
+            data: @json($tren->pluck('total')),
+            borderColor: ds.emas,
+            backgroundColor: ds.emas + '22',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointBackgroundColor: ds.emas,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } }
+        }
+    }
+});
+
+// Per Kategori
+new Chart(document.getElementById('chartKategori'), {
+    type: 'bar',
+    data: {
+        labels: @json($perKategori->pluck('nama')),
+        datasets: [{
+            label: 'Total OPK',
+            data: @json($perKategori->pluck('total')),
+            backgroundColor: ds.emas + '99',
+            borderColor: ds.emas,
+            borderWidth: 1,
+        }]
+    },
+    options: {
+        responsive: true,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true } }
+    }
+});
+
+// Per Kecamatan
+new Chart(document.getElementById('chartKecamatan'), {
+    type: 'bar',
+    data: {
+        labels: @json($perKecamatan->pluck('nama')),
+        datasets: [{
+            label: 'Kritis',
+            data: @json($perKecamatan->pluck('kritis')),
+            backgroundColor: ds.merah + '99',
+        }, {
+            label: 'Non-Kritis',
+            data: @json($perKecamatan->map(fn($k) => $k->total - $k->kritis)),
+            backgroundColor: ds.hijau + '99',
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: { stacked: true },
+            y: { stacked: true }
+        }
+    }
+});
+
+// Kondisi
+new Chart(document.getElementById('chartKondisi'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Kritis', 'Waspada', 'Baik'],
+        datasets: [{
+            data: [{{ $stats['kritis'] }}, {{ $stats['waspada'] }}, {{ $stats['baik'] }}],
+            backgroundColor: [ds.merah + 'CC', ds.kuning + 'CC', ds.hijau + 'CC'],
+            borderColor: 'white',
+            borderWidth: 2,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
+        }
+    }
+});
+</script>
+@endpush

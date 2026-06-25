@@ -261,17 +261,17 @@ function makeIcon(kondisi) {
 }
 
 // Load data OPK dari API
+let markerCluster;
 function loadPeta(kondisi = '') {
     const url = "{{ route('admin.peta.data') }}" + (kondisi ? `?kondisi=${kondisi}` : '');
     fetch(url)
         .then(r => r.json())
         .then(data => {
-            // Hapus marker lama
-            peta.eachLayer(l => { if (l instanceof L.Marker) peta.removeLayer(l); });
+            if (markerCluster) peta.removeLayer(markerCluster);
+            markerCluster = L.markerClusterGroup({ maxClusterRadius: 50 });
 
             data.forEach(opk => {
-                const marker = L.marker([opk.lat, opk.lng], { icon: makeIcon(opk.kondisi) })
-                    .addTo(peta);
+                const marker = L.marker([opk.lat, opk.lng], { icon: makeIcon(opk.kondisi) });
 
                 marker.bindPopup(`
                     <div class="popup-${opk.kondisi}" style="min-width:200px;padding:4px 0;">
@@ -284,7 +284,9 @@ function loadPeta(kondisi = '') {
                         </a>
                     </div>
                 `);
+                markerCluster.addLayer(marker);
             });
+            peta.addLayer(markerCluster);
         });
 }
 

@@ -8,14 +8,25 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Docker Compose production setup** — `docker-compose.yml` + nginx/PHP/MySQL/Redis config (`docker/`)
+- **Backup script** — `scripts/backup.sh` (mysqldump + storage tar + auto-cleanup 30 hari)
+- **WhatsApp notification service** — F-16: notifikasi via WhatsApp Cloud API (laporan diterima/disetujui/ditolak)
+- **Chart.js dashboard** — 4 chart interaktif di `/admin/laporan` (tren, kategori, kecamatan, kondisi)
+- **Leaflet marker clustering** — `leaflet.markercluster` di admin + publik dashboard
+- **Migration `010_add_composite_indexes`** — Composite: `(status_verifikasi, kondisi)`, `(status_verifikasi, ai_urgency_score)`, `(latitude, longitude)`
 - **`PetaDataService`** — Service class untuk query peta JSON (DRY dari 2 controller duplikat)
 - **`OpkStatsService`** — Service class untuk semua query statistik (dashboard, laporan, ringkasan eksekutif)
 - **`CacheKeys` helper** — Konstanta cache key terpusat (`app/Helpers/CacheKeys.php`)
 - **`OpkLaporanObserver`** — Observer untuk cleanup file storage saat `forceDeleted`
 - **Migration `009_add_missing_indexes`** — Unique index `opk_categories.nomor`, index `opk_fotos.is_utama`
 - **`Model::shouldBeStrict()`** — Deteksi N+1 query, lazy loading, missing fillable di dev environment
+- **Foto management di admin edit OPK** — Upload, hapus, ganti foto utama dari panel admin
 
 ### Changed
+- **`.env.example`** — `SESSION_DRIVER=database`, `CACHE_STORE=database`, `QUEUE_CONNECTION=database` + production guide section
+- **`SideEffectHandler`** — Integrasi WhatsApp notification (F-16); invalidasi `SIDEBAR_COUNTS` + `RINGKASAN_EKSEKUTIF` di semua event
+- **Admin dashboard + Publik dashboard** — Marker clustering dengan `leaflet.markercluster`
+- **`/admin/laporan` view** — 4 Chart.js chart menggantikan tabel statis + KPI cards
 - **Caching Kategori/Kecamatan** — `Cache::remember('kategori_list', 86400)` + `kecamatan_list` + `kecamatan_with_desa` di semua controller
 - **`VerifikasiController`** — `setujui()` + `tolak()` → private `updateVerificationStatus()` (DRY, 70 baris → 0 duplikasi)
 - **`OpkLaporan::generateKode()`** — `max('id')` + uniqid fallback → `count()` + `DB::transaction()` (KISS, atomic)

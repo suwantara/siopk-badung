@@ -13,5 +13,11 @@ class DatabaseSeeder extends Seeder
             WilayahSeeder::class,
             UserSeeder::class,
         ]);
+
+        if (app()->environment('local', 'development', 'testing')) {
+            $this->call([
+                OpkLaporanDemoSeeder::class,
+            ]);
+        }
     }
 }

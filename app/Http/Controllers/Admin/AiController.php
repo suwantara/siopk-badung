@@ -60,15 +60,44 @@ class AiController extends Controller
     // ─────────────────────────────────────────────
     public function ringkasanEksekutif()
     {
-        $ringkasan = Cache::remember(CacheKeys::RINGKASAN_EKSEKUTIF, 21600, function () {
-            $stats = app(OpkStatsService::class)->ringkasanEksekutif();
-            return $this->ai->ringkasanEksekutif($stats);
-        });
+        $cached = Cache::get(CacheKeys::RINGKASAN_EKSEKUTIF);
+
+        if ($cached) {
+            return response()->json([
+                'success'   => true,
+                'ringkasan' => $cached['text'],
+                'provider'  => $cached['provider'],
+                'cached_at' => $cached['cached_at'],
+                'from_cache'=> true,
+            ]);
+        }
+
+        $stats  = app(OpkStatsService::class)->ringkasanEksekutif();
+        $result = $this->ai->ringkasanEksekutif($stats);
+
+        $provider = config('services.ai.provider', 'AI');
+        $providerLabel = $provider === 'deepseek' ? 'DeepSeek AI' : ($provider === 'claude' ? 'Claude (Anthropic)' : ucfirst($provider));
+
+        if ($result === 'Ringkasan tidak tersedia.') {
+            return response()->json([
+                'success' => false,
+                'message' => "AI gagal merespons. Pastikan API key provider \"{$provider}\" sudah diisi di .env.\nCek storage/logs/laravel.log untuk detail error.",
+                'provider'=> $providerLabel,
+            ]);
+        }
+
+        Cache::put(CacheKeys::RINGKASAN_EKSEKUTIF, [
+            'text'       => $result,
+            'provider'   => $providerLabel,
+            'cached_at'  => now()->isoFormat('D MMM Y, HH:mm'),
+        ], 21600);
 
         return response()->json([
             'success'   => true,
-            'ringkasan' => $ringkasan,
+            'ringkasan' => $result,
+            'provider'  => $providerLabel,
             'cached_at' => now()->isoFormat('D MMM Y, HH:mm'),
+            'from_cache'=> false,
         ]);
     }
 

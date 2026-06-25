@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -275,6 +277,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
 // ── State ──
 let allData = [];
@@ -335,13 +338,17 @@ function loadData() {
 }
 
 // ── Render markers ──
+let markerCluster;
 function renderMarkers(data) {
     markers.forEach(m => peta.removeLayer(m));
     markers = [];
+    if (markerCluster) peta.removeLayer(markerCluster);
+
+    markerCluster = L.markerClusterGroup({ maxClusterRadius: 50 });
 
     data.forEach(opk => {
         if (!opk.lat || !opk.lng) return;
-        const m = L.marker([opk.lat, opk.lng], { icon: makeIcon(opk.kondisi) }).addTo(peta);
+        const m = L.marker([opk.lat, opk.lng], { icon: makeIcon(opk.kondisi) });
 
         const kondisiColor = getColor(opk.kondisi);
         m.bindPopup(`
@@ -356,7 +363,10 @@ function renderMarkers(data) {
         m.on('click', () => selectOpk(opk.id));
         m._opkId = opk.id;
         markers.push(m);
+        markerCluster.addLayer(m);
     });
+
+    peta.addLayer(markerCluster);
 }
 
 // ── Render list sidebar ──

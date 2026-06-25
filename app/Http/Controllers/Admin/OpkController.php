@@ -141,6 +141,11 @@ class OpkController extends Controller
                          ->with('success', 'OPK berhasil dihapus permanen dari database.');
     }
 
+    public function peta()
+    {
+        return view('admin.opk.peta');
+    }
+
     public function petaJson(Request $request)
     {
         return response()->json(

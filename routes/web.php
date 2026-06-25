@@ -60,6 +60,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::middleware('role:superadmin,admin,verifikator,petugas')->group(function () {
         Route::get('/opk',             [OpkController::class, 'index'])->name('opk.index');
         Route::get('/opk/arsip',       [OpkController::class, 'arsip'])->name('opk.arsip');
+        Route::get('/opk/peta',        [OpkController::class, 'peta'])->name('opk.peta');
         Route::get('/opk/{laporan}',   [OpkController::class, 'show'])->name('opk.show');
     });
 

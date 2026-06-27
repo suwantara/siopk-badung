@@ -8,11 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root { --tanah:#2C1A0E; --emas:#C8922A; --emas-muda:#E8B84B; }
+        :root { --tanah:var(--tanah); --emas:var(--emas); --emas-muda:var(--emas-muda); }
         body {
             font-family: 'Inter', sans-serif;
             min-height: 100vh; margin: 0;
-            background: linear-gradient(135deg, var(--tanah) 0%, #3d2410 60%, #1a0f06 100%);
+            background: linear-gradient(135deg, var(--tanah) 0%, #3d2410 60%, var(--tanah-gelap) 100%);
             display: flex; align-items: center; justify-content: center;
         }
         .login-card {
@@ -35,15 +35,15 @@
         }
         .login-title {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.6rem; font-weight: 700; color: #f7f1e8;
+            font-size: 1.6rem; font-weight: 700; color: var(--krem);
         }
         .login-sub { font-size: 0.75rem; color: rgba(232,184,75,0.7); margin-top: 4px; }
         .login-body { padding: 2rem; }
         .form-label { font-size: 0.78rem; font-weight: 600; color: var(--tanah); text-transform: uppercase; letter-spacing: 0.06em; }
         .form-control {
-            border: 1px solid #d4c9b8; border-radius: 3px;
+            border: 1px solid var(--garis); border-radius: 3px;
             font-size: 0.88rem; padding: 10px 14px;
-            background: #fdfaf5;
+            background: var(--input-bg);
         }
         .form-control:focus { border-color: var(--emas); box-shadow: 0 0 0 3px rgba(200,146,42,0.12); }
         .btn-login {
@@ -55,8 +55,8 @@
             transition: all 0.2s;
         }
         .btn-login:hover { background: var(--emas-muda); }
-        .alert-danger { background: rgba(192,57,43,0.08); border: none; border-left: 3px solid #c0392b; color: #c0392b; font-size: 0.82rem; border-radius: 3px; }
-        .login-footer { text-align: center; padding: 1rem 2rem 1.5rem; font-size: 0.75rem; color: #9ca3af; }
+        .alert-danger { background: rgba(192,57,43,0.08); border: none; border-left: 3px solid var(--merah); color: var(--merah); font-size: 0.82rem; border-radius: 3px; }
+        .login-footer { text-align: center; padding: 1rem 2rem 1.5rem; font-size: 0.75rem; color: var(--abu); }
         .login-footer a { color: var(--emas); text-decoration: none; }
     </style>
 </head>
@@ -92,7 +92,7 @@
                 <input type="password" name="password" class="form-control" placeholder="••••••••" required>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <label style="font-size:0.78rem;color:#6b7280;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                <label style="font-size:0.78rem;color:var(--abu-gelap);display:flex;align-items:center;gap:6px;cursor:pointer;">
                     <input type="checkbox" name="remember"> Ingat saya
                 </label>
             </div>

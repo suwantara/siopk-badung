@@ -3,55 +3,59 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\CacheKeys;
 use App\Models\{OpkLaporan, OpkCategory, Kecamatan};
 use App\Services\OpkStatsService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class LaporanAdminController extends Controller
 {
+    public function __construct(
+        private readonly OpkStatsService $statsService
+    ) {}
+
     public function index()
     {
-        $stats = app(OpkStatsService::class)->laporanAdmin();
+        $data = Cache::remember(CacheKeys::LAPORAN_ADMIN, 120, function () {
+            $stats = $this->statsService->laporanAdmin();
 
-        // Per kategori
-        $perKategori = OpkCategory::withCount([
-            'laporans as total'   => fn($q) => $q->where('status_verifikasi', 'disetujui'),
-            'laporans as kritis'  => fn($q) => $q->where('status_verifikasi', 'disetujui')->where('kondisi', 'kritis'),
-            'laporans as waspada' => fn($q) => $q->where('status_verifikasi', 'disetujui')->where('kondisi', 'waspada'),
-        ])->orderByDesc('total')->get();
+            $perKategori = OpkCategory::withCount([
+                'laporans as total'   => fn($q) => $q->disetujui(),
+                'laporans as kritis'  => fn($q) => $q->disetujui()->kritis(),
+                'laporans as waspada' => fn($q) => $q->disetujui()->waspada(),
+            ])->orderByDesc('total')->get();
 
-        // Per kecamatan
-        $perKecamatan = Kecamatan::withCount([
-            'laporans as total'   => fn($q) => $q->where('status_verifikasi', 'disetujui'),
-            'laporans as kritis'  => fn($q) => $q->where('status_verifikasi', 'disetujui')->where('kondisi', 'kritis'),
-        ])->orderByDesc('total')->get();
+            $perKecamatan = Kecamatan::withCount([
+                'laporans as total'   => fn($q) => $q->disetujui(),
+                'laporans as kritis'  => fn($q) => $q->disetujui()->kritis(),
+            ])->orderByDesc('total')->get();
 
-        // Tren laporan per bulan (6 bulan terakhir)
-        $tren = OpkLaporan::select(
-                DB::raw('MONTH(created_at) as bulan'),
-                DB::raw('YEAR(created_at) as tahun'),
-                DB::raw('COUNT(*) as total')
-            )
-            ->where('created_at', '>=', now()->subMonths(6))
-            ->groupBy('tahun', 'bulan')
-            ->orderBy('tahun')->orderBy('bulan')
-            ->get()
-            ->map(fn($r) => [
-                'label' => \Carbon\Carbon::createFromDate($r->tahun, $r->bulan, 1)->isoFormat('MMM Y'),
-                'total' => $r->total,
-            ]);
+            $tren = OpkLaporan::select(
+                    DB::raw('MONTH(created_at) as bulan'),
+                    DB::raw('YEAR(created_at) as tahun'),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->where('created_at', '>=', now()->subMonths(6))
+                ->groupBy('tahun', 'bulan')
+                ->orderBy('tahun')->orderBy('bulan')
+                ->get()
+                ->map(fn($r) => [
+                    'label' => \Carbon\Carbon::createFromDate($r->tahun, $r->bulan, 1)->isoFormat('MMM Y'),
+                    'total' => $r->total,
+                ]);
 
-        // Top 10 OPK urgensi tertinggi
-        $topUrgensi = OpkLaporan::with(['kategori', 'kecamatan'])
-            ->where('status_verifikasi', 'disetujui')
-            ->whereNotNull('ai_urgency_score')
-            ->orderByDesc('ai_urgency_score')
-            ->limit(10)
-            ->get();
+            $topUrgensi = OpkLaporan::with(['kategori', 'kecamatan'])
+                ->disetujui()
+                ->whereNotNull('ai_urgency_score')
+                ->orderByDesc('ai_urgency_score')
+                ->limit(10)
+                ->get();
 
-        return view('admin.laporan.index', compact(
-            'stats', 'perKategori', 'perKecamatan', 'tren', 'topUrgensi'
-        ));
+            return compact('stats', 'perKategori', 'perKecamatan', 'tren', 'topUrgensi');
+        });
+
+        return view('admin.laporan.index', $data);
     }
 
     // Export CSV — streaming dengan cursor
@@ -78,7 +82,7 @@ class LaporanAdminController extends Controller
             ], ';');
 
             OpkLaporan::with(['kategori', 'kecamatan', 'desaDinas'])
-                ->where('status_verifikasi', 'disetujui')
+                ->disetujui()
                 ->cursor()
                 ->each(function ($o) use ($out) {
                     fputcsv($out, [

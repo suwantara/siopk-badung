@@ -114,25 +114,52 @@
 
 {{-- Main Content --}}
 <div class="{{ auth()->check() ? 'main-wrapper' : '' }}">
-    {{-- Flash messages --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-3">
-            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mb-3">
-            <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
     @yield('content')
 </div>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+'use strict';
+window.swalKonfirmasi = function(opts) {
+    Swal.fire({
+        title: opts.title || 'Konfirmasi',
+        text: opts.text || '',
+        icon: opts.icon || 'warning',
+        showCancelButton: true,
+        confirmButtonText: opts.confirmText || 'Ya, lanjutkan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: opts.confirmColor || 'var(--emas)',
+        cancelButtonColor: 'var(--abu-gelap)',
+        reverseButtons: true,
+        allowOutsideClick: false,
+    }).then(function(result) {
+        if (result.isConfirmed && opts.onConfirm) {
+            opts.onConfirm();
+        }
+    });
+};
+window.swalToast = function(icon, title) {
+    Swal.fire({ toast: true, position: 'top-end', icon: icon, title: title, showConfirmButton: false, timer: 4000, timerProgressBar: true });
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    @if(session('success'))
+    if (typeof Swal !== 'undefined') {
+        swalToast('success', @json(session('success')));
+    }
+    @endif
+    @if(session('error'))
+    if (typeof Swal !== 'undefined') {
+        swalToast('error', @json(session('error')));
+    }
+    @endif
+});
+</script>
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"

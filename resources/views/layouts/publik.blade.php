@@ -66,6 +66,9 @@
             --tanah: #2C1A0E; --emas: #C8922A; --emas-muda: #E8B84B;
             --krem: #F7F1E8; --hijau: #2D5A27; --merah: #C0392B; --kuning: #D4A017;
             --emas-rgb: 200,146,42; --merah-rgb: 192,57,43; --kuning-rgb: 212,160,23; --hijau-rgb: 45,90,39;
+            --emas-gelap: #7a5c1e; --abu: #9ca3af; --abu-gelap: #6b7280;
+            --garis: #d4c9b8; --garis-terang: #f0ebe3; --input-bg: #fdfaf5; --placeholder: #e8e0d4;
+            --teks: #374151; --tanah-gelap: #1a0f06;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: var(--krem); color: var(--tanah); }
@@ -78,7 +81,7 @@
         .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .nav-brand:hover { text-decoration: none; }
         .nav-logo { width: 32px; height: 32px; border-radius: 50%; background: var(--emas); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-weight: 700; color: var(--tanah); font-size: 0.9rem; }
-        .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: #f7f1e8; }
+        .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--krem); }
         .nav-title span { color: var(--emas-muda); }
         .nav-links { display: flex; align-items: center; gap: 1.25rem; }
         .nav-links a { color: rgba(247,241,232,0.65); text-decoration: none; font-size: 0.8rem; font-weight: 500; transition: color 0.2s; }
@@ -112,6 +115,9 @@
     <div class="nav-links">
         <a href="{{ route('publik.dashboard') }}" class="{{ request()->routeIs('publik.dashboard') ? 'active' : '' }}">
             <i class="bi bi-map"></i> Peta OPK
+        </a>
+        <a href="{{ route('publik.daftar-opk') }}" class="{{ request()->routeIs('publik.daftar-opk') ? 'active' : '' }}">
+            <i class="bi bi-list-ul"></i> Daftar OPK
         </a>
         <a href="{{ route('publik.lapor.index') }}" class="{{ request()->routeIs('publik.lapor.index') ? 'active' : '' }}">
             <i class="bi bi-plus-circle"></i> Lapor OPK

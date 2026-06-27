@@ -49,7 +49,7 @@
                 <i class="bi {{ $icon }}" style="font-size:1.2rem;color:{{ $type === 'kritis' ? 'var(--merah)' : ($type === 'waspada' ? 'var(--kuning)' : 'var(--emas)') }};"></i>
                 <div class="kpi-value mt-1" style="font-size:1.8rem;">{{ $val }}</div>
                 <div class="kpi-label" style="font-size:0.65rem;">{{ $label }}</div>
-                <div style="font-size:0.65rem;color:#9ca3af;margin-top:2px;">{{ $sub }}</div>
+                <div style="font-size:0.65rem;color:var(--abu);margin-top:2px;">{{ $sub }}</div>
             </div>
         </div>
     </div>
@@ -62,19 +62,19 @@
         <div class="ai-panel p-0 h-100" style="overflow:hidden;">
             <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(200,146,42,0.2);display:flex;align-items:center;justify-content:space-between;">
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <span class="ai-blink" style="width:8px;height:8px;border-radius:50%;background:#E8B84B;display:inline-block;"></span>
-                    <span style="font-size:0.72rem;font-weight:700;color:#E8B84B;text-transform:uppercase;letter-spacing:0.1em;">AI · Ringkasan Eksekutif</span>
+                    <span class="ai-blink" style="width:8px;height:8px;border-radius:50%;background:var(--emas-muda);display:inline-block;"></span>
+                    <span style="font-size:0.72rem;font-weight:700;color:var(--emas-muda);text-transform:uppercase;letter-spacing:0.1em;">AI · Ringkasan Eksekutif</span>
                 </div>
                 <button onclick="loadCached()" id="btnCached"
-                        style="background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.3);color:#E8B84B;padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;display:none;">
+                        style="background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.3);color:var(--emas-muda);padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;display:none;">
                     📋 Lihat Tersimpan
                 </button>
                 <button onclick="loadRingkasan()" id="btnLoad"
-                        style="background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.3);color:#E8B84B;padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;">
+                        style="background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.3);color:var(--emas-muda);padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;">
                     ⚡ Generate Ringkasan
                 </button>
             </div>
-            <div id="ringkasanArea" style="padding:1.25rem;min-height:260px;color:#f7f1e8;">
+            <div id="ringkasanArea" style="padding:1.25rem;min-height:260px;color:var(--krem);">
                 <div style="opacity:0.4;font-size:0.82rem;text-align:center;margin-top:3rem;">
                     Klik "Generate Ringkasan" untuk meminta AI menganalisis kondisi OPK minggu ini.
                 </div>
@@ -102,15 +102,15 @@
                         ->get();
                 @endphp
                 @forelse($top5 as $i => $opk)
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 1rem;border-bottom:1px solid #f0ebe3;">
-                    <div style="width:24px;height:24px;border-radius:50%;background:{{ $i === 0 ? 'var(--merah)' : ($i < 3 ? 'var(--kuning)' : '#9ca3af') }};color:white;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 1rem;border-bottom:1px solid var(--garis-terang);">
+                    <div style="width:24px;height:24px;border-radius:50%;background:{{ $i === 0 ? 'var(--merah)' : ($i < 3 ? 'var(--kuning)' : 'var(--abu)') }};color:white;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;">
                         {{ $i + 1 }}
                     </div>
                     <div style="flex:1;min-width:0;">
                         <div style="font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                             <a href="{{ route('admin.opk.show', $opk) }}" style="color:var(--tanah);text-decoration:none;">{{ $opk->nama_opk }}</a>
                         </div>
-                        <div style="font-size:0.68rem;color:#9ca3af;">{{ $opk->kecamatan?->nama }} · {{ $opk->kategori?->ikon }}</div>
+                        <div style="font-size:0.68rem;color:var(--abu);">{{ $opk->kecamatan?->nama }} · {{ $opk->kategori?->ikon }}</div>
                     </div>
                     <div style="font-family:'Courier New',monospace;font-size:0.88rem;font-weight:700;flex-shrink:0;
                         color:{{ $opk->kondisi === 'kritis' ? 'var(--merah)' : 'var(--kuning)' }}">
@@ -118,7 +118,7 @@
                     </div>
                 </div>
                 @empty
-                <div style="padding:2rem;text-align:center;color:#9ca3af;font-size:0.82rem;">
+                <div style="padding:2rem;text-align:center;color:var(--abu);font-size:0.82rem;">
                     <i class="bi bi-check-circle" style="font-size:1.5rem;color:var(--hijau);display:block;margin-bottom:8px;"></i>
                     Tidak ada OPK dengan urgensi tinggi.
                 </div>
@@ -132,7 +132,7 @@
 <div class="card mt-3">
     <div class="card-header-custom">
         <span class="title">Semua OPK Perlu Perhatian (Kritis + Waspada)</span>
-        <span style="font-size:0.72rem;color:#9ca3af;">Diurutkan AI Score tertinggi</span>
+        <span style="font-size:0.72rem;color:var(--abu);">Diurutkan AI Score tertinggi</span>
     </div>
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
@@ -162,17 +162,17 @@
                             {{ $opk->nama_opk }}
                         </a>
                     </td>
-                    <td><span style="background:rgba(200,146,42,0.1);color:#7a5c1e;padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span></td>
+                    <td><span style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span></td>
                     <td style="font-size:0.82rem;">{{ $opk->kecamatan?->nama }}</td>
-                    <td style="font-size:0.78rem;color:#6b7280;">{{ Str::limit($opk->nama_desa_adat, 20) }}</td>
+                    <td style="font-size:0.78rem;color:var(--abu-gelap);">{{ Str::limit($opk->nama_desa_adat, 20) }}</td>
                     <td><span class="badge badge-{{ $opk->kondisi }} rounded-pill px-2" style="font-size:0.68rem;">{{ ucfirst($opk->kondisi) }}</span></td>
                     <td>
                         <div style="display:flex;align-items:center;gap:6px;">
                             <span style="font-family:'Courier New',monospace;font-size:0.82rem;font-weight:700;color:{{ $opk->kondisi==='kritis'?'var(--merah)':'var(--kuning)' }}">
                                 {{ number_format($opk->ai_urgency_score ?? 0, 1) }}
                             </span>
-                            <div style="height:4px;width:50px;background:#e5e0d8;border-radius:2px;overflow:hidden;">
-                                <div style="height:100%;width:{{ ($opk->ai_urgency_score ?? 0)*10 }}%;background:{{ $opk->kondisi==='kritis'?'#C0392B':'#D4A017' }};border-radius:2px;"></div>
+                            <div style="height:4px;width:50px;background:var(--input-bg);border-radius:2px;overflow:hidden;">
+                                <div style="height:100%;width:{{ ($opk->ai_urgency_score ?? 0)*10 }}%;background:{{ $opk->kondisi==='kritis'?'var(--merah)':'var(--kuning)' }};border-radius:2px;"></div>
                             </div>
                         </div>
                     </td>
@@ -189,7 +189,7 @@
         </table>
     </div>
     @if($semua->hasPages())
-    <div class="card-footer bg-white" style="border-top:1px solid #d4c9b8;">{{ $semua->links() }}</div>
+    <div class="card-footer bg-white" style="border-top:1px solid var(--garis);">{{ $semua->links() }}</div>
     @endif
 </div>
 @endsection
@@ -212,7 +212,7 @@ function renderRingkasan(ringkasan) {
         .map(l => {
             const t = l.trim();
             if (t.startsWith('&lt;h4&gt;')) return t;
-            if (/^\d+\./.test(t)) return `<div style="margin-top:10px;font-weight:600;color:#E8B84B;">${cleanMarkdown(t)}</div>`;
+            if (/^\d+\./.test(t)) return `<div style="margin-top:10px;font-weight:600;color:var(--emas-muda);">${cleanMarkdown(t)}</div>`;
             if (t.startsWith('→')) return `<div style="padding-left:12px;margin-top:4px;font-size:0.8rem;opacity:0.9;">${t}</div>`;
             return `<div style="font-size:0.83rem;line-height:1.8;opacity:0.9;margin-top:6px;">${cleanMarkdown(t)}</div>`;
         }).join('');
@@ -266,7 +266,7 @@ function loadRingkasan() {
             area.innerHTML = `<div style="color:#f08080;font-size:0.82rem;text-align:center;margin-top:2rem;">
                 <i class="bi bi-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
                 ${data.message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g,'<br>') || 'Gagal mendapatkan ringkasan.'}
-                <br><small style="color:#9ca3af;margin-top:8px;display:block;">Provider terkonfigurasi: ${data.provider || 'tidak diketahui'}</small>
+                <br><small style="color:var(--abu);margin-top:8px;display:block;">Provider terkonfigurasi: ${data.provider || 'tidak diketahui'}</small>
             </div>`;
         }
     })

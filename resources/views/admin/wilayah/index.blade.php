@@ -129,7 +129,7 @@
                                 </div>
                                 <div class="col-md-2 text-end">
                                     <form method="POST" action="{{ route('admin.wilayah.kecamatan.destroy', $selectedKec) }}"
-                                          onsubmit="return confirm('Hapus kecamatan {{ $selectedKec->nama }} dan semua data terkait?')" class="d-inline">
+                                          onsubmit="event.preventDefault(); swalKonfirmasi({title:'Hapus Kecamatan',text:'Hapus kecamatan {{ $selectedKec->nama }} dan semua data terkait?',icon:'warning',confirmText:'Hapus',confirmColor:'#dc3545',onConfirm:()=>this.submit()})" class="d-inline">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">
                                             <i class="bi bi-trash"></i> Hapus
@@ -165,8 +165,8 @@
                                 </form>
                             </td>
                             <td style="width:50px;">
-                                <form method="POST" action="{{ route('admin.wilayah.desa-dinas.destroy', $d) }}"
-                                      onsubmit="return confirm('Hapus {{ $d->nama }}?')">
+                                    <form method="POST" action="{{ route('admin.wilayah.desa-dinas.destroy', $d) }}"
+                                          onsubmit="event.preventDefault(); swalKonfirmasi({title:'Hapus Desa Dinas',text:'Hapus {{ $d->nama }}?',icon:'warning',confirmText:'Hapus',confirmColor:'#dc3545',onConfirm:()=>this.submit()})">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm text-danger" title="Hapus">
                                         <i class="bi bi-trash"></i></button>
@@ -214,8 +214,8 @@
                                 </form>
                             </td>
                             <td style="width:50px;">
-                                <form method="POST" action="{{ route('admin.wilayah.desa-adat.destroy', $a) }}"
-                                      onsubmit="return confirm('Hapus {{ $a->nama }}?')">
+                                    <form method="POST" action="{{ route('admin.wilayah.desa-adat.destroy', $a) }}"
+                                          onsubmit="event.preventDefault(); swalKonfirmasi({title:'Hapus Desa Adat',text:'Hapus {{ $a->nama }}?',icon:'warning',confirmText:'Hapus',confirmColor:'#dc3545',onConfirm:()=>this.submit()})">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm text-danger" title="Hapus">
                                         <i class="bi bi-trash"></i></button>

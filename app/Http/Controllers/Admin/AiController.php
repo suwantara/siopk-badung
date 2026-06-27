@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Cache;
 class AiController extends Controller
 {
     public function __construct(
-        private readonly AiOpkAnalyzer $ai
+        private readonly AiOpkAnalyzer $ai,
+        private readonly OpkStatsService $statsService
     ) {}
 
     // ─────────────────────────────────────────────
@@ -72,7 +73,7 @@ class AiController extends Controller
             ]);
         }
 
-        $stats  = app(OpkStatsService::class)->ringkasanEksekutif();
+        $stats  = $this->statsService->ringkasanEksekutif();
         $result = $this->ai->ringkasanEksekutif($stats);
 
         $provider = config('services.ai.provider', 'AI');

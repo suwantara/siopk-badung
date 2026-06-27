@@ -41,7 +41,7 @@
     <div class="card-body">
         <div class="d-flex gap-3 align-items-start">
             {{-- Foto --}}
-            <div style="width:72px;height:72px;border-radius:4px;background:#e8e0d4;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">
+            <div style="width:72px;height:72px;border-radius:4px;background:var(--placeholder);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">
                 @if($laporan->fotoUtama)
                     <img src="{{ asset('storage/' . $laporan->fotoUtama->path) }}" style="width:100%;height:100%;object-fit:cover;">
                 @else
@@ -55,14 +55,14 @@
                     <div>
                         <h6 class="mb-1 fw-bold" style="font-size:0.92rem;">{{ $laporan->nama_opk }}</h6>
                         <div class="d-flex gap-2 flex-wrap mb-1">
-                            <span style="font-size:0.7rem;background:rgba(200,146,42,0.1);color:#7a5c1e;padding:2px 8px;border-radius:2px;font-weight:500;">
+                            <span style="font-size:0.7rem;background:rgba(200,146,42,0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-weight:500;">
                                 {{ $laporan->kategori?->ikon }} {{ $laporan->kategori?->nama }}
                             </span>
                             <span class="badge badge-{{ $laporan->kondisi }} rounded-pill" style="font-size:0.68rem;">
                                 {{ ucfirst($laporan->kondisi) }}
                             </span>
                         </div>
-                        <div style="font-size:0.75rem;color:#6b7280;">
+                        <div style="font-size:0.75rem;color:var(--abu-gelap);">
                             📍 Kec. {{ $laporan->kecamatan?->nama }} &nbsp;·&nbsp;
                             🏘️ {{ $laporan->nama_desa_adat }} &nbsp;·&nbsp;
                             {{ $laporan->tipe_pelapor === 'masyarakat' ? '👤' : ($laporan->tipe_pelapor === 'tokoh_adat' ? '👘' : '🏛️') }}
@@ -76,14 +76,14 @@
                         <div style="font-family:'Courier New',monospace;font-size:1.3rem;font-weight:700;color:{{ $laporan->kondisi === 'kritis' ? 'var(--merah)' : 'var(--kuning)' }}">
                             {{ number_format($laporan->ai_urgency_score, 1) }}
                         </div>
-                        <div style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;">AI Score</div>
+                        <div style="font-size:0.6rem;color:var(--abu);text-transform:uppercase;letter-spacing:0.06em;">AI Score</div>
                     </div>
                     @endif
                 </div>
 
                 {{-- AI Saran --}}
                 @if($laporan->ai_rekomendasi)
-                <div style="background:rgba(200,146,42,0.07);border:1px solid rgba(200,146,42,0.2);border-radius:3px;padding:6px 10px;margin-top:8px;font-size:0.72rem;color:#7a5c1e;">
+                <div style="background:rgba(200,146,42,0.07);border:1px solid rgba(200,146,42,0.2);border-radius:3px;padding:6px 10px;margin-top:8px;font-size:0.72rem;color:var(--emas-gelap);">
                     🤖 <strong>AI:</strong> {{ $laporan->ai_rekomendasi }}
                     @if($laporan->ai_duplikat_score > 50)
                         — <span style="color:var(--merah);">⚠ Potensi duplikat {{ number_format($laporan->ai_duplikat_score, 0) }}%</span>
@@ -101,7 +101,7 @@
                         @csrf
                         <button type="submit" class="btn btn-sm"
                                 style="background:var(--hijau);color:white;border:none;"
-                                onclick="return confirm('Setujui laporan {{ $laporan->kode_laporan }}?')">
+                                onclick="event.preventDefault(); swalKonfirmasi({title:'Setujui Laporan',text:'Setujui laporan {{ $laporan->kode_laporan }}?',icon:'question',confirmText:'Setujui',confirmColor:'var(--hijau)',onConfirm:()=>this.closest('form').submit()})">
                             <i class="bi bi-check2 me-1"></i>Setujui
                         </button>
                     </form>
@@ -155,7 +155,7 @@
 <div class="card">
     <div class="card-body text-center py-5">
         <i class="bi bi-check-circle" style="font-size:2.5rem;color:var(--hijau);"></i>
-        <div class="mt-3" style="font-size:0.9rem;color:#6b7280;">Tidak ada laporan yang menunggu verifikasi.</div>
+        <div class="mt-3" style="font-size:0.9rem;color:var(--abu-gelap);">Tidak ada laporan yang menunggu verifikasi.</div>
     </div>
 </div>
 @endforelse

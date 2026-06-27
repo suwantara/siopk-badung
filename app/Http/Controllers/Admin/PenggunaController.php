@@ -54,18 +54,13 @@ class PenggunaController extends Controller
 
     public function edit(User $pengguna)
     {
-        // Cegah edit superadmin lain kecuali diri sendiri
-        if ($pengguna->isSuperAdmin() && auth()->id() !== $pengguna->id) {
-            return back()->with('error', 'Tidak dapat mengedit akun superadmin lain.');
-        }
+        $this->authorize('update', $pengguna);
         return view('admin.pengguna.form', ['user' => $pengguna]);
     }
 
     public function update(StoreUserRequest $request, User $pengguna)
     {
-        if ($pengguna->isSuperAdmin() && auth()->id() !== $pengguna->id) {
-            return back()->with('error', 'Tidak dapat mengedit akun superadmin lain.');
-        }
+        $this->authorize('update', $pengguna);
 
         $validated = $request->validated();
 
@@ -89,12 +84,7 @@ class PenggunaController extends Controller
 
     public function toggleAktif(User $pengguna)
     {
-        if ($pengguna->id === auth()->id()) {
-            return back()->with('error', 'Tidak dapat menonaktifkan akun sendiri.');
-        }
-        if ($pengguna->isSuperAdmin()) {
-            return back()->with('error', 'Tidak dapat menonaktifkan akun superadmin.');
-        }
+        $this->authorize('toggleActive', $pengguna);
         $pengguna->update(['is_active' => !$pengguna->is_active]);
         $status = $pengguna->is_active ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', "Pengguna {$pengguna->name} berhasil {$status}.");
@@ -102,12 +92,7 @@ class PenggunaController extends Controller
 
     public function destroy(User $pengguna)
     {
-        if ($pengguna->id === auth()->id()) {
-            return back()->with('error', 'Tidak dapat menghapus akun sendiri.');
-        }
-        if ($pengguna->isSuperAdmin()) {
-            return back()->with('error', 'Akun superadmin tidak dapat dihapus.');
-        }
+        $this->authorize('delete', $pengguna);
         $nama = $pengguna->name;
         $pengguna->delete();
         return redirect()->route('admin.pengguna.index')

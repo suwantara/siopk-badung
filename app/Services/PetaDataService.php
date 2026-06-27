@@ -6,6 +6,7 @@ use App\Helpers\CacheKeys;
 use App\Models\OpkLaporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class PetaDataService
 {
@@ -36,17 +37,24 @@ class PetaDataService
                 'kecamatan:id,nama',
                 'fotoUtama:laporan_id,path',
             ])
-            ->where('status_verifikasi', 'disetujui')
+            ->disetujui()
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->where('latitude', '!=', 0)
             ->where('longitude', '!=', 0);
 
         $this->applyFilters($query, $request);
+        $this->applyBounds($query, $request);
 
-        return $query->get()
+        $markers = $query->limit(500)->get()
             ->map(fn($opk) => $this->formatMarker($opk, $isAdmin))
             ->all();
+
+        if (count($markers) >= 500) {
+            Log::warning('PetaDataService: marker count mencapai limit 500. Pertimbangkan filter bounds.');
+        }
+
+        return $markers;
     }
 
     private function selectColumns(bool $isAdmin): array
@@ -71,6 +79,19 @@ class PetaDataService
             if ($request->filled($filter)) {
                 $query->where($filter, $request->$filter);
             }
+        }
+    }
+
+    private function applyBounds($query, Request $request): void
+    {
+        if ($request->filled(['sw_lat', 'sw_lng', 'ne_lat', 'ne_lng'])) {
+            $query->whereBetween('latitude', [
+                (float) $request->sw_lat,
+                (float) $request->ne_lat,
+            ])->whereBetween('longitude', [
+                (float) $request->sw_lng,
+                (float) $request->ne_lng,
+            ]);
         }
     }
 

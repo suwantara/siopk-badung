@@ -16,20 +16,20 @@
 {{-- KPI --}}
 <div class="row g-3 mb-4">
     @foreach([
-        ['Total OPK Resmi', $stats['total'], '', 'bi-collection', '#C8922A'],
-        ['Kritis', $stats['kritis'], 'Perlu tindakan', 'bi-exclamation-triangle', '#C0392B'],
-        ['Waspada', $stats['waspada'], 'Perlu pantau', 'bi-eye', '#D4A017'],
-        ['Baik', $stats['baik'], 'Terlindungi', 'bi-shield-check', '#2D5A27'],
-        ['Menunggu Verif.', $stats['menunggu'], 'Antrian', 'bi-clock', '#6b7280'],
+        ['Total OPK Resmi', $stats['total'], '', 'bi-collection', 'var(--emas)'],
+        ['Kritis', $stats['kritis'], 'Perlu tindakan', 'bi-exclamation-triangle', 'var(--merah)'],
+        ['Waspada', $stats['waspada'], 'Perlu pantau', 'bi-eye', 'var(--kuning)'],
+        ['Baik', $stats['baik'], 'Terlindungi', 'bi-shield-check', 'var(--hijau)'],
+        ['Menunggu Verif.', $stats['menunggu'], 'Antrian', 'bi-clock', 'var(--abu-gelap)'],
         ['Bulan Ini', $stats['bulan_ini'], 'Laporan baru', 'bi-calendar3', '#2980b9'],
     ] as [$label, $val, $sub, $icon, $color])
     <div class="col-md-2">
         <div class="card h-100" style="border-top:3px solid {{ $color }};">
             <div class="card-body text-center py-3">
                 <i class="bi {{ $icon }}" style="font-size:1.3rem;color:{{ $color }};"></i>
-                <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:#2C1A0E;line-height:1;margin:4px 0;">{{ $val }}</div>
-                <div style="font-size:0.68rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;">{{ $label }}</div>
-                @if($sub)<div style="font-size:0.65rem;color:#c4b8a8;margin-top:2px;">{{ $sub }}</div>@endif
+                <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--tanah);line-height:1;margin:4px 0;">{{ $val }}</div>
+                <div style="font-size:0.68rem;color:var(--abu);text-transform:uppercase;letter-spacing:0.06em;">{{ $label }}</div>
+                @if($sub)<div style="font-size:0.65rem;color:var(--abu);margin-top:2px;">{{ $sub }}</div>@endif
             </div>
         </div>
     </div>
@@ -105,16 +105,16 @@
                 @foreach($topUrgensi as $i => $opk)
                 <tr>
                     <td style="padding-left:1.25rem;">
-                        <div style="width:24px;height:24px;border-radius:50%;background:{{ $i < 3 ? '#C0392B' : ($i < 6 ? '#D4A017' : '#9ca3af') }};color:white;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;">{{ $i+1 }}</div>
+                        <div style="width:24px;height:24px;border-radius:50%;background:{{ $i < 3 ? 'var(--merah)' : ($i < 6 ? 'var(--kuning)' : 'var(--abu)') }};color:white;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;">{{ $i+1 }}</div>
                     </td>
                     <td>
                         <a href="{{ route('admin.opk.show', $opk) }}" style="font-weight:600;font-size:0.85rem;color:var(--tanah);text-decoration:none;">{{ $opk->nama_opk }}</a>
                     </td>
-                    <td><span style="background:rgba(var(--emas-rgb),0.1);color:#7a5c1e;padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span></td>
+                    <td><span style="background:rgba(var(--emas-rgb),0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span></td>
                     <td style="font-size:0.82rem;">{{ $opk->kecamatan?->nama }}</td>
                     <td><span class="badge badge-{{ $opk->kondisi }} rounded-pill px-2" style="font-size:0.68rem;">{{ ucfirst($opk->kondisi) }}</span></td>
                     <td>
-                        <span style="font-family:'Courier New',monospace;font-weight:700;color:{{ $opk->kondisi === 'kritis' ? '#C0392B' : '#D4A017' }}">
+                        <span style="font-family:'Courier New',monospace;font-weight:700;color:{{ $opk->kondisi === 'kritis' ? 'var(--merah)' : 'var(--kuning)' }}">
                             {{ number_format($opk->ai_urgency_score, 1) }}
                         </span>
                     </td>
@@ -134,11 +134,11 @@
 @push('scripts')
 <script>
 const ds = {
-    emas:   getComputedStyle(document.documentElement).getPropertyValue('--emas').trim() || '#C8922A',
-    merah:  getComputedStyle(document.documentElement).getPropertyValue('--merah').trim() || '#C0392B',
-    kuning: getComputedStyle(document.documentElement).getPropertyValue('--kuning').trim() || '#D4A017',
-    hijau:  getComputedStyle(document.documentElement).getPropertyValue('--hijau').trim() || '#2D5A27',
-    tanah:  getComputedStyle(document.documentElement).getPropertyValue('--tanah').trim() || '#2C1A0E',
+    emas:   getComputedStyle(document.documentElement).getPropertyValue('--emas').trim() || 'var(--emas)',
+    merah:  getComputedStyle(document.documentElement).getPropertyValue('--merah').trim() || 'var(--merah)',
+    kuning: getComputedStyle(document.documentElement).getPropertyValue('--kuning').trim() || 'var(--kuning)',
+    hijau:  getComputedStyle(document.documentElement).getPropertyValue('--hijau').trim() || 'var(--hijau)',
+    tanah:  getComputedStyle(document.documentElement).getPropertyValue('--tanah').trim() || 'var(--tanah)',
 };
 
 Chart.defaults.font.family = "'Inter', sans-serif";

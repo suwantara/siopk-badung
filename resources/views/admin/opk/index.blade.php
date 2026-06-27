@@ -87,7 +87,7 @@
             <tbody>
                 @forelse($laporans as $i => $opk)
                 <tr>
-                    <td style="padding-left:1.25rem;color:#9ca3af;font-size:0.75rem;">
+                    <td style="padding-left:1.25rem;color:var(--abu);font-size:0.75rem;">
                         {{ $laporans->firstItem() + $i }}
                     </td>
                     <td>
@@ -96,15 +96,15 @@
                                 {{ $opk->nama_opk }}
                             </a>
                         </div>
-                        <div style="font-size:0.7rem;color:#9ca3af;">{{ $opk->kode_laporan }}</div>
+                        <div style="font-size:0.7rem;color:var(--abu);">{{ $opk->kode_laporan }}</div>
                     </td>
                     <td>
-                        <span style="background:rgba(200,146,42,0.1);color:#7a5c1e;padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;white-space:nowrap;">
+                        <span style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;white-space:nowrap;">
                             {{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}
                         </span>
                     </td>
                     <td style="font-size:0.82rem;">{{ $opk->kecamatan?->nama }}</td>
-                    <td style="font-size:0.78rem;color:#6b7280;">{{ Str::limit($opk->nama_desa_adat, 25) }}</td>
+                    <td style="font-size:0.78rem;color:var(--abu-gelap);">{{ Str::limit($opk->nama_desa_adat, 25) }}</td>
                     <td>
                         <span class="badge badge-{{ $opk->kondisi }} rounded-pill px-2" style="font-size:0.68rem;">
                             {{ ucfirst($opk->kondisi) }}
@@ -113,18 +113,18 @@
                     <td>
                         @if($opk->ai_urgency_score)
                             <span style="font-family:'Courier New',monospace;font-size:0.82rem;font-weight:700;
-                                color:{{ $opk->kondisi === 'kritis' ? '#C0392B' : ($opk->kondisi === 'waspada' ? '#D4A017' : '#2D5A27') }}">
+                                color:{{ $opk->kondisi === 'kritis' ? 'var(--merah)' : ($opk->kondisi === 'waspada' ? 'var(--kuning)' : 'var(--hijau)') }}">
                                 {{ number_format($opk->ai_urgency_score, 1) }}
                             </span>
                         @else
-                            <span style="color:#d1ccc4;font-size:0.75rem;">—</span>
+                            <span style="color:var(--abu);font-size:0.75rem;">—</span>
                         @endif
                     </td>
                     <td>
                         @if($opk->latitude && $opk->longitude)
-                            <i class="bi bi-geo-alt-fill" style="color:#2D5A27;font-size:0.85rem;" title="{{ $opk->latitude }}, {{ $opk->longitude }}"></i>
+                            <i class="bi bi-geo-alt-fill" style="color:var(--hijau);font-size:0.85rem;" title="{{ $opk->latitude }}, {{ $opk->longitude }}"></i>
                         @else
-                            <i class="bi bi-geo-alt" style="color:#d1ccc4;font-size:0.85rem;"></i>
+                            <i class="bi bi-geo-alt" style="color:var(--abu);font-size:0.85rem;"></i>
                         @endif
                     </td>
                     <td>
@@ -136,7 +136,7 @@
                             @if(auth()->user()->isAdmin())
                             <a href="{{ route('admin.opk.edit', $opk) }}"
                                class="btn btn-sm py-0 px-2"
-                               style="background:rgba(200,146,42,0.1);color:#7a5c1e;border:1px solid rgba(200,146,42,0.2);" title="Edit">
+                               style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);border:1px solid rgba(200,146,42,0.2);" title="Edit">
                                 <i class="bi bi-pencil" style="font-size:0.75rem;"></i>
                             </a>
                             @endif
@@ -155,7 +155,7 @@
         </table>
     </div>
     @if($laporans->hasPages())
-    <div class="card-footer bg-white" style="border-top:1px solid #d4c9b8;">
+    <div class="card-footer bg-white" style="border-top:1px solid var(--garis);">
         {{ $laporans->links() }}
     </div>
     @endif

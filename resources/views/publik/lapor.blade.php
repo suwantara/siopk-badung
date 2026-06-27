@@ -7,48 +7,48 @@
     .container-lapor { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
 
     /* Step tabs */
-    .step-nav { display: flex; background: white; border: 1px solid #d4c9b8; border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }
-    .step-tab { flex: 1; padding: 10px 8px; text-align: center; cursor: pointer; border-right: 1px solid #d4c9b8; transition: all 0.2s; }
+    .step-nav { display: flex; background: white; border: 1px solid var(--garis); border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }
+    .step-tab { flex: 1; padding: 10px 8px; text-align: center; cursor: pointer; border-right: 1px solid var(--garis); transition: all 0.2s; }
     .step-tab:last-child { border-right: none; }
     .step-tab.active { background: var(--emas); }
     .step-tab .step-num { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
     .step-tab .step-label { font-size: 0.78rem; font-weight: 600; margin-top: 2px; }
     .step-tab.active .step-num, .step-tab.active .step-label { color: var(--tanah); }
-    .step-tab:not(.active) .step-num, .step-tab:not(.active) .step-label { color: #9ca3af; }
+    .step-tab:not(.active) .step-num, .step-tab:not(.active) .step-label { color: var(--abu); }
     .step-tab.done { background: rgba(45,90,39,0.08); }
     .step-tab.done .step-num, .step-tab.done .step-label { color: var(--hijau); }
 
     /* Form */
-    .form-card { background: white; border: 1px solid #d4c9b8; border-radius: 4px; padding: 1.75rem; }
+    .form-card { background: white; border: 1px solid var(--garis); border-radius: 4px; padding: 1.75rem; }
     .form-label { font-size: 0.75rem; font-weight: 600; color: var(--tanah); text-transform: uppercase; letter-spacing: 0.06em; }
-    .form-control, .form-select { border: 1px solid #d4c9b8; border-radius: 3px; font-size: 0.88rem; background: #fdfaf5; color: var(--tanah); }
+    .form-control, .form-select { border: 1px solid var(--garis); border-radius: 3px; font-size: 0.88rem; background: var(--input-bg); color: var(--tanah); }
     .form-control:focus, .form-select:focus { border-color: var(--emas); box-shadow: 0 0 0 3px rgba(200,146,42,0.12); }
-    .form-text { font-size: 0.7rem; color: #9ca3af; }
-    .optional-badge { font-size: 0.62rem; color: #9ca3af; font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; }
+    .form-text { font-size: 0.7rem; color: var(--abu); }
+    .optional-badge { font-size: 0.62rem; color: var(--abu); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; }
     .required-star { color: var(--merah); }
 
-    .kondisi-label { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid #d4c9b8; border-radius: 3px; cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
+    .kondisi-label { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--garis); border-radius: 3px; cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
     .kondisi-label:hover { border-color: var(--emas); }
     .kondisi-label input[type=radio] { accent-color: var(--emas); }
 
-    .tipe-label { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; border: 1px solid #d4c9b8; border-radius: 3px; cursor: pointer; text-align: center; transition: all 0.15s; }
+    .tipe-label { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; border: 1px solid var(--garis); border-radius: 3px; cursor: pointer; text-align: center; transition: all 0.15s; }
     .tipe-label:hover { border-color: var(--emas); background: rgba(200,146,42,0.03); }
     .tipe-label.selected { border-color: var(--emas); background: rgba(200,146,42,0.06); }
 
-    .upload-zone { border: 2px dashed #d4c9b8; border-radius: 3px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: #fdfaf5; }
+    .upload-zone { border: 2px dashed var(--garis); border-radius: 3px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--input-bg); }
     .upload-zone:hover { border-color: var(--emas); background: rgba(200,146,42,0.03); }
 
     .foto-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-    .foto-thumb { aspect-ratio: 1; border-radius: 3px; overflow: hidden; position: relative; background: #e8e0d4; display: flex; align-items: center; justify-content: center; }
+    .foto-thumb { aspect-ratio: 1; border-radius: 3px; overflow: hidden; position: relative; background: var(--placeholder); display: flex; align-items: center; justify-content: center; }
     .foto-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .foto-del { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--merah); color: white; font-size: 0.55rem; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .foto-size { position: absolute; bottom: 3px; left: 3px; right: 3px; background: rgba(0,0,0,0.7); color: white; border-radius: 2px; font-size: 0.55rem; text-align: center; padding: 1px 2px; }
     .foto-toobig { border: 2px solid var(--merah) !important; }
     .foto-toobig::after { content: 'Terlalu besar'; position: absolute; inset: 0; background: rgba(192,57,43,0.85); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; }
-    .foto-add { aspect-ratio: 1; border: 2px dashed #d4c9b8; border-radius: 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; gap: 4px; background: #fdfaf5; transition: all 0.15s; }
+    .foto-add { aspect-ratio: 1; border: 2px dashed var(--garis); border-radius: 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; gap: 4px; background: var(--input-bg); transition: all 0.15s; }
     .foto-add:hover { border-color: var(--emas); }
 
-    .wilayah-box { background: var(--krem); border: 1px solid #d4c9b8; border-radius: 3px; padding: 1rem; }
+    .wilayah-box { background: var(--krem); border: 1px solid var(--garis); border-radius: 3px; padding: 1rem; }
     .desa-adat-box { background: rgba(200,146,42,0.05); border: 1px solid rgba(200,146,42,0.2); border-radius: 3px; padding: 1rem; }
 
     .lapor-sidebar { width: 220px; flex-shrink: 0; }
@@ -72,7 +72,7 @@
         <h1 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;margin-bottom:4px;">
             Lapor Objek Pemajuan Kebudayaan
         </h1>
-        <p style="color:#6b7280;font-size:0.85rem;">
+        <p style="color:var(--abu-gelap);font-size:0.85rem;">
             Bantu Pemkab Badung memetakan & melindungi warisan budaya Bali · UU No. 5 Tahun 2017
         </p>
     </div>
@@ -91,23 +91,23 @@
 
     {{-- Step Nav --}}
     <div class="step-nav" id="stepNav">
-        <div class="step-tab active" id="stab-1" onclick="goStep(1)">
+        <div class="step-tab active" id="stab-1">
             <div class="step-num">Langkah 1</div>
             <div class="step-label">Identitas OPK</div>
         </div>
-        <div class="step-tab" id="stab-2" onclick="goStep(2)">
+        <div class="step-tab" id="stab-2">
             <div class="step-num">Langkah 2</div>
             <div class="step-label">Lokasi & Wilayah</div>
         </div>
-        <div class="step-tab" id="stab-3" onclick="goStep(3)">
+        <div class="step-tab" id="stab-3">
             <div class="step-num">Langkah 3</div>
             <div class="step-label">Deskripsi Detail</div>
         </div>
-        <div class="step-tab" id="stab-4" onclick="goStep(4)">
+        <div class="step-tab" id="stab-4">
             <div class="step-num">Langkah 4</div>
             <div class="step-label">Foto & Media</div>
         </div>
-        <div class="step-tab" id="stab-5" onclick="goStep(5)">
+        <div class="step-tab" id="stab-5">
             <div class="step-num">Langkah 5</div>
             <div class="step-label">Data Pelapor</div>
         </div>
@@ -127,7 +127,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">1</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Identitas OPK</div>
-                    <div style="font-size:0.75rem;color:#9ca3af;">Informasi dasar tentang OPK yang dilaporkan</div>
+                    <div style="font-size:0.75rem;color:var(--abu);">Informasi dasar tentang OPK yang dilaporkan</div>
                 </div>
             </div>
 
@@ -183,7 +183,7 @@
                             <input type="radio" name="kondisi" value="baik" {{ old('kondisi','baik') === 'baik' ? 'checked' : '' }} onchange="setKondisi('baik')">
                             <div>
                                 <div style="font-weight:600;font-size:0.85rem;"><i class="bi bi-check-circle-fill" style="color:var(--hijau);"></i> Baik</div>
-                                <div style="font-size:0.7rem;color:#9ca3af;">Aktif & terpelihara</div>
+                                <div style="font-size:0.7rem;color:var(--abu);">Aktif & terpelihara</div>
                             </div>
                         </label>
                     </div>
@@ -192,7 +192,7 @@
                             <input type="radio" name="kondisi" value="waspada" {{ old('kondisi') === 'waspada' ? 'checked' : '' }} onchange="setKondisi('waspada')">
                             <div>
                                 <div style="font-weight:600;font-size:0.85rem;"><i class="bi bi-exclamation-triangle-fill" style="color:var(--kuning);"></i> Waspada</div>
-                                <div style="font-size:0.7rem;color:#9ca3af;">Praktisi berkurang</div>
+                                <div style="font-size:0.7rem;color:var(--abu);">Praktisi berkurang</div>
                             </div>
                         </label>
                     </div>
@@ -201,7 +201,7 @@
                             <input type="radio" name="kondisi" value="kritis" {{ old('kondisi') === 'kritis' ? 'checked' : '' }} onchange="setKondisi('kritis')">
                             <div>
                                 <div style="font-weight:600;font-size:0.85rem;"><i class="bi bi-exclamation-circle-fill" style="color:var(--merah);"></i> Kritis</div>
-                                <div style="font-size:0.7rem;color:#9ca3af;">Terancam punah</div>
+                                <div style="font-size:0.7rem;color:var(--abu);">Terancam punah</div>
                             </div>
                         </label>
                     </div>
@@ -221,7 +221,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">2</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Lokasi & Wilayah</div>
-                    <div style="font-size:0.75rem;color:#9ca3af;">Wilayah administratif tempat OPK berada</div>
+                    <div style="font-size:0.75rem;color:var(--abu);">Wilayah administratif tempat OPK berada</div>
                 </div>
             </div>
 
@@ -318,7 +318,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">3</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Deskripsi & Detail</div>
-                    <div style="font-size:0.75rem;color:#9ca3af;">Semakin lengkap, semakin mudah diverifikasi Dinas</div>
+                    <div style="font-size:0.75rem;color:var(--abu);">Semakin lengkap, semakin mudah diverifikasi Dinas</div>
                 </div>
             </div>
 
@@ -390,10 +390,10 @@
                 </div>
             </div>
 
-            <div style="background:var(--krem);border:1px solid #d4c9b8;border-radius:3px;padding:1rem;">
+            <div style="background:var(--krem);border:1px solid var(--garis);border-radius:3px;padding:1rem;">
                 <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem;">
                     Informasi Praktisi / Narasumber
-                    <span style="font-size:0.65rem;color:#9ca3af;font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px;">(opsional)</span>
+                    <span style="font-size:0.65rem;color:var(--abu);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px;">(opsional)</span>
                 </div>
                 <div class="row g-3">
                     <div class="col-md-4">
@@ -428,7 +428,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">4</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Foto & Dokumentasi</div>
-                    <div style="font-size:0.75rem;color:#9ca3af;">Upload hingga 10 foto · video · dokumen pendukung</div>
+                    <div style="font-size:0.75rem;color:var(--abu);">Upload hingga 10 foto · video · dokumen pendukung</div>
                 </div>
             </div>
 
@@ -438,8 +438,8 @@
                        class="d-none @error('fotos') is-invalid @enderror" onchange="previewFotos(this)">
                 <div class="foto-grid" id="fotoGrid">
                     <div class="foto-add" onclick="document.getElementById('inputFotos').click()">
-                        <i class="bi bi-camera" style="font-size:1.4rem;color:#9ca3af;"></i>
-                        <span style="font-size:0.68rem;color:#9ca3af;">Tambah Foto</span>
+                        <i class="bi bi-camera" style="font-size:1.4rem;color:var(--abu);"></i>
+                        <span style="font-size:0.68rem;color:var(--abu);">Tambah Foto</span>
                     </div>
                 </div>
                 <div class="form-text mt-1">Format: JPG, PNG, HEIC, WebP · Maks 10MB per foto</div>
@@ -465,9 +465,9 @@
                 <input type="file" name="dokumen" id="inputDokumen" accept=".pdf,.doc,.docx"
                        class="d-none" onchange="previewDokumen(this)">
                 <div class="upload-zone" onclick="document.getElementById('inputDokumen').click()" id="dokZone">
-                    <i class="bi bi-file-earmark-text" style="font-size:1.8rem;color:#9ca3af;"></i>
-                    <div style="font-size:0.82rem;color:#9ca3af;margin-top:6px;">SK, sertifikat, artikel, atau dokumen resmi</div>
-                    <div style="font-size:0.7rem;color:#c4b8a8;">PDF, DOC · Maks 20MB</div>
+                    <i class="bi bi-file-earmark-text" style="font-size:1.8rem;color:var(--abu);"></i>
+                    <div style="font-size:0.82rem;color:var(--abu);margin-top:6px;">SK, sertifikat, artikel, atau dokumen resmi</div>
+                    <div style="font-size:0.7rem;color:var(--abu);">PDF, DOC · Maks 20MB</div>
                 </div>
             </div>
 
@@ -487,7 +487,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">5</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Data Pelapor</div>
-                    <div style="font-size:0.75rem;color:#9ca3af;">Identitas untuk konfirmasi & notifikasi status laporan</div>
+                    <div style="font-size:0.75rem;color:var(--abu);">Identitas untuk konfirmasi & notifikasi status laporan</div>
                 </div>
             </div>
 
@@ -548,7 +548,7 @@
                 </div>
             </div>
 
-            <div style="background:var(--krem);border:1px solid #d4c9b8;border-radius:3px;padding:1rem;margin-bottom:1rem;">
+            <div style="background:var(--krem);border:1px solid var(--garis);border-radius:3px;padding:1rem;margin-bottom:1rem;">
                 <label style="display:flex;gap:10px;cursor:pointer;align-items:flex-start;">
                     <input type="checkbox" name="setuju_1" value="1" {{ old('setuju_1') ? 'checked' : '' }}
                            style="margin-top:3px;accent-color:var(--emas);" required>
@@ -582,18 +582,18 @@
 
         {{-- SIDEBAR KANAN --}}
         <div class="lapor-sidebar d-none d-lg-block">
-            <div style="background:white;border:1px solid #d4c9b8;border-radius:4px;padding:1rem;">
+            <div style="background:white;border:1px solid var(--garis);border-radius:4px;padding:1rem;">
                 <div style="font-size:0.72rem;font-weight:700;color:var(--tanah);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">Progress</div>
-                <div style="height:5px;background:#e5e0d8;border-radius:3px;margin-bottom:10px;">
+                <div style="height:5px;background:var(--input-bg);border-radius:3px;margin-bottom:10px;">
                     <div id="progBar" style="height:100%;width:20%;background:var(--emas);border-radius:3px;transition:width 0.3s;"></div>
                 </div>
                 <div id="progList">
                     @foreach(['Identitas OPK','Lokasi & Wilayah','Deskripsi Detail','Foto & Media','Data Pelapor'] as $i => $label)
                     <div class="prog-item" id="prog-{{ $i+1 }}">
-                        <div class="prog-dot" style="background:{{ $i === 0 ? 'var(--emas)' : '#e5e0d8' }};color:{{ $i === 0 ? 'var(--tanah)' : '#9ca3af' }};">
+                        <div class="prog-dot" style="background:{{ $i === 0 ? 'var(--emas)' : 'var(--input-bg)' }};color:{{ $i === 0 ? 'var(--tanah)' : 'var(--abu)' }};">
                             {{ $i+1 }}
                         </div>
-                        <span style="color:{{ $i === 0 ? 'var(--emas)' : '#9ca3af' }};font-weight:{{ $i === 0 ? '600' : '400' }};">
+                        <span style="color:{{ $i === 0 ? 'var(--emas)' : 'var(--abu)' }};font-weight:{{ $i === 0 ? '600' : '400' }};">
                             {{ $label }}
                         </span>
                     </div>
@@ -609,8 +609,68 @@
 @push('scripts')
 <script>
 let step = 1;
+let maxReached = 1;
+
+function validateStep(n) {
+    const errors = [];
+    const form = document.getElementById('formLapor');
+
+    if (n >= 2) {
+        const nama = form.querySelector('[name="nama_opk"]');
+        const kategori = form.querySelector('[name="kategori_id"]');
+        const kondisi = form.querySelector('[name="kondisi"]:checked');
+        if (!nama.value.trim()) errors.push('Nama Objek Budaya wajib diisi.');
+        if (!kategori.value)     errors.push('Jenis OPK wajib dipilih.');
+        if (!kondisi)            errors.push('Kondisi OPK wajib dipilih.');
+    }
+
+    if (n >= 3) {
+        const kec = form.querySelector('[name="kecamatan_id"]');
+        const desa = form.querySelector('[name="desa_dinas_id"]');
+        const adat = form.querySelector('[name="nama_desa_adat"]');
+        if (!kec.value)    errors.push('Kecamatan wajib dipilih.');
+        if (!desa.value)   errors.push('Desa Dinas wajib dipilih.');
+        if (!adat.value.trim()) errors.push('Nama Desa Adat wajib diisi.');
+    }
+
+    if (n >= 4) {
+        const deskripsi = form.querySelector('[name="deskripsi_umum"]');
+        if (!deskripsi.value.trim() || deskripsi.value.trim().length < 50) {
+            errors.push('Deskripsi Umum wajib diisi minimal 50 karakter.');
+        }
+    }
+
+    // Step 4 — optional, allow through
+
+    if (errors.length) {
+        showStepErrors(errors);
+        return false;
+    }
+    return true;
+}
+
+function showStepErrors(errors) {
+    const existing = document.querySelector('.step-error-alert');
+    if (existing) existing.remove();
+    const card = document.getElementById('step-' + step);
+    const alert = document.createElement('div');
+    alert.className = 'step-error-alert alert alert-danger py-2 px-3 mb-3';
+    alert.style.cssText = 'font-size:0.8rem;margin-top:-0.5rem;';
+    alert.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i><strong>Lengkapi isian berikut:</strong><ul style="margin:4px 0 0 1rem;padding:0;">' +
+        errors.map(e => '<li>' + e + '</li>').join('') + '</ul>';
+    card.insertBefore(alert, card.firstChild);
+    setTimeout(function() {
+        if (alert.parentNode) alert.remove();
+    }, 6000);
+}
 
 function goStep(n) {
+    if (n > step && !validateStep(n)) {
+        return;
+    }
+
+    if (n > maxReached) maxReached = n;
+
     for (let i = 1; i <= 5; i++) {
         document.getElementById('step-' + i).style.display = 'none';
         const tab = document.getElementById('stab-' + i);
@@ -621,25 +681,35 @@ function goStep(n) {
     document.getElementById('stab-' + n).classList.add('active');
     step = n;
 
-    document.getElementById('progBar').style.width = (n * 20) + '%';
+    document.getElementById('progBar').style.width = (Math.max(maxReached, n) * 20) + '%';
 
     for (let i = 1; i <= 5; i++) {
         const p = document.getElementById('prog-' + i);
+        if (!p) continue;
         const dot = p.querySelector('.prog-dot');
         const lbl = p.querySelector('span');
-        if (i < n) {
-            dot.style.background = 'var(--hijau)'; dot.style.color = 'white'; dot.textContent = '✓';
-            lbl.style.color = 'var(--hijau)'; lbl.style.fontWeight = '600';
-        } else if (i === n) {
-            dot.style.background = 'var(--emas)'; dot.style.color = 'var(--tanah)'; dot.textContent = i;
-            lbl.style.color = 'var(--emas)'; lbl.style.fontWeight = '600';
+        if (i <= maxReached) {
+            dot.style.background = i < n ? 'var(--hijau)' : (i === n ? 'var(--emas)' : 'var(--hijau)');
+            dot.style.color = i === n ? 'var(--tanah)' : 'white';
+            dot.textContent = i < n ? '\u2713' : i;
+            lbl.style.color = i < n ? 'var(--hijau)' : 'var(--emas)';
+            lbl.style.fontWeight = '600';
         } else {
-            dot.style.background = '#e5e0d8'; dot.style.color = '#9ca3af'; dot.textContent = i;
-            lbl.style.color = '#9ca3af'; lbl.style.fontWeight = '400';
+            dot.style.background = 'var(--input-bg)'; dot.style.color = 'var(--abu)'; dot.textContent = i;
+            lbl.style.color = 'var(--abu)'; lbl.style.fontWeight = '400';
         }
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+document.querySelectorAll('#stepNav .step-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+        const target = parseInt(this.id.replace('stab-', ''));
+        if (target <= maxReached || target <= step) {
+            goStep(target);
+        }
+    });
+});
 
 function setKondisi(val) {
     ['baik','waspada','kritis'].forEach(k => {
@@ -715,7 +785,7 @@ function previewDokumen(input) {
         document.getElementById('dokZone').innerHTML =
             `<i class="bi bi-file-earmark-check" style="font-size:1.8rem;color:var(--hijau);"></i>
              <div style="font-size:0.82rem;margin-top:6px;">${input.files[0].name}</div>
-             <div style="font-size:0.7rem;color:#9ca3af;">Klik untuk ganti</div>`;
+             <div style="font-size:0.7rem;color:var(--abu);">Klik untuk ganti</div>`;
     }
 }
 

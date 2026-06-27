@@ -4,23 +4,25 @@ namespace App\Http\Controllers\Publik;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLaporanRequest;
+use App\Helpers\CacheKeys;
 use App\Jobs\AnalisisOpkJob;
 use App\Events\LaporanCreated;
-use App\Models\{OpkCategory, Kecamatan, DesaDinas, DesaAdat, OpkLaporan, OpkFoto, OpkDokumen, OpkVideo};
+use App\Models\{OpkCategory, Kecamatan, DesaDinas, DesaAdat};
+use App\Services\LaporanService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\{Cache, DB, Log};
 
 class LaporController extends Controller
 {
+    public function __construct(
+        private readonly LaporanService $laporanService
+    ) {}
+
     // Halaman form laporan publik
     public function index()
     {
-        $kategori   = Cache::remember('kategori_list', 86400, fn() => OpkCategory::orderBy('nomor')->get());
-        $kecamatans = Cache::remember('kecamatan_list', 86400, fn() => Kecamatan::orderBy('nama')->get());
+        $kategori   = Cache::remember(CacheKeys::KATEGORI_LIST, 86400, fn() => OpkCategory::orderBy('nomor')->get());
+        $kecamatans = Cache::remember(CacheKeys::KECAMATAN_LIST, 86400, fn() => Kecamatan::orderBy('nama')->get());
         return view('publik.lapor', compact('kategori', 'kecamatans'));
     }
 
@@ -51,88 +53,25 @@ class LaporController extends Controller
 
         DB::beginTransaction();
         try {
-            // Buat laporan
-            $laporan = OpkLaporan::create([
-                'kode_laporan'        => OpkLaporan::generateKode(),
-                'nama_opk'            => $validated['nama_opk'],
-                'kategori_id'         => $validated['kategori_id'],
-                'tahun_diketahui'     => $validated['tahun_diketahui'] ?? null,
-                'tahun_keterangan'    => $validated['tahun_keterangan'] ?? null,
-                'status_pelindungan'  => $validated['status_pelindungan'],
-                'kondisi'             => $validated['kondisi'],
-                'kecamatan_id'        => $validated['kecamatan_id'],
-                'desa_dinas_id'       => $validated['desa_dinas_id'],
-                'nama_desa_adat'      => $validated['nama_desa_adat'],
-                'banjar_adat'         => $validated['banjar_adat'] ?? null,
-                'lokasi_spesifik'     => $validated['lokasi_spesifik'] ?? null,
-                'latitude'            => $validated['latitude'] ?? null,
-                'longitude'           => $validated['longitude'] ?? null,
-                'deskripsi_umum'      => $validated['deskripsi_umum'],
-                'sejarah_asal_usul'   => $validated['sejarah_asal_usul'] ?? null,
-                'nilai_makna_budaya'  => $validated['nilai_makna_budaya'] ?? null,
-                'bahasa_digunakan'    => $validated['bahasa_digunakan'] ?? null,
-                'aksara_digunakan'    => $validated['aksara_digunakan'] ?? null,
-                'frekuensi_pelaksanaan' => $validated['frekuensi_pelaksanaan'] ?? null,
-                'status_kepemilikan'  => $validated['status_kepemilikan'] ?? null,
-                'praktisi_nama'       => $validated['praktisi_nama'] ?? null,
-                'praktisi_usia'       => $validated['praktisi_usia'] ?? null,
-                'praktisi_kontak'     => $validated['praktisi_kontak'] ?? null,
-                'tipe_pelapor'        => $validated['tipe_pelapor'],
-                'pelapor_nama'        => $validated['pelapor_nama'],
-                'pelapor_nik'         => $validated['pelapor_nik'],
-                'pelapor_whatsapp'    => $validated['pelapor_whatsapp'],
-                'pelapor_email'       => $validated['pelapor_email'] ?? null,
-                'link_video'          => $validated['link_video'] ?? null,
-                'status_verifikasi'   => 'menunggu',
-            ]);
+            $laporan = $this->laporanService->createLaporan($validated);
 
-            // Upload multi foto
             if ($request->hasFile('fotos')) {
-                foreach ($request->file('fotos') as $index => $foto) {
-                    $namaFile = Str::uuid() . '.' . $foto->getClientOriginalExtension();
-                    $path     = $foto->storeAs('foto_opk/' . $laporan->id, $namaFile, 'public');
-
-                    OpkFoto::create([
-                        'laporan_id'   => $laporan->id,
-                        'nama_file'    => $foto->getClientOriginalName(),
-                        'path'         => $path,
-                        'keterangan'   => $index === 0 ? ($validated['keterangan_foto_utama'] ?? null) : null,
-                        'is_utama'     => $index === 0,
-                        'urutan'       => $index,
-                        'ukuran_bytes' => $foto->getSize(),
-                        'mime_type'    => $foto->getMimeType(),
-                    ]);
-                }
+                $this->laporanService->uploadFotos(
+                    $laporan,
+                    $request->file('fotos'),
+                    $validated['keterangan_foto_utama'] ?? null
+                );
             }
 
-            // Upload dokumen
             if ($request->hasFile('dokumen')) {
-                $dok      = $request->file('dokumen');
-                $namaDok  = Str::uuid() . '.' . $dok->getClientOriginalExtension();
-                $pathDok  = $dok->storeAs('dokumen_opk/' . $laporan->id, $namaDok, 'public');
-
-                OpkDokumen::create([
-                    'laporan_id'   => $laporan->id,
-                    'nama_file'    => $dok->getClientOriginalName(),
-                    'path'         => $pathDok,
-                    'jenis'        => 'dokumen_pendukung',
-                    'ukuran_bytes' => $dok->getSize(),
-                ]);
+                $this->laporanService->uploadDokumen($laporan, $request->file('dokumen'));
             }
 
-            // Simpan link video jika ada
-            if (!empty($validated['link_video'])) {
-                OpkVideo::create([
-                    'laporan_id'     => $laporan->id,
-                    'link_eksternal' => $validated['link_video'],
-                ]);
-            }
+            $this->laporanService->saveVideoLink($laporan, $validated['link_video'] ?? null);
 
             DB::commit();
 
-            // Dispatch job AI untuk analisis background
             AnalisisOpkJob::dispatch($laporan->id);
-
             LaporanCreated::dispatch($laporan);
 
             return redirect()->route('publik.lapor.sukses', ['kode' => $laporan->kode_laporan])

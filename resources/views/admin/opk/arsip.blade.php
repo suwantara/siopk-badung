@@ -33,10 +33,10 @@
                 <tr style="opacity:0.7;">
                     <td style="padding-left:1.25rem;">
                         <div style="font-weight:600;font-size:0.88rem;">{{ $opk->nama_opk }}</div>
-                        <div style="font-size:0.7rem;color:#9ca3af;">{{ $opk->kode_laporan }}</div>
+                        <div style="font-size:0.7rem;color:var(--abu);">{{ $opk->kode_laporan }}</div>
                     </td>
                     <td>
-                        <span style="background:rgba(200,146,42,0.1);color:#7a5c1e;padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">
+                        <span style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">
                             {{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}
                         </span>
                     </td>
@@ -46,7 +46,7 @@
                             {{ ucfirst($opk->kondisi) }}
                         </span>
                     </td>
-                    <td style="font-size:0.78rem;color:#9ca3af;">
+                    <td style="font-size:0.78rem;color:var(--abu);">
                         {{ $opk->deleted_at?->isoFormat('D MMM Y, HH:mm') }}
                     </td>
                     <td>
@@ -55,7 +55,7 @@
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-outline-secondary py-0 px-2"
                                         title="Pulihkan OPK ini"
-                                        onclick="return confirm('Pulihkan OPK ini ke daftar aktif?')">
+                                        onclick="event.preventDefault(); swalKonfirmasi({title:'Pulihkan OPK',text:'Pulihkan OPK ini ke daftar aktif?',icon:'question',confirmText:'Pulihkan',confirmColor:'var(--hijau)',onConfirm:()=>this.closest('form').submit()})">
                                     <i class="bi bi-arrow-counterclockwise" style="font-size:0.75rem;"></i> Pulihkan
                                 </button>
                             </form>
@@ -64,7 +64,7 @@
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"
                                         title="Hapus permanen OPK ini"
-                                        onclick="return confirm('Hapus PERMANEN OPK ini? Tindakan ini tidak dapat dibatalkan dan semua data, foto, serta dokumen terkait akan dihapus dari database.')">
+                                        onclick="event.preventDefault(); swalKonfirmasi({title:'Hapus Permanen',text:'Hapus PERMANEN OPK ini? Tindakan ini tidak dapat dibatalkan dan semua data, foto, serta dokumen terkait akan dihapus dari database.',icon:'error',confirmText:'Hapus Permanen',confirmColor:'#dc3545',onConfirm:()=>this.closest('form').submit()})">
                                     <i class="bi bi-trash" style="font-size:0.75rem;"></i> Hapus
                                 </button>
                             </form>
@@ -84,7 +84,7 @@
         </table>
     </div>
     @if($laporans->hasPages())
-    <div class="card-footer bg-white" style="border-top:1px solid #d4c9b8;">
+    <div class="card-footer bg-white" style="border-top:1px solid var(--garis);">
         {{ $laporans->links() }}
     </div>
     @endif

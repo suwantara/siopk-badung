@@ -11,21 +11,20 @@ use Illuminate\Support\Facades\Cache;
 
 class DashboardPublikController extends Controller
 {
+    public function __construct(
+        private readonly OpkStatsService $statsService,
+        private readonly PetaDataService $petaService
+    ) {}
+
     public function index()
     {
         $data = Cache::remember(CacheKeys::PUBLIK_DASHBOARD, 120, function () {
-            $stats = app(OpkStatsService::class)->dashboardPublik();
-
-            $kategori   = OpkCategory::withCount([
-                'laporans as total' => fn($q) => $q->where('status_verifikasi', 'disetujui')
-            ])->orderByDesc('total')->get();
-
-            $kecamatans = Kecamatan::withCount([
-                'laporans as total' => fn($q) => $q->where('status_verifikasi', 'disetujui')
-            ])->orderByDesc('total')->get();
+            $stats     = $this->statsService->dashboardPublik();
+            $kategori   = $this->statsService->kategoriWithOpkCount();
+            $kecamatans = $this->statsService->kecamatanWithOpkCount();
 
             $terbaru = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama'])
-                ->where('status_verifikasi', 'disetujui')
+                ->disetujui()
                 ->latest()
                 ->limit(6)
                 ->get();
@@ -39,7 +38,7 @@ class DashboardPublikController extends Controller
     public function petaJson(Request $request)
     {
         return response()->json(
-            app(PetaDataService::class)->getPetaData($request)
+            $this->petaService->getPetaData($request)
         );
     }
 
@@ -51,5 +50,52 @@ class DashboardPublikController extends Controller
         }
         $opk->load(['kategori', 'kecamatan', 'desaDinas', 'fotoUtama', 'fotos', 'videos']);
         return view('publik.opk-detail', compact('opk'));
+    }
+
+    public function daftarOpk(Request $request)
+    {
+        $query = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama'])
+            ->disetujui();
+
+        if ($request->filled('cari')) {
+            $q = $request->cari;
+            $query->where(function ($qry) use ($q) {
+                $qry->where('nama_opk', 'like', "%{$q}%")
+                    ->orWhere('deskripsi_umum', 'like', "%{$q}%")
+                    ->orWhere('nama_desa_adat', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('kategori_id', $request->kategori);
+        }
+
+        if ($request->filled('kecamatan')) {
+            $query->where('kecamatan_id', $request->kecamatan);
+        }
+
+        if ($request->filled('kondisi')) {
+            $query->where('kondisi', $request->kondisi);
+        }
+
+        $sort = $request->get('urut', 'terbaru');
+        match ($sort) {
+            'terbaru'  => $query->latest(),
+            'terlama'  => $query->oldest(),
+            'nama'     => $query->orderBy('nama_opk'),
+            'kritis'   => $query->orderByRaw("FIELD(kondisi, 'kritis', 'waspada', 'baik')"),
+            default    => $query->latest(),
+        };
+
+        $opks = $query->paginate(20)->withQueryString();
+
+        $kategori   = Cache::remember(CacheKeys::DAFTAR_OPK_FILTERS . '_kategori', 300, fn() =>
+            OpkCategory::withCount(['laporans as total' => fn($q) => $q->disetujui()])->orderByDesc('total')->get()
+        );
+        $kecamatans = Cache::remember(CacheKeys::DAFTAR_OPK_FILTERS . '_kecamatan', 300, fn() =>
+            Kecamatan::withCount(['laporans as total' => fn($q) => $q->disetujui()])->orderByDesc('total')->get()
+        );
+
+        return view('publik.daftar-opk', compact('opks', 'kategori', 'kecamatans'));
     }
 }

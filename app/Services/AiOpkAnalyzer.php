@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\OpkLaporan;
-use Illuminate\Support\Facades\Http;
+use App\Services\Ai\{AiProviderInterface, AiProviderFactory};
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -21,29 +21,14 @@ use Illuminate\Support\Facades\Log;
  */
 class AiOpkAnalyzer
 {
-    private string $provider;
-    private array  $config;
+    private AiProviderInterface $provider;
 
-    // ─────────────────────────────────────────────
-    //  CONSTRUCTOR
-    // ─────────────────────────────────────────────
     public function __construct()
     {
-        $this->provider = config('services.ai.provider', 'claude');
-        $this->config   = config("services.ai.{$this->provider}", []);
-
-        // Fallback ke claude jika provider tidak ditemukan
-        if (empty($this->config)) {
-            $this->provider = 'claude';
-            $this->config   = config('services.ai.claude', []);
-        }
+        $this->provider = AiProviderFactory::make(
+            config('services.ai.provider', 'claude')
+        );
     }
-
-    private function apiKey():    string { return (string) ($this->config['api_key'] ?? ''); }
-    private function apiUrl():    string { return (string) ($this->config['api_url'] ?? ''); }
-    private function model():     string { return (string) ($this->config['model'] ?? ''); }
-    private function maxTokens(): int    { return (int) ($this->config['max_tokens'] ?? 1024); }
-    private function timeout():   int    { return (int) ($this->config['timeout'] ?? 30); }
 
     // ─────────────────────────────────────────────
     //  1. ANALISIS UTAMA — dipanggil setelah laporan masuk
@@ -254,81 +239,11 @@ PROMPT;
     }
 
     /**
-     * Panggil API AI — adaptif terhadap provider.
-     * Provider "claude" dan provider "custom" dengan type="claude" 
-     * menggunakan Anthropic response format.
-     * Sisanya (openai, deepseek, groq, custom type=openai) 
-     * menggunakan OpenAI-compatible response format. 
+     * Panggil API AI via provider.
      */
     private function callApi(string $prompt, ?int $maxTokens = null): array
     {
-        $tokens = $maxTokens ?? $this->maxTokens();
-
-        try {
-            $body = [
-                'model'      => $this->model(),
-                'max_tokens' => $tokens,
-                'messages'   => [
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-            ];
-
-            if ($this->isClaudeFormat()) {
-                $headers = [
-                    'x-api-key'         => $this->apiKey(),
-                    'anthropic-version' => '2023-06-01',
-                    'content-type'      => 'application/json',
-                ];
-            } else {
-                $headers = [
-                    'Authorization' => 'Bearer ' . $this->apiKey(),
-                    'content-type'  => 'application/json',
-                ];
-            }
-
-            $response = Http::timeout($this->timeout())
-                ->connectTimeout(10)
-                ->retry(3, fn(int $attempt) => $attempt <= 3 ? $attempt * 500 : 2000)
-                ->withHeaders($headers)
-                ->post($this->apiUrl(), $body);
-
-            if ($response->successful()) {
-                $content = $this->parseResponseContent($response->json());
-                return ['success' => true, 'content' => trim($content)];
-            }
-
-            Log::error("SIOPK AI Error [{$this->provider}]", [
-                'status' => $response->status(),
-                'body'   => $response->body(),
-            ]);
-
-            return ['success' => false, 'content' => '', 'error' => $response->body()];
-
-        } catch (\Exception $e) {
-            Log::error("SIOPK AI Exception [{$this->provider}]", ['message' => $e->getMessage()]);
-            return ['success' => false, 'content' => '', 'error' => $e->getMessage()];
-        }
-    }
-
-    private function parseResponseContent(array $data): string
-    {
-        if ($this->isClaudeFormat()) {
-            // Anthropic/Claude: data.content[0].text
-            return $data['content'][0]['text'] ?? '';
-        }
-        // OpenAI / DeepSeek / Groq / Custom: data.choices[0].message.content
-        return $data['choices'][0]['message']['content'] ?? '';
-    }
-
-    private function isClaudeFormat(): bool
-    {
-        if ($this->provider === 'claude') {
-            return true;
-        }
-        if ($this->provider === 'custom' && ($this->config['type'] ?? 'openai') === 'claude') {
-            return true;
-        }
-        return false;
+        return $this->provider->analyze($prompt, $maxTokens ?? 1024);
     }
 
     private function parseJson(string $content): array

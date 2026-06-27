@@ -1,7 +1,7 @@
 services:
   # PHP-FPM Application
   app:
-    image: php:8.3-fpm
+    build: .
     container_name: siopk-app
     restart: unless-stopped
     working_dir: /var/www/html
@@ -67,7 +67,7 @@ services:
 
   # Queue Worker
   worker:
-    image: php:8.3-cli
+    build: .
     container_name: siopk-worker
     restart: unless-stopped
     working_dir: /var/www/html

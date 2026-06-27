@@ -4,7 +4,7 @@
 
 @push('styles')
 <style>
-.urgency-bar { height: 4px; border-radius: 2px; background: #e5e0d8; overflow: hidden; }
+.urgency-bar { height: 4px; border-radius: 2px; background: var(--input-bg); overflow: hidden; }
 .urgency-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
 </style>
 @endpush
@@ -32,7 +32,7 @@
                 <div class="kpi-label">Total OPK Terdaftar</div>
                 <div class="kpi-value">{{ $stats['total_opk'] }}</div>
                 <div class="kpi-sub">Di 6 kecamatan Badung</div>
-                <div class="mt-2" style="font-size:0.72rem;color:#4a8a43;">
+                <div class="mt-2" style="font-size:0.72rem;color:var(--hijau);">
                     <i class="bi bi-arrow-up"></i> +{{ $stats['bulan_ini'] }} bulan ini
                 </div>
             </div>
@@ -72,7 +72,7 @@
                 <div class="kpi-label">OPK Terlindungi</div>
                 <div class="kpi-value" style="color:var(--hijau)">{{ $stats['terlindungi'] }}</div>
                 <div class="kpi-sub">Kondisi baik & aktif</div>
-                <div class="mt-2" style="font-size:0.72rem;color:#4a8a43;">
+                <div class="mt-2" style="font-size:0.72rem;color:var(--hijau);">
                     {{ $stats['total_opk'] > 0 ? round($stats['terlindungi']/$stats['total_opk']*100) : 0 }}% dari total terdaftar
                 </div>
             </div>
@@ -129,11 +129,11 @@
 
             <div class="d-flex flex-column gap-2 mt-3">
                 <a href="{{ route('admin.verifikasi.index') }}"
-                   style="background:rgba(200,146,42,0.15);border:1px solid rgba(200,146,42,0.25);color:#f7f1e8;padding:8px 12px;border-radius:3px;font-size:0.78rem;text-decoration:none;display:flex;align-items:center;justify-content:space-between;">
+                   style="background:rgba(200,146,42,0.15);border:1px solid rgba(200,146,42,0.25);color:var(--krem);padding:8px 12px;border-radius:3px;font-size:0.78rem;text-decoration:none;display:flex;align-items:center;justify-content:space-between;">
                     <span>✓ Review Laporan Warga</span> <span style="opacity:0.5;">→</span>
                 </a>
                 <a href="{{ route('admin.opk.index') }}?kondisi=kritis"
-                   style="background:rgba(200,146,42,0.15);border:1px solid rgba(200,146,42,0.25);color:#f7f1e8;padding:8px 12px;border-radius:3px;font-size:0.78rem;text-decoration:none;display:flex;align-items:center;justify-content:space-between;">
+                   style="background:rgba(200,146,42,0.15);border:1px solid rgba(200,146,42,0.25);color:var(--krem);padding:8px 12px;border-radius:3px;font-size:0.78rem;text-decoration:none;display:flex;align-items:center;justify-content:space-between;">
                     <span>🔴 OPK Status Kritis</span> <span style="opacity:0.5;">→</span>
                 </a>
             </div>
@@ -169,7 +169,7 @@
                                 </a>
                             </td>
                             <td>
-                                <span style="background:rgba(200,146,42,0.1);color:#7a5c1e;padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">
+                                <span style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">
                                     {{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}
                                 </span>
                             </td>

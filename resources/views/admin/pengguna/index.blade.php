@@ -56,15 +56,15 @@
                 <tr style="{{ !$user->is_active ? 'opacity:0.55;' : '' }}">
                     <td style="padding-left:1.25rem;">
                         <div style="font-weight:600;font-size:0.88rem;">{{ $user->name }}</div>
-                        @if($user->nip)<div style="font-size:0.7rem;color:#9ca3af;">NIP: {{ $user->nip }}</div>@endif
+                        @if($user->nip)<div style="font-size:0.7rem;color:var(--abu);">NIP: {{ $user->nip }}</div>@endif
                     </td>
                     <td style="font-size:0.82rem;">{{ $user->email }}</td>
                     <td>
                         @php
                             $roleColor = match($user->role) {
-                                'superadmin' => ['bg'=>'#2C1A0E','color'=>'#E8B84B'],
-                                'admin'      => ['bg'=>'rgba(200,146,42,0.15)','color'=>'#7a5c1e'],
-                                'verifikator'=> ['bg'=>'rgba(45,90,39,0.12)','color'=>'#2D5A27'],
+                                'superadmin' => ['bg'=>'var(--tanah)','color'=>'var(--emas-muda)'],
+                                'admin'      => ['bg'=>'rgba(200,146,42,0.15)','color'=>'var(--emas-gelap)'],
+                                'verifikator'=> ['bg'=>'rgba(45,90,39,0.12)','color'=>'var(--hijau)'],
                                 default      => ['bg'=>'rgba(107,114,128,0.1)','color'=>'#4b5563'],
                             };
                         @endphp
@@ -72,20 +72,20 @@
                             {{ ucfirst($user->role) }}
                         </span>
                     </td>
-                    <td style="font-size:0.8rem;color:#6b7280;">{{ $user->instansi ?? '—' }}</td>
+                    <td style="font-size:0.8rem;color:var(--abu-gelap);">{{ $user->instansi ?? '—' }}</td>
                     <td>
                         @if($user->is_active)
-                            <span style="color:#2D5A27;font-size:0.75rem;font-weight:600;"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>Aktif</span>
+                            <span style="color:var(--hijau);font-size:0.75rem;font-weight:600;"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>Aktif</span>
                         @else
-                            <span style="color:#9ca3af;font-size:0.75rem;"><i class="bi bi-circle me-1" style="font-size:0.5rem;"></i>Nonaktif</span>
+                            <span style="color:var(--abu);font-size:0.75rem;"><i class="bi bi-circle me-1" style="font-size:0.5rem;"></i>Nonaktif</span>
                         @endif
                     </td>
-                    <td style="font-size:0.78rem;color:#9ca3af;">{{ $user->created_at->isoFormat('D MMM Y') }}</td>
+                    <td style="font-size:0.78rem;color:var(--abu);">{{ $user->created_at->isoFormat('D MMM Y') }}</td>
                     <td>
                         <div class="d-flex gap-1">
                             @if(auth()->user()->isSuperAdmin() || (auth()->user()->isAdmin() && !$user->isSuperAdmin()))
                             <a href="{{ route('admin.pengguna.edit', $user) }}"
-                               class="btn btn-sm py-0 px-2" style="background:rgba(200,146,42,0.1);color:#7a5c1e;border:1px solid rgba(200,146,42,0.2);" title="Edit">
+                               class="btn btn-sm py-0 px-2" style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);border:1px solid rgba(200,146,42,0.2);" title="Edit">
                                 <i class="bi bi-pencil" style="font-size:0.75rem;"></i>
                             </a>
                             @if($user->id !== auth()->id())
@@ -97,7 +97,7 @@
                             </form>
                             @if(!$user->isSuperAdmin())
                             <form method="POST" action="{{ route('admin.pengguna.destroy', $user) }}"
-                                  onsubmit="return confirm('Hapus pengguna {{ $user->name }}?')">
+                                  onsubmit="event.preventDefault(); swalKonfirmasi({title:'Hapus Pengguna',text:'Hapus pengguna {{ $user->name }}?',icon:'warning',confirmText:'Hapus',confirmColor:'#dc3545',onConfirm:()=>this.submit()})">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm py-0 px-2 btn-outline-danger" title="Hapus">
                                     <i class="bi bi-trash" style="font-size:0.75rem;"></i>
@@ -116,7 +116,7 @@
         </table>
     </div>
     @if($users->hasPages())
-    <div class="card-footer bg-white" style="border-top:1px solid #d4c9b8;">{{ $users->links() }}</div>
+    <div class="card-footer bg-white" style="border-top:1px solid var(--garis);">{{ $users->links() }}</div>
     @endif
 </div>
 @endsection

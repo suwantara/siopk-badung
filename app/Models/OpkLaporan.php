@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\{StatusVerifikasi, KondisiOpk};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class OpkLaporan extends Model
 {
@@ -59,43 +60,36 @@ class OpkLaporan extends Model
     // ---- Helpers ----
     public static function generateKode(): string
     {
-        $tahun = date('Y');
-
-        return DB::transaction(function () use ($tahun) {
-            $count = self::withTrashed()->whereYear('created_at', $tahun)->count();
-            $suffix = str_pad($count + 1, 5, '0', STR_PAD_LEFT);
-
-            return 'SIOPK-' . $tahun . '-' . $suffix;
-        });
+        return 'SIOPK-' . date('Y') . '-' . Str::upper(Str::random(8));
     }
 
     // ---- Scopes ----
-    public function scopeDisetujui($query)    { return $query->where('status_verifikasi', 'disetujui'); }
-    public function scopeKritis($query)       { return $query->where('kondisi', 'kritis'); }
-    public function scopeWaspada($query)      { return $query->where('kondisi', 'waspada'); }
-    public function scopeMenunggu($query)     { return $query->whereIn('status_verifikasi', ['menunggu', 'ai_review', 'review_dinas']); }
+    public function scopeDisetujui($query)    { return $query->where('status_verifikasi', StatusVerifikasi::Disetujui->value); }
+    public function scopeKritis($query)       { return $query->where('kondisi', KondisiOpk::Kritis->value); }
+    public function scopeWaspada($query)      { return $query->where('kondisi', KondisiOpk::Waspada->value); }
+    public function scopeMenunggu($query)     { return $query->whereIn('status_verifikasi', [StatusVerifikasi::Menunggu->value, StatusVerifikasi::AiReview->value, StatusVerifikasi::ReviewDinas->value]); }
     public function scopePrioritas($query)    { return $query->where('ai_urgency_score', '>=', 7); }
 
     public function getStatusBadgeAttribute(): array
     {
         return match($this->status_verifikasi) {
-            'menunggu'     => ['label' => 'Menunggu',     'color' => 'secondary'],
-            'ai_review'    => ['label' => 'AI Review',    'color' => 'info'],
-            'review_dinas' => ['label' => 'Review Dinas', 'color' => 'warning'],
-            'disetujui'    => ['label' => 'Disetujui',    'color' => 'success'],
-            'ditolak'      => ['label' => 'Ditolak',      'color' => 'danger'],
-            'duplikat'     => ['label' => 'Duplikat',     'color' => 'dark'],
-            default        => ['label' => 'Unknown',      'color' => 'secondary'],
+            StatusVerifikasi::Menunggu->value     => ['label' => 'Menunggu',     'color' => 'secondary'],
+            StatusVerifikasi::AiReview->value     => ['label' => 'AI Review',    'color' => 'info'],
+            StatusVerifikasi::ReviewDinas->value  => ['label' => 'Review Dinas', 'color' => 'warning'],
+            StatusVerifikasi::Disetujui->value    => ['label' => 'Disetujui',    'color' => 'success'],
+            StatusVerifikasi::Ditolak->value      => ['label' => 'Ditolak',      'color' => 'danger'],
+            StatusVerifikasi::Duplikat->value     => ['label' => 'Duplikat',     'color' => 'dark'],
+            default                               => ['label' => 'Unknown',      'color' => 'secondary'],
         };
     }
 
     public function getKondisiBadgeAttribute(): array
     {
         return match($this->kondisi) {
-            'baik'    => ['label' => 'Baik',    'color' => 'success'],
-            'waspada' => ['label' => 'Waspada', 'color' => 'warning'],
-            'kritis'  => ['label' => 'Kritis',  'color' => 'danger'],
-            default   => ['label' => '-',        'color' => 'secondary'],
+            KondisiOpk::Baik->value    => ['label' => 'Baik',    'color' => 'success'],
+            KondisiOpk::Waspada->value => ['label' => 'Waspada', 'color' => 'warning'],
+            KondisiOpk::Kritis->value  => ['label' => 'Kritis',  'color' => 'danger'],
+            default                    => ['label' => '-',        'color' => 'secondary'],
         };
     }
 }

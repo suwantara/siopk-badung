@@ -122,14 +122,14 @@
             <div class="card-header-custom"><span class="title">Keterangan Role</span></div>
             <div class="card-body p-0">
                 @foreach([
-                    ['Superadmin','Akses penuh termasuk kelola pengguna & arsip','#2C1A0E','#E8B84B'],
-                    ['Admin','Edit OPK, verifikasi, kelola pengguna (kecuali superadmin)','#7a5c1e','rgba(200,146,42,0.1)'],
-                    ['Verifikator','Verifikasi laporan, akses AI chat & ringkasan','#2D5A27','rgba(45,90,39,0.1)'],
+                    ['Superadmin','Akses penuh termasuk kelola pengguna & arsip','var(--tanah)','var(--emas-muda)'],
+                    ['Admin','Edit OPK, verifikasi, kelola pengguna (kecuali superadmin)','var(--emas-gelap)','rgba(200,146,42,0.1)'],
+                    ['Verifikator','Verifikasi laporan, akses AI chat & ringkasan','var(--hijau)','rgba(45,90,39,0.1)'],
                     ['Petugas','Lihat data & dashboard saja, tidak bisa verifikasi','#4b5563','rgba(107,114,128,0.1)'],
                 ] as [$role, $desc, $color, $bg])
-                <div style="padding:10px 1rem;border-bottom:1px solid #f0ebe3;display:flex;gap:10px;align-items:flex-start;">
+                <div style="padding:10px 1rem;border-bottom:1px solid var(--garis-terang);display:flex;gap:10px;align-items:flex-start;">
                     <span style="background:{{ $bg }};color:{{ $color }};padding:2px 10px;border-radius:10px;font-size:0.7rem;font-weight:600;flex-shrink:0;margin-top:2px;">{{ $role }}</span>
-                    <span style="font-size:0.78rem;color:#6b7280;">{{ $desc }}</span>
+                    <span style="font-size:0.78rem;color:var(--abu-gelap);">{{ $desc }}</span>
                 </div>
                 @endforeach
             </div>

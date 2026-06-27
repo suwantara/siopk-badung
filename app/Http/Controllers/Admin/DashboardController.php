@@ -10,23 +10,22 @@ use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        private readonly OpkStatsService $statsService
+    ) {}
+
     public function index()
     {
         $cacheKey = CacheKeys::adminDashboard(auth()->id());
 
         $data = Cache::remember($cacheKey, 60, function () {
-            $stats = app(OpkStatsService::class)->dashboardAdmin();
+            $stats = $this->statsService->dashboardAdmin();
 
-            $perKategori = OpkCategory::withCount([
-                'laporans as total' => fn($q) => $q->where('status_verifikasi', 'disetujui')
-            ])->orderByDesc('total')->get();
-
-            $perKecamatan = Kecamatan::withCount([
-                'laporans as total' => fn($q) => $q->where('status_verifikasi', 'disetujui')
-            ])->orderByDesc('total')->get();
+            $perKategori  = $this->statsService->kategoriWithOpkCount();
+            $perKecamatan = $this->statsService->kecamatanWithOpkCount();
 
             $prioritas = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama'])
-                ->where('status_verifikasi', 'disetujui')
+                ->disetujui()
                 ->whereIn('kondisi', ['kritis', 'waspada'])
                 ->orderByDesc('ai_urgency_score')
                 ->orderBy('kondisi')
@@ -34,7 +33,7 @@ class DashboardController extends Controller
                 ->get();
 
             $antrian = OpkLaporan::with(['kategori', 'kecamatan'])
-                ->whereIn('status_verifikasi', ['menunggu', 'review_dinas'])
+                ->menunggu()
                 ->latest()
                 ->limit(7)
                 ->get();
@@ -44,7 +43,7 @@ class DashboardController extends Controller
                     'latitude', 'longitude', 'kategori_id', 'kecamatan_id'
                 ])
                 ->with(['kategori:id,nama,ikon', 'kecamatan:id,nama'])
-                ->where('status_verifikasi', 'disetujui')
+                ->disetujui()
                 ->whereNotNull('latitude')
                 ->whereNotNull('longitude')
                 ->get();

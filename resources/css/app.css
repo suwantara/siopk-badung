@@ -17,6 +17,16 @@
     --merah-rgb:   192,57,43;
     --kuning-rgb:  212,160,23;
     --hijau-rgb:   45,90,39;
+    --emas-gelap:  #7a5c1e;
+    --abu:         #9ca3af;
+    --abu-gelap:   #6b7280;
+    --garis:       #d4c9b8;
+    --garis-terang:#f0ebe3;
+    --input-bg:    #fdfaf5;
+    --placeholder: #e8e0d4;
+    --teks:        #374151;
+    --tanah-gelap: #1a0f06;
+    --krem-rgb:    247,241,232;
 }
 
 body {
@@ -24,6 +34,35 @@ body {
     background: #f4f0e8;
     color: var(--tanah);
 }
+
+/* ---- Utility Classes ---- */
+.badge-kategori {
+    background: rgba(var(--emas-rgb), 0.1);
+    color: var(--emas-gelap);
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+.btn-edit-outline {
+    background: rgba(var(--emas-rgb), 0.1);
+    color: var(--emas-gelap);
+    border: 1px solid rgba(var(--emas-rgb), 0.2);
+    padding: 4px 12px;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.15s;
+}
+.btn-edit-outline:hover { background: rgba(var(--emas-rgb), 0.18); color: var(--emas-gelap); }
+.text-meta { color: var(--abu); font-size: 0.78rem; }
+.text-muted-si { color: var(--abu-gelap); }
+.bg-placeholder { background: var(--placeholder); }
+.border-si { border: 1px solid var(--garis); }
+.card-header-custom { background: var(--krem); }
 
 /* ---- Sidebar ---- */
 .sidebar {
@@ -88,7 +127,7 @@ body {
 .topbar {
     margin-left: var(--sidebar-w);
     background: white;
-    border-bottom: 1px solid #e5e0d8;
+    border-bottom: 1px solid var(--input-bg);
     padding: 0 1.5rem;
     height: 56px;
     display: flex; align-items: center; justify-content: space-between;
@@ -107,14 +146,14 @@ body {
 
 /* ---- Cards ---- */
 .card {
-    border: 1px solid #d4c9b8;
+    border: 1px solid var(--garis);
     border-radius: 4px;
 }
 .card-header-custom {
     padding: 0.85rem 1.25rem;
-    border-bottom: 1px solid #d4c9b8;
+    border-bottom: 1px solid var(--garis);
     display: flex; align-items: center; justify-content: space-between;
-    background: #fdfaf5;
+    background: var(--input-bg);
 }
 .card-header-custom .title {
     font-weight: 600;
@@ -132,11 +171,11 @@ body {
     line-height: 1; color: var(--tanah);
 }
 .kpi-label {
-    font-size: 0.7rem; color: #6b7280;
+    font-size: 0.7rem; color: var(--abu-gelap);
     text-transform: uppercase; letter-spacing: 0.08em;
 }
 .kpi-sub {
-    font-size: 0.75rem; color: #9ca3af;
+    font-size: 0.75rem; color: var(--abu);
     margin-top: 4px;
 }
 
@@ -162,8 +201,8 @@ body {
 
 /* ---- AI Panel ---- */
 .ai-panel {
-    background: linear-gradient(135deg, #1a0f06, var(--tanah));
-    border-radius: 4px; color: #f7f1e8;
+    background: linear-gradient(135deg, var(--tanah-gelap), var(--tanah));
+    border-radius: 4px; color: var(--krem);
     border: 1px solid rgba(var(--emas-rgb),0.3);
 }
 .ai-blink { animation: blink 2s infinite; }
@@ -181,8 +220,8 @@ body {
 /* ---- Table ---- */
 .table th {
     font-size: 0.68rem; text-transform: uppercase;
-    letter-spacing: 0.08em; color: #6b7280;
-    font-weight: 600; background: #fdfaf5;
+    letter-spacing: 0.08em; color: var(--abu-gelap);
+    font-weight: 600; background: var(--input-bg);
 }
 .table td {
     vertical-align: middle;
@@ -204,7 +243,7 @@ body {
 .page-link {
     color: var(--tanah);
     background: white;
-    border-color: #d4c9b8;
+    border-color: var(--garis);
     padding: 0.35rem 0.75rem;
 }
 .page-link:hover {
@@ -219,9 +258,10 @@ body {
     font-weight: 600;
 }
 .page-item.disabled .page-link {
-    color: #c5bfb0;
-    background: #fdfaf5;
-    border-color: #d4c9b8;
+    color: var(--abu);
+    background: var(--input-bg);
+    border-color: var(--garis);
+    pointer-events: none;
 }
 .page-link:focus {
     box-shadow: 0 0 0 0.2rem rgba(var(--emas-rgb),0.25);

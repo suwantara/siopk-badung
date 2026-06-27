@@ -92,7 +92,7 @@
 
                     {{-- Hapus --}}
                     <form method="POST" action="{{ route('admin.kategori.destroy', $cat) }}"
-                          onsubmit="return confirm('Hapus kategori {{ $cat->nama }}?')" class="d-inline">
+                          onsubmit="event.preventDefault(); swalKonfirmasi({title:'Hapus Kategori',text:'Hapus kategori {{ $cat->nama }}?',icon:'warning',confirmText:'Hapus',confirmColor:'#dc3545',onConfirm:()=>this.submit()})" class="d-inline">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus"
                                 @if($cat->laporans_count > 0) disabled @endif>

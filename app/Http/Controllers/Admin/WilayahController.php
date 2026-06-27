@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\{Kecamatan, DesaDinas, DesaAdat};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class WilayahController extends Controller
 {
@@ -33,6 +34,7 @@ class WilayahController extends Controller
         ], ['kode.unique' => 'Kode kecamatan sudah digunakan.']);
 
         $kec = Kecamatan::create($validated);
+        Cache::forget('kecamatan_list');
         return redirect()->route('admin.wilayah.index', ['kecamatan_id' => $kec->id])
             ->with('success', "Kecamatan {$kec->nama} berhasil ditambahkan.");
     }
@@ -45,6 +47,7 @@ class WilayahController extends Controller
         ], ['kode.unique' => 'Kode kecamatan sudah digunakan.']);
 
         $kecamatan->update($validated);
+        Cache::forget('kecamatan_list');
         return back()->with('success', "Kecamatan {$kecamatan->nama} berhasil diperbarui.");
     }
 
@@ -53,6 +56,8 @@ class WilayahController extends Controller
         $nama = $kecamatan->nama;
         try {
             $kecamatan->delete();
+            Cache::forget('kecamatan_list');
+            Cache::forget('kecamatan_with_desa');
             return redirect()->route('admin.wilayah.index')
                 ->with('success', "Kecamatan {$nama} dan semua desa/desa adat terkait berhasil dihapus.");
         } catch (\Illuminate\Database\QueryException $e) {
@@ -69,6 +74,7 @@ class WilayahController extends Controller
         ]);
 
         DesaDinas::create($validated);
+        Cache::forget('kecamatan_with_desa');
         return back()->with('success', "Desa Dinas {$validated['nama']} berhasil ditambahkan.");
     }
 
@@ -76,12 +82,14 @@ class WilayahController extends Controller
     {
         $validated = $request->validate(['nama' => 'required|string|max:100']);
         $desaDina->update($validated);
+        Cache::forget('kecamatan_with_desa');
         return back()->with('success', "Desa Dinas {$desaDina->nama} berhasil diperbarui.");
     }
 
     public function destroyDesaDinas(DesaDinas $desaDina)
     {
         $desaDina->delete();
+        Cache::forget('kecamatan_with_desa');
         return back()->with('success', "Desa Dinas {$desaDina->nama} berhasil dihapus.");
     }
 
@@ -94,6 +102,7 @@ class WilayahController extends Controller
         ]);
 
         DesaAdat::create($validated);
+        Cache::forget('kecamatan_with_desa');
         return back()->with('success', "Desa Adat {$validated['nama']} berhasil ditambahkan.");
     }
 
@@ -101,12 +110,14 @@ class WilayahController extends Controller
     {
         $validated = $request->validate(['nama' => 'required|string|max:150']);
         $desaAdat->update($validated);
+        Cache::forget('kecamatan_with_desa');
         return back()->with('success', "Desa Adat {$desaAdat->nama} berhasil diperbarui.");
     }
 
     public function destroyDesaAdat(DesaAdat $desaAdat)
     {
         $desaAdat->delete();
+        Cache::forget('kecamatan_with_desa');
         return back()->with('success', "Desa Adat {$desaAdat->nama} berhasil dihapus.");
     }
 }

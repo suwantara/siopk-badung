@@ -6,7 +6,7 @@ use App\Events\AiAnalysisCompleted;
 use App\Events\LaporanCreated;
 use App\Events\LaporanVerified;
 use App\Helpers\CacheKeys;
-use App\Services\WhatsAppService;
+use App\Jobs\SendWhatsAppNotifJob;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -16,6 +16,7 @@ class SideEffectHandler
     {
         Cache::forget(CacheKeys::SIDEBAR_COUNTS);
         Cache::forget(CacheKeys::RINGKASAN_EKSEKUTIF);
+        Cache::forget(CacheKeys::LAPORAN_ADMIN);
     }
 
     public function handleLaporanCreated(LaporanCreated $event): void
@@ -23,8 +24,8 @@ class SideEffectHandler
         $this->clearSidebarCache();
         Log::info("Laporan dibuat: {$event->laporan->kode_laporan}");
 
-        $wa = app(WhatsAppService::class);
-        $wa->notifikasiLaporanDiterima(
+        SendWhatsAppNotifJob::dispatch(
+            'laporan_diterima',
             $event->laporan->pelapor_whatsapp,
             $event->laporan->kode_laporan,
             $event->laporan->nama_opk
@@ -36,16 +37,16 @@ class SideEffectHandler
         $this->clearSidebarCache();
         Log::info("Laporan {$event->laporan->kode_laporan} telah {$event->status}");
 
-        $wa = app(WhatsAppService::class);
-
         if ($event->status === 'disetujui') {
-            $wa->notifikasiLaporanDisetujui(
+            SendWhatsAppNotifJob::dispatch(
+                'laporan_disetujui',
                 $event->laporan->pelapor_whatsapp,
                 $event->laporan->kode_laporan,
                 $event->laporan->nama_opk
             );
         } else {
-            $wa->notifikasiLaporanDitolak(
+            SendWhatsAppNotifJob::dispatch(
+                'laporan_ditolak',
                 $event->laporan->pelapor_whatsapp,
                 $event->laporan->kode_laporan,
                 $event->laporan->nama_opk,

@@ -19,30 +19,38 @@ class AnalisisSemuaOpkCommand extends Command
             $query->whereNull('ai_urgency_score');
         }
 
-        $laporans = $query->get();
+        $total = $query->count();
 
-        if ($laporans->isEmpty()) {
+        if ($total === 0) {
             $this->info('Tidak ada laporan yang perlu dianalisis.');
             return self::SUCCESS;
         }
 
-        $this->info("Ditemukan {$laporans->count()} laporan untuk dianalisis.");
+        $this->info("Ditemukan {$total} laporan untuk dianalisis.");
 
-        $bar = $this->output->createProgressBar($laporans->count());
+        $bar = $this->output->createProgressBar($total);
         $bar->start();
 
-        foreach ($laporans as $laporan) {
-            AnalisisOpkJob::dispatch($laporan->id);
-            $bar->advance();
-            // Jeda kecil agar tidak rate-limit API
-            if (config('queue.default') === 'sync') {
-                sleep(1);
+        $processed = 0;
+
+        $query->chunk(100, function ($laporans) use ($bar, &$processed) {
+            foreach ($laporans as $laporan) {
+                AnalisisOpkJob::dispatch($laporan->id);
+                $bar->advance();
+
+                if (config('queue.default') === 'sync') {
+                    sleep(1);
+                }
             }
-        }
+
+            $processed += $laporans->count();
+            $this->newLine();
+            $this->info("Diproses {$processed} records...");
+        });
 
         $bar->finish();
-        $this->info('');
-        $this->info("✓ {$laporans->count()} job AI berhasil di-dispatch.");
+        $this->newLine();
+        $this->info("✓ {$total} job AI berhasil di-dispatch.");
 
         return self::SUCCESS;
     }

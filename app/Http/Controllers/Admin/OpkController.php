@@ -102,7 +102,8 @@ class OpkController extends Controller
     // Arsipkan (soft delete)
     public function destroy(OpkLaporan $laporan)
     {
-        $laporan->delete(); // soft delete — data tetap di DB, tidak muncul di tampilan
+        $this->authorize('delete', $laporan);
+        $laporan->delete();
         return redirect()->route('admin.opk.index')
                          ->with('success', 'OPK berhasil diarsipkan. Data masih tersimpan di database.');
     }
@@ -111,6 +112,7 @@ class OpkController extends Controller
     public function restore($id)
     {
         $laporan = OpkLaporan::withTrashed()->findOrFail($id);
+        $this->authorize('restore', $laporan);
         $laporan->restore();
         return redirect()->route('admin.opk.index')
                          ->with('success', 'OPK berhasil dipulihkan dari arsip.');
@@ -120,6 +122,7 @@ class OpkController extends Controller
     public function forceDelete($id)
     {
         $laporan = OpkLaporan::onlyTrashed()->findOrFail($id);
+        $this->authorize('forceDelete', $laporan);
         $laporan->forceDelete();
 
         return redirect()->route('admin.opk.arsip')

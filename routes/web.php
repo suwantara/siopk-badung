@@ -42,7 +42,11 @@ Route::prefix('lapor')->name('publik.lapor.')->group(function () {
          ->middleware('throttle:10,1')->name('status');
 });
 
-// AJAX API publik
+// Fonnte Webhook — device status & incoming messages
+Route::prefix('webhook/fonnte')->name('webhook.fonnte.')->group(function () {
+    Route::post('/device-status', [\App\Http\Controllers\FonnteWebhookController::class, 'deviceStatus'])->name('device-status');
+    Route::post('/incoming',      [\App\Http\Controllers\FonnteWebhookController::class, 'incomingMessage'])->name('incoming');
+});
 Route::prefix('api')->name('api.')->middleware('throttle:30,1')->group(function () {
     Route::get('/desa-dinas', [LaporController::class, 'getDesaDinas'])->name('desa-dinas');
     Route::get('/desa-adat',  [LaporController::class, 'getDesaAdat'])->name('desa-adat');
@@ -63,8 +67,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // OPK Resmi
     Route::middleware('role:superadmin,admin,verifikator,petugas')->group(function () {
         Route::get('/opk',             [OpkController::class, 'index'])->name('opk.index');
-        Route::get('/opk/arsip',       [OpkController::class, 'arsip'])->name('opk.arsip');
         Route::get('/opk/peta',        [OpkController::class, 'peta'])->name('opk.peta');
+        Route::get('/opk/arsip',       [OpkController::class, 'arsip'])->name('opk.arsip')
+             ->middleware('role:superadmin,admin');
         Route::get('/opk/{laporan}',   [OpkController::class, 'show'])->name('opk.show');
     });
 

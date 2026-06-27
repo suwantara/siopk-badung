@@ -21,6 +21,12 @@ Schedule::command('siopk:analisis-semua')
     ->withoutOverlapping()
     ->runInBackground();
 
+// Cek koneksi Fonnte — setiap 15 menit
+Schedule::command('siopk:fonnte-check')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/fonnte-check.log'));
+
 // Hapus cache ringkasan eksekutif — tiap Senin pagi (auto-refresh)
 Schedule::call(function () {
     cache()->forget('siopk_ringkasan_eksekutif');

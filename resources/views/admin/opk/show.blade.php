@@ -34,9 +34,18 @@
                         </div>
                     </div>
                     @if(auth()->user()->isAdmin())
+                    <div class="d-flex gap-1">
                     <a href="{{ route('admin.opk.edit', $laporan) }}" class="btn btn-sm" style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);border:1px solid rgba(200,146,42,0.2);white-space:nowrap;">
                         <i class="bi bi-pencil me-1"></i>Edit
                     </a>
+                    <form method="POST" action="{{ route('admin.opk.destroy', $laporan) }}"
+                          onsubmit="event.preventDefault(); swalKonfirmasi({title:'Arsipkan OPK',text:'Arsipkan {{ $laporan->nama_opk }}? OPK tidak akan tampil di peta publik namun masih dapat dipulihkan.',icon:'warning',confirmText:'Arsipkan',confirmColor:'#dc3545',onConfirm:()=>this.submit()})">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm" style="background:rgba(220,53,69,0.1);color:#dc3545;border:1px solid rgba(220,53,69,0.2);white-space:nowrap;" title="Arsipkan OPK">
+                            <i class="bi bi-archive me-1"></i>Arsip
+                        </button>
+                    </form>
+                    </div>
                     @endif
                 </div>
             </div>

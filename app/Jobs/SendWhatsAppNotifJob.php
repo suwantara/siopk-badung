@@ -13,8 +13,8 @@ class SendWhatsAppNotifJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries   = 3;
-    public array $backoff = [10, 30, 60];
+    public int $tries = 2;
+    public array $backoff = [5, 30];
 
     public function __construct(
         private readonly string $action,
@@ -26,7 +26,7 @@ class SendWhatsAppNotifJob implements ShouldQueue
 
     public function handle(WhatsAppService $wa): void
     {
-        Log::info("SendWhatsAppNotifJob: {$this->action} ke {$this->nomorWa} untuk {$this->kodeLaporan}");
+        Log::warning("SendWhatsAppNotifJob: {$this->action} ke {$this->nomorWa} untuk {$this->kodeLaporan}");
 
         match ($this->action) {
             'laporan_diterima'   => $wa->notifikasiLaporanDiterima($this->nomorWa, $this->kodeLaporan, $this->namaOpk),
@@ -38,6 +38,6 @@ class SendWhatsAppNotifJob implements ShouldQueue
 
     public function failed(\Throwable $e): void
     {
-        Log::error("SendWhatsAppNotifJob FAILED action {$this->action}: " . $e->getMessage());
+        Log::warning("SendWhatsAppNotifJob FAILED action {$this->action}: " . $e->getMessage());
     }
 }

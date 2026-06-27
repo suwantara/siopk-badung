@@ -44,18 +44,5 @@ class AppServiceProvider extends ServiceProvider
         OpkLaporan::observe(OpkLaporanObserver::class);
 
         View::composer('layouts.app', \App\Http\View\Composers\SidebarComposer::class);
-
-        \Illuminate\Support\Facades\Event::listen(
-            \App\Events\LaporanCreated::class,
-            [\App\Listeners\SideEffectHandler::class, 'handleLaporanCreated']
-        );
-        \Illuminate\Support\Facades\Event::listen(
-            \App\Events\LaporanVerified::class,
-            [\App\Listeners\SideEffectHandler::class, 'handleLaporanVerified']
-        );
-        \Illuminate\Support\Facades\Event::listen(
-            \App\Events\AiAnalysisCompleted::class,
-            [\App\Listeners\SideEffectHandler::class, 'handleAiAnalysisCompleted']
-        );
     }
 }

@@ -7,7 +7,7 @@ use App\Http\Requests\StoreLaporanRequest;
 use App\Helpers\CacheKeys;
 use App\Jobs\AnalisisOpkJob;
 use App\Events\LaporanCreated;
-use App\Models\{OpkCategory, Kecamatan, DesaDinas, DesaAdat};
+use App\Models\{OpkLaporan, OpkCategory, Kecamatan, DesaDinas, DesaAdat};
 use App\Services\LaporanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Cache, DB, Log};

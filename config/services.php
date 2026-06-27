@@ -67,8 +67,9 @@ return [
     |------------------------------------------------------------------
     */
     'whatsapp' => [
-        'token'    => env('WHATSAPP_TOKEN', ''),
-        'phone_id' => env('WHATSAPP_PHONE_ID', ''),
+        'token'        => env('FONNTE_TOKEN', ''),
+        'country_code' => env('FONNTE_COUNTRY_CODE', '62'),
+        'admin_wa'     => env('FONNTE_ADMIN_WA', ''),
     ],
 
     /*

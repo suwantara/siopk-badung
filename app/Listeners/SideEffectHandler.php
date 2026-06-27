@@ -22,7 +22,7 @@ class SideEffectHandler
     public function handleLaporanCreated(LaporanCreated $event): void
     {
         $this->clearSidebarCache();
-        Log::info("Laporan dibuat: {$event->laporan->kode_laporan}");
+        Log::warning("[SIOPK] Laporan dibuat: {$event->laporan->kode_laporan}, WA: {$event->laporan->pelapor_whatsapp}");
 
         SendWhatsAppNotifJob::dispatch(
             'laporan_diterima',

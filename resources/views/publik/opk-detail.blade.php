@@ -3,7 +3,6 @@
 @section('title', $opk->nama_opk . ' — SIOPK Badung')
 
 @push('styles')
-<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
 <style>
     .container-detail { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem; }
     .card-detail { background: white; border: 1px solid var(--garis); border-radius: 4px; margin-bottom: 1.2rem; overflow: hidden; }
@@ -212,7 +211,6 @@
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const fotoList = [
     @foreach($opk->fotos as $foto)

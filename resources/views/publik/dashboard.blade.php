@@ -3,9 +3,6 @@
 @section('title', 'Peta OPK Kabupaten Badung')
 
 @push('styles')
-<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
-<link href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" rel="stylesheet">
-<link href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" rel="stylesheet">
 <style>
     .main-layout { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 56px); position: relative; }
 
@@ -291,8 +288,6 @@
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
 (function() {
 

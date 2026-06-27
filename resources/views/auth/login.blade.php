@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — SIOPK Badung</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { --tanah:#2C1A0E; --emas:#C8922A; --emas-muda:#E8B84B; --tanah-gelap:#1a0f06; --krem:#F7F1E8; --abu:#9ca3af; --abu-gelap:#6b7280; --garis:#d4c9b8; --input-bg:#fdfaf5; --merah:#C0392B; }
@@ -106,6 +105,5 @@
         <a href="{{ route('publik.lapor.index') }}">Lapor OPK sebagai masyarakat →</a>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

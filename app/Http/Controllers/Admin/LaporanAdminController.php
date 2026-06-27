@@ -52,9 +52,9 @@ class LaporanAdminController extends Controller
                 ->orderBy('tahun')->orderBy('bulan')
                 ->get()
                 ->map(fn ($r) => [
-                'label' => Carbon::createFromDate($r->tahun, $r->bulan, 1)->isoFormat('MMM Y'),
-                'total' => $r->total,
-            ]);
+                    'label' => Carbon::createFromDate($r->tahun, $r->bulan, 1)->isoFormat('MMM Y'),
+                    'total' => $r->total,
+                ]);
 
             $topUrgensi = OpkLaporan::with(['kategori', 'kecamatan'])
                 ->disetujui()

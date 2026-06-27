@@ -44,7 +44,7 @@ class OpkController extends Controller
 
     public function show(OpkLaporan $laporan)
     {
-        $laporan->load(['kategori', 'kecamatan', 'desaDinas', 'fotos', 'dokumens', 'videos', 'riwayat.user', 'verifikator']);
+        $laporan->load(['kategori', 'kecamatan', 'desaDinas', 'fotos', 'fotoUtama', 'dokumens', 'videos', 'riwayat.user', 'verifikator']);
         return view('admin.opk.show', compact('laporan'));
     }
 

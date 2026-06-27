@@ -50,6 +50,7 @@ Route::prefix('webhook/fonnte')->name('webhook.fonnte.')->group(function () {
 Route::prefix('api')->name('api.')->middleware('throttle:30,1')->group(function () {
     Route::get('/desa-dinas', [LaporController::class, 'getDesaDinas'])->name('desa-dinas');
     Route::get('/desa-adat',  [LaporController::class, 'getDesaAdat'])->name('desa-adat');
+    Route::get('/suggest-opk', [DashboardPublikController::class, 'suggestOpk'])->name('suggest-opk');
 });
 
 /*

@@ -36,7 +36,7 @@ class VerifikasiController extends Controller
     {
         $laporan->load([
             'kategori', 'kecamatan', 'desaDinas',
-            'fotos', 'dokumens', 'videos', 'riwayat.user'
+            'fotos', 'fotoUtama', 'dokumens', 'videos', 'riwayat.user', 'duplikatDari'
         ]);
         return view('admin.verifikasi.show', compact('laporan'));
     }

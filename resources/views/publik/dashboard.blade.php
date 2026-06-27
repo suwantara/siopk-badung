@@ -24,15 +24,37 @@
     .search-box input:focus { border-color: var(--emas); }
     .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--abu); font-size: 0.85rem; }
 
+    /* ── Suggest Dropdown ── */
+    .suggest-dropdown {
+        display: none; position: absolute; top: 100%; left: 0; right: 0;
+        background: white; border: 1px solid var(--garis); border-top: none;
+        border-radius: 0 0 4px 4px; max-height: 320px; overflow-y: auto;
+        z-index: 500; box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .suggest-dropdown.show { display: block; }
+    .suggest-item {
+        display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+        cursor: pointer; transition: background 0.12s; border-bottom: 1px solid var(--garis-terang);
+        text-decoration: none; color: inherit;
+    }
+    .suggest-item:last-child { border-bottom: none; }
+    .suggest-item:hover, .suggest-item.active { background: rgba(var(--emas-rgb), 0.07); }
+    .suggest-thumb {
+        width: 36px; height: 36px; border-radius: 3px; background: var(--placeholder);
+        flex-shrink: 0; overflow: hidden; display: flex; align-items: center;
+        justify-content: center; font-size: 1rem;
+    }
+    .suggest-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .suggest-nama { font-weight: 600; font-size: 0.8rem; color: var(--tanah); line-height: 1.3; }
+    .suggest-meta { font-size: 0.66rem; color: var(--abu); }
+    .suggest-empty {
+        padding: 14px; text-align: center; font-size: 0.76rem; color: var(--abu);
+    }
+
     /* ── Filter ── */
     .filter-group { padding: 0 0.75rem 0.75rem; border-bottom: 1px solid var(--garis-terang); }
     .filter-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--tanah); margin: 0.75rem 0 6px; }
     .filter-group:first-child .filter-label { margin-top: 0; }
-
-    .filter-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-    .filter-chip { padding: 4px 10px; border: 1px solid var(--garis); border-radius: 10px; font-size: 0.7rem; cursor: pointer; background: white; transition: all 0.15s; white-space: nowrap; }
-    .filter-chip:hover { border-color: var(--emas); background: rgba(var(--emas-rgb), 0.06); }
-    .filter-chip.active { background: var(--emas); border-color: var(--emas); color: var(--tanah); font-weight: 600; }
 
     .filter-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border: 1px solid var(--garis); border-radius: 3px; background: var(--krem); cursor: pointer; font-size: 0.78rem; margin-bottom: 4px; transition: all 0.15s; }
     .filter-btn:hover { border-color: var(--emas); background: rgba(var(--emas-rgb), 0.05); }
@@ -112,7 +134,6 @@
     /* ── Mobile ── */
     .mobile-toggle { display: none; position: absolute; top: 0.75rem; right: 3.5rem; z-index: 450; background: white; border: 1px solid var(--garis); border-radius: 4px; padding: 6px 10px; font-size: 0.78rem; cursor: pointer; }
     .mobile-filter-bar { display: none; position: absolute; top: 0.75rem; left: 3.5rem; right: 3.5rem; z-index: 400; overflow-x: auto; white-space: nowrap; gap: 6px; padding: 4px 0; }
-    .mobile-filter-bar .filter-chip { display: inline-block; }
 
     @media (max-width: 768px) {
         .main-layout { grid-template-columns: 1fr; }
@@ -146,17 +167,18 @@
         <div class="sidebar-panel active" id="panel-filter">
             <div class="search-box">
                 <i class="bi bi-search"></i>
-                <input type="text" id="searchOpk" placeholder="Cari nama OPK...">
+                <input type="text" id="searchOpk" placeholder="Cari nama OPK..." autocomplete="off">
+                <div class="suggest-dropdown" id="suggestDropdown"></div>
             </div>
 
             <div class="filter-group">
                 <div class="filter-label">Kategori</div>
-                <div class="filter-chips" id="katChips">
-                    <span class="filter-chip active" data-kat="">Semua</span>
+                <select id="filterKat" class="filter-select" onchange="window._filterKategori(this.value)">
+                    <option value="">Semua Kategori</option>
                     @foreach($kategori->where('total', '>', 0) as $kat)
-                    <span class="filter-chip" data-kat="{{ $kat->id }}">{{ $kat->ikon }} {{ $kat->nama }}</span>
+                    <option value="{{ $kat->id }}">{{ $kat->ikon }} {{ $kat->nama }} ({{ $kat->total }})</option>
                     @endforeach
-                </div>
+                </select>
             </div>
 
             <div class="filter-group">
@@ -418,19 +440,87 @@ function filterKecamatan(val) {
 }
 window._filterKecamatan = filterKecamatan;
 
-document.getElementById('katChips').addEventListener('click', function(e) {
-    const chip = e.target.closest('.filter-chip');
-    if (!chip) return;
-    document.querySelectorAll('#katChips .filter-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    activeKat = chip.dataset.kat;
+function filterKategori(val) {
+    activeKat = val;
     loadData();
-});
+}
+window._filterKategori = filterKategori;
 
 let searchTimeout;
-document.getElementById('searchOpk').addEventListener('input', function() {
+let suggestIndex = -1;
+const searchInput = document.getElementById('searchOpk');
+const suggestDropdown = document.getElementById('suggestDropdown');
+
+searchInput.addEventListener('input', function() {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => renderList(allData), 300);
+    const q = this.value.trim();
+    if (q.length >= 2) {
+        searchTimeout = setTimeout(() => fetchSuggest(q), 250);
+    } else {
+        suggestDropdown.classList.remove('show');
+        suggestIndex = -1;
+        renderList(allData);
+    }
+});
+
+searchInput.addEventListener('keydown', function(e) {
+    const items = suggestDropdown.querySelectorAll('.suggest-item');
+    if (!items.length) return;
+
+    if (e.key === 'ArrowDown') { e.preventDefault(); suggestIndex = Math.min(suggestIndex + 1, items.length - 1); updateSuggestActive(items); }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); suggestIndex = Math.max(suggestIndex - 1, 0); updateSuggestActive(items); }
+    else if (e.key === 'Enter')     { if (suggestIndex >= 0) { e.preventDefault(); items[suggestIndex].click(); } }
+    else if (e.key === 'Escape')    { suggestDropdown.classList.remove('show'); suggestIndex = -1; }
+});
+
+function updateSuggestActive(items) {
+    items.forEach((el, i) => el.classList.toggle('active', i === suggestIndex));
+    if (suggestIndex >= 0) items[suggestIndex].scrollIntoView({ block: 'nearest' });
+}
+
+function fetchSuggest(q) {
+    fetch(`/api/suggest-opk?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(results => {
+            if (!results.length) {
+                suggestDropdown.innerHTML = '<div class="suggest-empty">Tidak ditemukan</div>';
+            } else {
+                suggestIndex = -1;
+                suggestDropdown.innerHTML = results.map(opk => `
+                    <div class="suggest-item" onclick="window._goToOpk(${opk.id})">
+                        <div class="suggest-thumb">
+                            ${opk.foto ? `<img src="${opk.foto}" alt="${opk.nama}">` : (opk.ikon || '🏛️')}
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div class="suggest-nama">${opk.nama}</div>
+                            <div class="suggest-meta">
+                                ${opk.ikon || ''} ${opk.kategori || ''} · ${opk.kec || ''}
+                                <span class="kondisi-pill pill-${opk.kondisi}">${opk.kondisi.charAt(0).toUpperCase()+opk.kondisi.slice(1)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            suggestDropdown.classList.add('show');
+        })
+        .catch(() => {
+            suggestDropdown.classList.remove('show');
+        });
+}
+
+function goToOpk(id) { window.location.href = `/opk/${id}`; }
+window._goToOpk = goToOpk;
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.search-box')) {
+        suggestDropdown.classList.remove('show');
+        suggestIndex = -1;
+    }
+});
+
+searchInput.addEventListener('focus', function() {
+    const q = this.value.trim();
+    if (q.length >= 2) fetchSuggest(q);
 });
 
 function switchTab(tab) {

@@ -4,8 +4,11 @@
 .env.bak
 .env.backup
 .env.production
+.env.testing
+.env.example.testing
 .phpactor.json
 .phpunit.result.cache
+/phpunit-mysql.xml
 /.claude
 /.fleet
 /.idea

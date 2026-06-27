@@ -52,6 +52,33 @@ class DashboardPublikController extends Controller
         return view('publik.opk-detail', compact('opk'));
     }
 
+    public function suggestOpk(Request $request)
+    {
+        $q = $request->get('q', '');
+        if (mb_strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $results = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama'])
+            ->disetujui()
+            ->where('nama_opk', 'like', "%{$q}%")
+            ->orderBy('nama_opk')
+            ->limit(10)
+            ->get()
+            ->map(fn($opk) => [
+                'id'       => $opk->id,
+                'nama'     => $opk->nama_opk,
+                'kategori' => $opk->kategori?->nama,
+                'ikon'     => $opk->kategori?->ikon,
+                'kec'      => $opk->kecamatan?->nama,
+                'kondisi'  => $opk->kondisi,
+                'foto'     => $opk->fotoUtama ? asset('storage/' . $opk->fotoUtama->path) : null,
+                'url'      => route('publik.opk.show', $opk->id),
+            ]);
+
+        return response()->json($results);
+    }
+
     public function daftarOpk(Request $request)
     {
         $query = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama'])

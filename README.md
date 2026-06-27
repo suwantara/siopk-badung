@@ -168,4 +168,4 @@ docker compose exec app php artisan config:cache
 - Rotasi API key jika pernah terekspos di Git history
 - CSP headers enforced via `SecurityHeaders` middleware
 - Rate limiting: login 5/menit, lapor 3/menit, API 30/menit
-- Audit lengkap: `docs/SECURITY_AUDIT.md`
+

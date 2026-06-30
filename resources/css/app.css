@@ -379,14 +379,6 @@ body.sidebar-open {
 }
 .btn-icon:hover { border-color: var(--emas); color: var(--emas); }
 
-.btn-success {
-    background: var(--hijau); color: white; border: none;
-    padding: 8px 16px; border-radius: 3px; font-weight: 600;
-    font-size: var(--text-caption); cursor: pointer;
-    display: inline-flex; align-items: center; gap: 6px;
-}
-.btn-success:hover { background: #3a6b34; }
-
 /* ---- Pagination ---- */
 .pagination { --bs-pagination-font-size: var(--text-caption); }
 .page-link {

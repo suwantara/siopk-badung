@@ -73,7 +73,7 @@
                         <div class="d-flex gap-2 flex-wrap mb-1">
                             <x-ui.badge-kategori :ikon="$laporan->kategori?->ikon" :nama="$laporan->kategori?->nama" />
                             <x-ui.badge-kondisi :kondisi="$laporan->kondisi" />
-                            <span class="badge bg-secondary t-caption" style="font-size:0.62rem;">{{ strtoupper(str_replace('_',' ',$laporan->status_verifikasi)) }}</span>
+                            <span class="t-label" style="background:var(--bg-input);color:var(--text-muted);padding:2px 8px;border-radius:10px;">{{ strtoupper(str_replace('_',' ',$laporan->status_verifikasi)) }}</span>
                         </div>
                         <div class="d-flex flex-wrap gap-2 t-caption" style="color:var(--text-muted);">
                             <span>📍 {{ $laporan->kecamatan?->nama }}</span>
@@ -110,7 +110,7 @@
 
                     <form method="POST" action="{{ route('admin.verifikasi.setujui', $laporan) }}" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn-success btn-sm"
+                        <button type="submit" class="btn btn-sm btn-success"
                                 onclick="event.preventDefault(); swalKonfirmasi({title:'Setujui Laporan',text:'Setujui {{ $laporan->kode_laporan }} — {{ $laporan->nama_opk }}?',icon:'question',confirmText:'Setujui',confirmColor:'var(--hijau)',onConfirm:()=>this.closest('form').submit()})">
                             <i class="bi bi-check2 me-1"></i>Setujui
                         </button>

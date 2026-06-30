@@ -60,7 +60,7 @@
                 @if($laporan->ai_urgency_score)
                 <span class="ms-auto">
                     <span style="color:rgba(247,241,232,0.5);">Urgency</span>
-                    <x-ui.ai-score :score="$laporan->ai_urgency_score" :kondisi="$laporan->kondisi" size="lg" />
+                    <x-ui.ai-score :score="$laporan->ai_urgency_score" :kondisi="$laporan->kondisi" size="lg" dark />
                     <span style="color:rgba(247,241,232,0.4);">/10</span>
                 </span>
                 @endif

@@ -1,11 +1,19 @@
-@props(['score', 'kondisi' => 'baik', 'size' => 'sm'])
+@props(['score', 'kondisi' => 'baik', 'size' => 'sm', 'dark' => false])
 
 @php
-$color = match($kondisi) {
-    'kritis' => 'var(--merah)',
-    'waspada' => 'var(--kuning)',
-    default => 'var(--hijau)'
-};
+if ($dark) {
+    $color = match($kondisi) {
+        'kritis'  => '#f08080',
+        'waspada' => '#e8c55a',
+        default   => '#7ec87e'
+    };
+} else {
+    $color = match($kondisi) {
+        'kritis'  => 'var(--merah)',
+        'waspada' => 'var(--kuning)',
+        default   => 'var(--hijau)'
+    };
+}
 $sizeStyle = $size === 'lg' ? 'font-size:1.3rem;' : 'font-size:0.82rem;';
 @endphp
 

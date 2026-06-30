@@ -8,7 +8,7 @@
         </span>
         @if($score !== null)
         <span class="ms-auto">
-            <x-ui.ai-score :score="$score" :kondisi="$kondisi" size="lg" />
+            <x-ui.ai-score :score="$score" :kondisi="$kondisi" size="lg" dark />
             <span style="color:rgba(247,241,232,0.4)" class="t-caption">/10</span>
         </span>
         @endif

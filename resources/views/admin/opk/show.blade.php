@@ -91,7 +91,7 @@
                 <span style="font-weight:700;color:var(--emas-muda);text-transform:uppercase;letter-spacing:0.1em" class="t-caption">AI · Analisis & Rekomendasi</span>
                 @if($laporan->ai_urgency_score)
                 <span class="ms-auto">
-                    <x-ui.ai-score :score="$laporan->ai_urgency_score" :kondisi="$laporan->kondisi" size="lg" />
+                    <x-ui.ai-score :score="$laporan->ai_urgency_score" :kondisi="$laporan->kondisi" size="lg" dark />
                     <span style="color:rgba(247,241,232,0.4)" class="t-caption">/10</span>
                 </span>
                 @endif

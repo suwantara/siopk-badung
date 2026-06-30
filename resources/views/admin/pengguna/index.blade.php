@@ -67,14 +67,13 @@
                     <td>
                         <div class="d-flex gap-1">
                             @if(auth()->user()->isSuperAdmin() || (auth()->user()->isAdmin() && !$user->isSuperAdmin()))
-                            <a href="{{ route('admin.pengguna.edit', $user) }}"
-                               class="btn btn-sm py-0 px-2" style="background:var(--surface-emas);color:var(--emas-gelap);border:1px solid var(--border-emas);" title="Edit">
+                            <a href="{{ route('admin.pengguna.edit', $user) }}" class="btn-edit btn-sm" title="Edit">
                                 <i class="bi bi-pencil" class="t-caption"></i>
                             </a>
                             @if($user->id !== auth()->id())
                             <form method="POST" action="{{ route('admin.pengguna.toggle', $user) }}">
                                 @csrf
-                                <button type="submit" class="btn btn-sm py-0 px-2 btn-outline-secondary" title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
+                                <button type="submit" class="btn-icon" title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
                                     <i class="bi bi-{{ $user->is_active ? 'toggle-on' : 'toggle-off' }}" class="t-caption"></i>
                                 </button>
                             </form>
@@ -82,7 +81,7 @@
                             <form method="POST" action="{{ route('admin.pengguna.destroy', $user) }}"
                                   onsubmit="event.preventDefault(); swalKonfirmasi({title:'Hapus Pengguna',text:'Hapus pengguna {{ $user->name }}?',icon:'warning',confirmText:'Hapus',confirmColor:'#dc3545',onConfirm:()=>this.submit()})">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm py-0 px-2 btn-outline-danger" title="Hapus">
+                                <button type="submit" class="btn-icon btn-outline-danger" title="Hapus">
                                     <i class="bi bi-trash" class="t-caption"></i>
                                 </button>
                             </form>

@@ -349,12 +349,43 @@ body.sidebar-open {
 /* ---- Button ---- */
 .btn-emas {
     background: var(--emas); color: var(--tanah);
-    border: none; font-weight: 600;
+    border: none; font-weight: 600; padding: 8px 16px;
+    border-radius: 3px; font-size: var(--text-caption);
+    transition: background 0.2s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
 }
-.btn-emas:hover {
-    background: var(--emas-muda);
-    color: var(--tanah);
+.btn-emas:hover { background: var(--emas-muda); color: var(--tanah); }
+.btn-emas.btn-sm { padding: 5px 12px; font-size: var(--text-label); }
+.btn-emas.btn-lg { padding: 10px 24px; font-size: var(--text-body); }
+
+.btn-edit {
+    background: var(--surface-emas); color: var(--emas-gelap);
+    border: 1px solid var(--border-emas); border-radius: 3px;
+    padding: 4px 12px; font-size: var(--text-label);
+    font-weight: 500; cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 4px;
+    text-decoration: none;
 }
+.btn-edit:hover { background: var(--surface-emas-hover); color: var(--emas-gelap); }
+
+.btn-icon {
+    background: transparent; border: 1px solid var(--border-default);
+    color: var(--text-muted); border-radius: 3px;
+    padding: 2px 8px; font-size: 0.75rem;
+    cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; justify-content: center;
+    text-decoration: none; line-height: 1;
+}
+.btn-icon:hover { border-color: var(--emas); color: var(--emas); }
+
+.btn-success {
+    background: var(--hijau); color: white; border: none;
+    padding: 8px 16px; border-radius: 3px; font-weight: 600;
+    font-size: var(--text-caption); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-success:hover { background: #3a6b34; }
 
 /* ---- Pagination ---- */
 .pagination { --bs-pagination-font-size: var(--text-caption); }

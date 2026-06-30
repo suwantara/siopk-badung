@@ -109,7 +109,7 @@
                         </span>
                     </td>
                     <td>
-                        <a href="{{ route('admin.opk.show', $opk) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+                        <a href="{{ route('admin.opk.show', $opk) }}" class="btn-icon">
                             <i class="bi bi-eye" class="t-caption"></i>
                         </a>
                     </td>

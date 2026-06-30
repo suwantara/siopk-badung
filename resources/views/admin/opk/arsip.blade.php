@@ -45,7 +45,7 @@
                         <div class="d-flex gap-2">
                             <form method="POST" action="{{ route('admin.opk.restore', $opk->id) }}">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-secondary py-0 px-2"
+                                <button type="submit" class="btn btn-sm btn-outline-secondary"
                                         title="Pulihkan OPK ini"
                                         onclick="event.preventDefault(); swalKonfirmasi({title:'Pulihkan OPK',text:'Pulihkan OPK ini ke daftar aktif?',icon:'question',confirmText:'Pulihkan',confirmColor:'var(--hijau)',onConfirm:()=>this.closest('form').submit()})">
                                     <i class="bi bi-arrow-counterclockwise" class="t-caption"></i> Pulihkan
@@ -54,7 +54,7 @@
                             @if(auth()->user()->isSuperAdmin())
                             <form method="POST" action="{{ route('admin.opk.force-delete', $opk->id) }}">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
                                         title="Hapus permanen OPK ini"
                                         onclick="event.preventDefault(); swalKonfirmasi({title:'Hapus Permanen',text:'Hapus PERMANEN OPK ini? Tindakan ini tidak dapat dibatalkan dan semua data, foto, serta dokumen terkait akan dihapus dari database.',icon:'error',confirmText:'Hapus Permanen',confirmColor:'#dc3545',onConfirm:()=>this.closest('form').submit()})">
                                     <i class="bi bi-trash" class="t-caption"></i> Hapus

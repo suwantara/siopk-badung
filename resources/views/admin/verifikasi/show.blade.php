@@ -137,8 +137,7 @@
                             <form method="POST" action="{{ route('admin.verifikasi.setujui', $laporan) }}">
                                 @csrf
                                 <textarea name="catatan" class="form-control form-control-sm mb-2" rows="2" placeholder="Catatan verifikator (opsional)..."></textarea>
-                                <button type="submit" class="btn w-100"
-                                        style="background:var(--hijau);color:white;border:none;font-weight:600;"
+                                <button type="submit" class="btn-success w-100"
                                         onclick="event.preventDefault(); swalKonfirmasi({title:'Setujui Laporan',text:'Setujui {{ $laporan->kode_laporan }} — {{ $laporan->nama_opk }} dan masukkan ke peta OPK?',icon:'question',confirmText:'Setujui',confirmColor:'var(--hijau)',onConfirm:()=>this.closest('form').submit()})">
                                     <i class="bi bi-check2 me-1"></i>Setujui & Publikasikan
                                 </button>

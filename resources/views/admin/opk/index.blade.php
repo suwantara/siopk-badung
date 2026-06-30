@@ -91,14 +91,11 @@
                     </td>
                     <td>
                         <div class="d-flex gap-1">
-                            <a href="{{ route('admin.opk.show', $opk) }}"
-                               class="btn btn-sm btn-outline-secondary py-0 px-2" title="Detail">
+                            <a href="{{ route('admin.opk.show', $opk) }}" class="btn-icon" title="Detail">
                                 <i class="bi bi-eye" class="t-caption"></i>
                             </a>
                             @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.opk.edit', $opk) }}"
-                               class="btn btn-sm py-0 px-2"
-                               style="background:var(--surface-emas);color:var(--emas-gelap);border:1px solid var(--border-emas);" title="Edit">
+                            <a href="{{ route('admin.opk.edit', $opk) }}" class="btn-icon" title="Edit" style="color:var(--emas);border-color:var(--border-emas);">
                                 <i class="bi bi-pencil" class="t-caption"></i>
                             </a>
                             @endif

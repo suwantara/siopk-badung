@@ -27,9 +27,7 @@
                    style="flex:1;border:1px solid var(--garis);border-radius:3px;padding:8px 12px;background:var(--input-bg);color:var(--tanah);outline:none" class="t-body"
                    onkeydown="if(event.key==='Enter') sendChat()"
                    onfocus="this.style.borderColor='var(--emas)'" onblur="this.style.borderColor='var(--garis)'">
-            <button onclick="sendChat()"
-                    style="background:var(--emas);color:var(--tanah);border:none;padding:8px 14px;border-radius:3px;font-weight:600;cursor:pointer;white-space:nowrap" class="t-body"
-                    id="chatBtn">
+            <button onclick="sendChat()" class="btn-emas btn-sm" id="chatBtn">
                 Kirim
             </button>
         </div>

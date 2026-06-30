@@ -50,11 +50,11 @@
             <option value="nama" {{ request('urut') === 'nama' ? 'selected' : '' }}>Nama A-Z</option>
             <option value="kritis" {{ request('urut') === 'kritis' ? 'selected' : '' }}>Prioritas Kritis</option>
         </select>
-        <button type="submit" class="btn btn-sm" style="background:var(--emas);color:var(--tanah);border:none;font-weight:600;padding:6px 14px;">
+        <button type="submit" class="btn-emas btn-sm">
             <i class="bi bi-search"></i>
         </button>
         @if(request()->anyFilled(['cari','kategori','kecamatan','kondisi','urut']) && request('urut') !== 'terbaru')
-        <a href="{{ route('publik.daftar-opk') }}" class="btn btn-sm" style="border:1px solid var(--garis);color:var(--abu-gelap);padding:6px 14px;text-decoration:none;">
+        <a href="{{ route('publik.daftar-opk') }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-x"></i> Reset
         </a>
         @endif

@@ -110,8 +110,7 @@
 
                     <form method="POST" action="{{ route('admin.verifikasi.setujui', $laporan) }}" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-sm"
-                                style="background:var(--hijau);color:white;border:none;"
+                        <button type="submit" class="btn-success btn-sm"
                                 onclick="event.preventDefault(); swalKonfirmasi({title:'Setujui Laporan',text:'Setujui {{ $laporan->kode_laporan }} — {{ $laporan->nama_opk }}?',icon:'question',confirmText:'Setujui',confirmColor:'var(--hijau)',onConfirm:()=>this.closest('form').submit()})">
                             <i class="bi bi-check2 me-1"></i>Setujui
                         </button>

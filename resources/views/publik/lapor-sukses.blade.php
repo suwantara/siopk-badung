@@ -35,11 +35,11 @@
             </div>
 
             <div class="d-flex gap-3">
-                <a href="{{ route('publik.lapor.index') }}" class="btn-emas" style="flex:1;text-align:center;">
+                <a href="{{ route('publik.lapor.index') }}" class="btn-emas btn-lg" style="flex:1;text-align:center;justify-content:center;">
                     <i class="bi bi-plus-circle me-1"></i>Lapor OPK Lain
                 </a>
                 <a href="{{ route('publik.lapor.status') }}?kode_laporan={{ $laporan->kode_laporan }}"
-                   class="btn-outline" style="flex:1;text-align:center;">
+                   class="btn btn-outline-secondary btn-lg" style="flex:1;text-align:center;justify-content:center;">
                     <i class="bi bi-search me-1"></i>Cek Status
                 </a>
             </div>

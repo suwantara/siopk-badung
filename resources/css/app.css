@@ -126,6 +126,9 @@ body.sidebar-open {
 .modal { z-index: 1110; }
 .modal-backdrop { z-index: 1105; }
 
+/* ---- SweetAlert2 z-index fix ---- */
+.swal2-container { z-index: 1120 !important; }
+
 /* ---- Visible Focus Ring ---- */
 :focus-visible {
     outline: 3px solid var(--emas-muda) !important;

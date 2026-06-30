@@ -125,6 +125,13 @@
 <script>
 'use strict';
 
+// SweetAlert2 z-index di atas topbar/sidebar
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Swal !== 'undefined') {
+        Swal = Swal.mixin({ customClass: { container: 'swal2-container' } });
+    }
+});
+
 window._toggleSidebar = function() {
     var sidebar = document.getElementById('sidebarEl');
     var backdrop = document.getElementById('sidebarBackdrop');

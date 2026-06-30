@@ -7,7 +7,7 @@
     </div>
     <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700;color:var(--tanah);margin-bottom:0.5rem;">500</h1>
     <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--tanah);margin-bottom:1rem;">Kesalahan Server</h2>
-    <p style="color:var(--abu-gelap);margin-bottom:1.5rem;font-size:0.9rem;">Terjadi kesalahan pada server. Tim teknis Dinas Kebudayaan Kabupaten Badung telah diberitahu. Silakan coba lagi dalam beberapa saat.</p>
+    <p style="color:var(--abu-gelap);margin-bottom:1.5rem" class="t-body-lg">Terjadi kesalahan pada server. Tim teknis Dinas Kebudayaan Kabupaten Badung telah diberitahu. Silakan coba lagi dalam beberapa saat.</p>
     <a href="{{ route('publik.dashboard') }}" class="btn" style="background:var(--emas);color:var(--tanah);font-weight:600;padding:8px 20px;text-decoration:none;">
         <i class="bi bi-house me-2"></i>Kembali ke Beranda
     </a>

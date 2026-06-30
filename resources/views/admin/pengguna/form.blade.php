@@ -3,11 +3,7 @@
 @section('page-title', $user ? 'Edit Pengguna' : 'Tambah Pengguna')
 
 @section('content')
-<div class="mb-3">
-    <a href="{{ route('admin.pengguna.index') }}" style="font-size:0.8rem;color:var(--emas);text-decoration:none;">
-        <i class="bi bi-arrow-left me-1"></i>Kembali ke Daftar Pengguna
-    </a>
-</div>
+<x-ui.back-link href="{{ route('admin.pengguna.index') }}" label="Kembali ke Daftar Pengguna" />
 
 <div class="row g-3">
     <div class="col-md-7">
@@ -22,7 +18,7 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">
+                            <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">
                                 Nama Lengkap <span style="color:var(--merah)">*</span>
                             </label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
@@ -30,7 +26,7 @@
                             @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">
+                            <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">
                                 Email <span style="color:var(--merah)">*</span>
                             </label>
                             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
@@ -41,7 +37,7 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">
+                            <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">
                                 Password {{ $user ? '(kosongkan jika tidak diubah)' : '*' }}
                             </label>
                             <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
@@ -49,7 +45,7 @@
                             @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">
+                            <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">
                                 Konfirmasi Password
                             </label>
                             <input type="password" name="password_confirmation" class="form-control" placeholder="Ulangi password">
@@ -58,7 +54,7 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">
+                            <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">
                                 Role <span style="color:var(--merah)">*</span>
                             </label>
                             <select name="role" class="form-select @error('role') is-invalid @enderror">
@@ -72,7 +68,7 @@
                             @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">NIP</label>
+                            <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">NIP</label>
                             <input type="text" name="nip" class="form-control"
                                    value="{{ old('nip', $user?->nip) }}" placeholder="Nomor Induk Pegawai">
                         </div>
@@ -80,15 +76,15 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">No. HP / WhatsApp</label>
+                            <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">No. HP / WhatsApp</label>
                             <input type="text" name="no_hp" class="form-control"
                                    value="{{ old('no_hp', $user?->no_hp) }}" placeholder="08xxxxxxxxxx">
                         </div>
                         <div class="col-md-6">
                             @if($user)
-                            <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Status Akun</label>
+                            <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">Status Akun</label>
                             <div class="mt-1">
-                                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.85rem;">
+                                <label style="display:flex;align-items:center;cursor:pointer" class="gap-sm" class="t-body">
                                     <input type="checkbox" name="is_active" value="1"
                                            {{ old('is_active', $user?->is_active) ? 'checked' : '' }}
                                            style="accent-color:var(--emas);">
@@ -100,7 +96,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label" style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Instansi</label>
+                        <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">Instansi</label>
                         <input type="text" name="instansi" class="form-control"
                                value="{{ old('instansi', $user?->instansi ?? 'Dinas Kebudayaan Kabupaten Badung') }}"
                                placeholder="Nama instansi/unit kerja">
@@ -123,13 +119,13 @@
             <div class="card-body p-0">
                 @foreach([
                     ['Superadmin','Akses penuh termasuk kelola pengguna & arsip','var(--tanah)','var(--emas-muda)'],
-                    ['Admin','Edit OPK, verifikasi, kelola pengguna (kecuali superadmin)','var(--emas-gelap)','rgba(200,146,42,0.1)'],
-                    ['Verifikator','Verifikasi laporan, akses AI chat & ringkasan','var(--hijau)','rgba(45,90,39,0.1)'],
+                    ['Admin','Edit OPK, verifikasi, kelola pengguna (kecuali superadmin)','var(--emas-gelap)','var(--surface-emas)'],
+                    ['Verifikator','Verifikasi laporan, akses AI chat & ringkasan','var(--hijau)','var(--surface-hijau)'],
                     ['Petugas','Lihat data & dashboard saja, tidak bisa verifikasi','#4b5563','rgba(107,114,128,0.1)'],
                 ] as [$role, $desc, $color, $bg])
-                <div style="padding:10px 1rem;border-bottom:1px solid var(--garis-terang);display:flex;gap:10px;align-items:flex-start;">
-                    <span style="background:{{ $bg }};color:{{ $color }};padding:2px 10px;border-radius:10px;font-size:0.7rem;font-weight:600;flex-shrink:0;margin-top:2px;">{{ $role }}</span>
-                    <span style="font-size:0.78rem;color:var(--abu-gelap);">{{ $desc }}</span>
+                <div style="padding:10px 1rem;border-bottom:1px solid var(--garis-terang);display:flex;align-items:flex-start" class="gap-sm">
+                    <span style="background:{{ $bg }};color:{{ $color }};padding:2px 10px;border-radius:10px;font-weight:600;flex-shrink:0;margin-top:2px" class="t-caption">{{ $role }}</span>
+                    <span style="color:var(--abu-gelap)" class="t-body">{{ $desc }}</span>
                 </div>
                 @endforeach
             </div>

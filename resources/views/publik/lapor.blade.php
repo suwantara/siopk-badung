@@ -2,86 +2,13 @@
 
 @section('title', 'Lapor OPK — SIOPK Badung')
 
-@push('styles')
-<style>
-    .container-lapor { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
-
-    /* Step tabs */
-    .step-nav { display: flex; background: white; border: 1px solid var(--garis); border-radius: 4px; overflow-x: auto; margin-bottom: 1.5rem; -webkit-overflow-scrolling: touch; }
-    .step-tab { flex: 1 0 auto; min-width: 80px; padding: 10px 8px; text-align: center; cursor: pointer; border-right: 1px solid var(--garis); transition: all 0.2s; white-space: nowrap; }
-    .step-tab:last-child { border-right: none; }
-    .step-tab.active { background: var(--emas); }
-    .step-tab .step-num { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
-    .step-tab .step-label { font-size: 0.78rem; font-weight: 600; margin-top: 2px; }
-    .step-tab.active .step-num, .step-tab.active .step-label { color: var(--tanah); }
-    .step-tab:not(.active) .step-num, .step-tab:not(.active) .step-label { color: var(--abu); }
-    .step-tab.done { background: rgba(45,90,39,0.08); }
-    .step-tab.done .step-num, .step-tab.done .step-label { color: var(--hijau); }
-
-    /* Form */
-    .form-card { background: white; border: 1px solid var(--garis); border-radius: 4px; padding: 1.75rem; }
-    .form-label { font-size: 0.75rem; font-weight: 600; color: var(--tanah); text-transform: uppercase; letter-spacing: 0.06em; }
-    .form-control, .form-select { border: 1px solid var(--garis); border-radius: 3px; font-size: 0.88rem; background: var(--input-bg); color: var(--tanah); }
-    .form-control:focus, .form-select:focus { border-color: var(--emas); box-shadow: 0 0 0 3px rgba(200,146,42,0.12); }
-    .form-text { font-size: 0.7rem; color: var(--abu); }
-    .optional-badge { font-size: 0.62rem; color: var(--abu); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; }
-    .required-star { color: var(--merah); }
-
-    .kondisi-label { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--garis); border-radius: 3px; cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
-    .kondisi-label:hover { border-color: var(--emas); }
-    .kondisi-label input[type=radio] { accent-color: var(--emas); }
-
-    .tipe-label { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; border: 1px solid var(--garis); border-radius: 3px; cursor: pointer; text-align: center; transition: all 0.15s; }
-    .tipe-label:hover { border-color: var(--emas); background: rgba(200,146,42,0.03); }
-    .tipe-label.selected { border-color: var(--emas); background: rgba(200,146,42,0.06); }
-
-    .upload-zone { border: 2px dashed var(--garis); border-radius: 3px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--input-bg); }
-    .upload-zone:hover { border-color: var(--emas); background: rgba(200,146,42,0.03); }
-
-    .foto-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-    .foto-thumb { aspect-ratio: 1; border-radius: 3px; overflow: hidden; position: relative; background: var(--placeholder); display: flex; align-items: center; justify-content: center; }
-    .foto-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .foto-del { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--merah); color: white; font-size: 0.55rem; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .foto-size { position: absolute; bottom: 3px; left: 3px; right: 3px; background: rgba(0,0,0,0.7); color: white; border-radius: 2px; font-size: 0.55rem; text-align: center; padding: 1px 2px; }
-    .foto-toobig { border: 2px solid var(--merah) !important; }
-    .foto-toobig::after { content: 'Terlalu besar'; position: absolute; inset: 0; background: rgba(192,57,43,0.85); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; }
-    .foto-add { aspect-ratio: 1; border: 2px dashed var(--garis); border-radius: 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; gap: 4px; background: var(--input-bg); transition: all 0.15s; }
-    .foto-add:hover { border-color: var(--emas); }
-
-    .wilayah-box { background: var(--krem); border: 1px solid var(--garis); border-radius: 3px; padding: 1rem; }
-    .desa-adat-box { background: rgba(200,146,42,0.05); border: 1px solid rgba(200,146,42,0.2); border-radius: 3px; padding: 1rem; }
-
-    .lapor-sidebar { width: 220px; flex-shrink: 0; }
-    .lapor-sidebar .prog-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; margin-bottom: 6px; }
-    .lapor-sidebar .prog-dot { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 700; flex-shrink: 0; }
-
-    .btn-emas { background: var(--emas); color: var(--tanah); border: none; font-weight: 600; }
-    .btn-emas:hover { background: var(--emas-muda); color: var(--tanah); }
-
-    .alert-danger { background: rgba(192,57,43,0.08); border: none; border-left: 3px solid var(--merah); color: var(--merah); font-size: 0.82rem; }
-
-    @media (max-width: 992px) {
-        .lapor-sidebar { display: none; }
-    }
-    @media (max-width: 576px) {
-        .step-tab { min-width: 65px; padding: 8px 5px; }
-        .step-tab .step-num { font-size: 0.58rem; }
-        .step-tab .step-label { font-size: 0.68rem; }
-        .form-card { padding: 1rem; }
-        .kondisi-label { padding: 8px 6px; }
-        .kondisi-label > div > div:first-child { font-size: 0.75rem !important; }
-        .kondisi-label > div > div:last-child { font-size: 0.62rem !important; }
-    }
-</style>
-@endpush
-
 @section('content')
 <div class="container-lapor">
     <div class="mb-4">
         <h1 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;margin-bottom:4px;">
             Lapor Objek Pemajuan Kebudayaan
         </h1>
-        <p style="color:var(--abu-gelap);font-size:0.85rem;">
+        <p style="color:var(--abu-gelap)" class="t-body">
             Bantu Pemkab Badung memetakan & melindungi warisan budaya Bali · UU No. 5 Tahun 2017
         </p>
     </div>
@@ -136,7 +63,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">1</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Identitas OPK</div>
-                    <div style="font-size:0.75rem;color:var(--abu);">Informasi dasar tentang OPK yang dilaporkan</div>
+                    <div style="color:var(--abu);" class="t-caption">Informasi dasar tentang OPK yang dilaporkan</div>
                 </div>
             </div>
 
@@ -191,8 +118,8 @@
                         <label class="kondisi-label" id="lbl-baik">
                             <input type="radio" name="kondisi" value="baik" {{ old('kondisi','baik') === 'baik' ? 'checked' : '' }} onchange="setKondisi('baik')">
                             <div>
-                                <div style="font-weight:600;font-size:0.85rem;"><i class="bi bi-check-circle-fill" style="color:var(--hijau);"></i> Baik</div>
-                                <div style="font-size:0.7rem;color:var(--abu);">Aktif & terpelihara</div>
+                                <div style="font-weight:600" class="t-body"><i class="bi bi-check-circle-fill" style="color:var(--hijau);"></i> Baik</div>
+                                <div style="color:var(--abu)" class="t-caption">Aktif & terpelihara</div>
                             </div>
                         </label>
                     </div>
@@ -200,8 +127,8 @@
                         <label class="kondisi-label" id="lbl-waspada">
                             <input type="radio" name="kondisi" value="waspada" {{ old('kondisi') === 'waspada' ? 'checked' : '' }} onchange="setKondisi('waspada')">
                             <div>
-                                <div style="font-weight:600;font-size:0.85rem;"><i class="bi bi-exclamation-triangle-fill" style="color:var(--kuning);"></i> Waspada</div>
-                                <div style="font-size:0.7rem;color:var(--abu);">Praktisi berkurang</div>
+                                <div style="font-weight:600" class="t-body"><i class="bi bi-exclamation-triangle-fill" style="color:var(--kuning);"></i> Waspada</div>
+                                <div style="color:var(--abu)" class="t-caption">Praktisi berkurang</div>
                             </div>
                         </label>
                     </div>
@@ -209,8 +136,8 @@
                         <label class="kondisi-label" id="lbl-kritis">
                             <input type="radio" name="kondisi" value="kritis" {{ old('kondisi') === 'kritis' ? 'checked' : '' }} onchange="setKondisi('kritis')">
                             <div>
-                                <div style="font-weight:600;font-size:0.85rem;"><i class="bi bi-exclamation-circle-fill" style="color:var(--merah);"></i> Kritis</div>
-                                <div style="font-size:0.7rem;color:var(--abu);">Terancam punah</div>
+                                <div style="font-weight:600" class="t-body"><i class="bi bi-exclamation-circle-fill" style="color:var(--merah);"></i> Kritis</div>
+                                <div style="color:var(--abu)" class="t-caption">Terancam punah</div>
                             </div>
                         </label>
                     </div>
@@ -230,12 +157,12 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">2</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Lokasi & Wilayah</div>
-                    <div style="font-size:0.75rem;color:var(--abu);">Wilayah administratif tempat OPK berada</div>
+                    <div style="color:var(--abu);" class="t-caption">Wilayah administratif tempat OPK berada</div>
                 </div>
             </div>
 
             <div class="wilayah-box mb-3">
-                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem;">Wilayah Administratif</div>
+                <div style="font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem" class="t-caption">Wilayah Administratif</div>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Kecamatan <span class="required-star">*</span></label>
@@ -261,8 +188,8 @@
 
             <div class="desa-adat-box mb-3">
                 <div class="d-flex align-items-center gap-2 mb-2">
-                    <span style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">Desa Adat (Desa Pakraman)</span>
-                    <span style="font-size:0.62rem;background:rgba(200,146,42,0.15);color:var(--emas);padding:2px 8px;border-radius:10px;font-weight:600;">Khas Bali</span>
+                    <span style="font-weight:700;text-transform:uppercase;letter-spacing:0.08em" class="t-caption">Desa Adat (Desa Pakraman)</span>
+                    <span style="background:var(--surface-emas-hover);color:var(--emas);padding:2px 8px;border-radius:10px;font-weight:600" class="t-caption">Khas Bali</span>
                 </div>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -327,7 +254,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">3</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Deskripsi & Detail</div>
-                    <div style="font-size:0.75rem;color:var(--abu);">Semakin lengkap, semakin mudah diverifikasi Dinas</div>
+                    <div style="color:var(--abu);" class="t-caption">Semakin lengkap, semakin mudah diverifikasi Dinas</div>
                 </div>
             </div>
 
@@ -400,21 +327,21 @@
             </div>
 
             <div style="background:var(--krem);border:1px solid var(--garis);border-radius:3px;padding:1rem;">
-                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem;">
+                <div style="font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem" class="t-caption">
                     Informasi Praktisi / Narasumber
-                    <span style="font-size:0.65rem;color:var(--abu);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px;">(opsional)</span>
+                    <span style="color:var(--abu);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px" class="t-caption">(opsional)</span>
                 </div>
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label" style="font-size:0.68rem;">Nama Praktisi</label>
+                        <label class="form-label" class="t-caption">Nama Praktisi</label>
                         <input type="text" name="praktisi_nama" class="form-control" value="{{ old('praktisi_nama') }}" placeholder="Nama tokoh / seniman">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label" style="font-size:0.68rem;">Usia (perkiraan)</label>
+                        <label class="form-label" class="t-caption">Usia (perkiraan)</label>
                         <input type="number" name="praktisi_usia" class="form-control" value="{{ old('praktisi_usia') }}" placeholder="Contoh: 65" min="1" max="120">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label" style="font-size:0.68rem;">Kontak</label>
+                        <label class="form-label" class="t-caption">Kontak</label>
                         <input type="text" name="praktisi_kontak" class="form-control" value="{{ old('praktisi_kontak') }}" placeholder="No. HP (jika bersedia)">
                     </div>
                 </div>
@@ -437,7 +364,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">4</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Foto & Dokumentasi</div>
-                    <div style="font-size:0.75rem;color:var(--abu);">Upload hingga 10 foto · video · dokumen pendukung</div>
+                    <div style="color:var(--abu);" class="t-caption">Upload hingga 10 foto · video · dokumen pendukung</div>
                 </div>
             </div>
 
@@ -448,11 +375,11 @@
                 <div class="foto-grid" id="fotoGrid">
                     <div class="foto-add" onclick="document.getElementById('inputFotos').click()">
                         <i class="bi bi-camera" style="font-size:1.4rem;color:var(--abu);"></i>
-                        <span style="font-size:0.68rem;color:var(--abu);">Tambah Foto</span>
+                        <span style="color:var(--abu)" class="t-caption">Tambah Foto</span>
                     </div>
                 </div>
                 <div class="form-text mt-1">Format: JPG, PNG, HEIC, WebP · Maks 10MB per foto</div>
-                @error('fotos')<div class="text-danger" style="font-size:0.75rem;">{{ $message }}</div>@enderror
+                @error('fotos')<div class="text-danger" class="t-caption">{{ $message }}</div>@enderror
             </div>
 
             <div class="mb-3">
@@ -475,8 +402,8 @@
                        class="d-none" onchange="previewDokumen(this)">
                 <div class="upload-zone" onclick="document.getElementById('inputDokumen').click()" id="dokZone">
                     <i class="bi bi-file-earmark-text" style="font-size:1.8rem;color:var(--abu);"></i>
-                    <div style="font-size:0.82rem;color:var(--abu);margin-top:6px;">SK, sertifikat, artikel, atau dokumen resmi</div>
-                    <div style="font-size:0.7rem;color:var(--abu);">PDF, DOC · Maks 20MB</div>
+                    <div style="color:var(--abu);margin-top:6px" class="t-body">SK, sertifikat, artikel, atau dokumen resmi</div>
+                    <div style="color:var(--abu)" class="t-caption">PDF, DOC · Maks 20MB</div>
                 </div>
             </div>
 
@@ -496,7 +423,7 @@
                 <div style="width:34px;height:34px;border-radius:50%;background:var(--emas);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tanah);flex-shrink:0;">5</div>
                 <div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">Data Pelapor</div>
-                    <div style="font-size:0.75rem;color:var(--abu);">Identitas untuk konfirmasi & notifikasi status laporan</div>
+                    <div style="color:var(--abu);" class="t-caption">Identitas untuk konfirmasi & notifikasi status laporan</div>
                 </div>
             </div>
 
@@ -507,21 +434,21 @@
                         <label class="tipe-label" id="lbl-masyarakat" onclick="setTipe(this,'masyarakat')">
                             <input type="radio" name="tipe_pelapor" value="masyarakat" {{ old('tipe_pelapor','masyarakat') === 'masyarakat' ? 'checked' : '' }} style="accent-color:var(--emas);">
                             <i class="bi bi-person" style="font-size:1.4rem;"></i>
-                            <span style="font-size:0.75rem;font-weight:600;">Masyarakat Umum</span>
+                            <span style="font-weight:600;" class="t-caption">Masyarakat Umum</span>
                         </label>
                     </div>
                     <div class="col-6 col-sm-4">
                         <label class="tipe-label" id="lbl-tokoh_adat" onclick="setTipe(this,'tokoh_adat')">
                             <input type="radio" name="tipe_pelapor" value="tokoh_adat" {{ old('tipe_pelapor') === 'tokoh_adat' ? 'checked' : '' }} style="accent-color:var(--emas);">
                             <i class="bi bi-people" style="font-size:1.4rem;"></i>
-                            <span style="font-size:0.75rem;font-weight:600;">Tokoh Adat / Praktisi</span>
+                            <span style="font-weight:600;" class="t-caption">Tokoh Adat / Praktisi</span>
                         </label>
                     </div>
                     <div class="col-6 col-sm-4">
                         <label class="tipe-label" id="lbl-petugas_dinas" onclick="setTipe(this,'petugas_dinas')">
                             <input type="radio" name="tipe_pelapor" value="petugas_dinas" {{ old('tipe_pelapor') === 'petugas_dinas' ? 'checked' : '' }} style="accent-color:var(--emas);">
                             <i class="bi bi-building" style="font-size:1.4rem;"></i>
-                            <span style="font-size:0.75rem;font-weight:600;">Petugas Dinas</span>
+                            <span style="font-weight:600;" class="t-caption">Petugas Dinas</span>
                         </label>
                     </div>
                 </div>
@@ -558,19 +485,19 @@
             </div>
 
             <div style="background:var(--krem);border:1px solid var(--garis);border-radius:3px;padding:1rem;margin-bottom:1rem;">
-                <label style="display:flex;gap:10px;cursor:pointer;align-items:flex-start;">
+                <label style="display:flex;cursor:pointer;align-items:flex-start" class="gap-sm">
                     <input type="checkbox" name="setuju_1" value="1" {{ old('setuju_1') ? 'checked' : '' }}
                            style="margin-top:3px;accent-color:var(--emas);" required>
-                    <span style="font-size:0.8rem;line-height:1.6;">
+                    <span style="line-height:1.6" class="t-body">
                         Saya menyatakan bahwa informasi yang dilaporkan adalah <strong>benar dan dapat dipertanggungjawabkan</strong>. Saya memahami data ini akan diverifikasi oleh Dinas Kebudayaan Kabupaten Badung.
                     </span>
                 </label>
             </div>
-            <div style="background:rgba(200,146,42,0.05);border:1px solid rgba(200,146,42,0.2);border-radius:3px;padding:1rem;margin-bottom:1.5rem;">
-                <label style="display:flex;gap:10px;cursor:pointer;align-items:flex-start;">
+            <div style="background:var(--surface-emas-light);border:1px solid var(--border-emas);border-radius:3px;padding:1rem;margin-bottom:1.5rem;">
+                <label style="display:flex;cursor:pointer;align-items:flex-start" class="gap-sm">
                     <input type="checkbox" name="setuju_2" value="1" {{ old('setuju_2') ? 'checked' : '' }}
                            style="margin-top:3px;accent-color:var(--emas);" required>
-                    <span style="font-size:0.8rem;line-height:1.6;">
+                    <span style="line-height:1.6" class="t-body">
                         Saya menyetujui data yang diinput digunakan untuk keperluan <strong>pelestarian budaya oleh Pemkab Badung</strong> sesuai UU No. 5 Tahun 2017 tentang Pemajuan Kebudayaan.
                     </span>
                 </label>
@@ -580,7 +507,7 @@
                 <button type="button" class="btn btn-outline-secondary px-4" onclick="goStep(4)">
                     <i class="bi bi-arrow-left me-2"></i>Kembali
                 </button>
-                <button type="submit" class="btn btn-emas flex-grow-1 py-3" style="font-size:0.95rem;letter-spacing:0.05em;">
+                <button type="submit" class="btn btn-emas flex-grow-1 py-3" style="letter-spacing:0.05em" class="t-body-lg">
                     <i class="bi bi-send me-2"></i>Kirim Laporan OPK
                 </button>
             </div>
@@ -592,7 +519,7 @@
         {{-- SIDEBAR KANAN --}}
         <div class="lapor-sidebar d-none d-lg-block">
             <div style="background:white;border:1px solid var(--garis);border-radius:4px;padding:1rem;">
-                <div style="font-size:0.72rem;font-weight:700;color:var(--tanah);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">Progress</div>
+                <div style="font-weight:700;color:var(--tanah);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem" class="t-caption">Progress</div>
                 <div style="height:5px;background:var(--input-bg);border-radius:3px;margin-bottom:10px;">
                     <div id="progBar" style="height:100%;width:20%;background:var(--emas);border-radius:3px;transition:width 0.3s;"></div>
                 </div>
@@ -793,8 +720,8 @@ function previewDokumen(input) {
     if (input.files[0]) {
         document.getElementById('dokZone').innerHTML =
             `<i class="bi bi-file-earmark-check" style="font-size:1.8rem;color:var(--hijau);"></i>
-             <div style="font-size:0.82rem;margin-top:6px;">${input.files[0].name}</div>
-             <div style="font-size:0.7rem;color:var(--abu);">Klik untuk ganti</div>`;
+             <div style="margin-top:6px" class="t-body">${input.files[0].name}</div>
+             <div style="color:var(--abu)" class="t-caption">Klik untuk ganti</div>`;
     }
 }
 

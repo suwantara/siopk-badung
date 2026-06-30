@@ -1,7 +1,7 @@
 <div class="modal fade" id="modalFoto" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="background:var(--tanah-gelap);border:none;">
-            <div class="modal-header" style="border-bottom:1px solid rgba(200,146,42,0.2);">
+            <div class="modal-header" style="border-bottom:1px solid var(--border-emas);">
                 <small id="fotoKet" style="color:var(--abu);"></small>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>

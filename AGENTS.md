@@ -195,3 +195,8 @@ menunggu → ai_review → review_dinas → disetujui
 - `PetaDataService::invalidateCache()` increments version (atomic)
 - For other caches: call `Cache::forget()` in controller after write operations
 - Production uses `file` cache store; consider Redis for tags support
+
+## Git Remotes
+
+- **origin**: `infokbrc-alt/siopk-badung` — upstream (NEVER push here)
+- **fork**: `suwantara/siopk-badung` — personal fork (always push & PR from here)

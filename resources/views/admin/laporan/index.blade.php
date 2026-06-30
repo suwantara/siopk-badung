@@ -3,15 +3,7 @@
 @section('page-title','Laporan & Statistik OPK')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin:0;">Laporan & Statistik</h1>
-        <p class="text-muted mb-0" style="font-size:0.82rem;">Rekap data OPK Kabupaten Badung</p>
-    </div>
-    <a href="{{ route('admin.laporan.export') }}" class="btn btn-emas btn-sm">
-        <i class="bi bi-download me-1"></i>Export CSV
-    </a>
-</div>
+<x-ui.page-header title="Laporan &amp; Statistik" subtitle="Rekap data OPK Kabupaten Badung" action-label="Export CSV" action-url="{{ route('admin.laporan.export') }}" action-icon="bi-download" />
 
 {{-- KPI --}}
 <div class="row g-3 mb-4">
@@ -28,8 +20,8 @@
             <div class="card-body text-center py-3">
                 <i class="bi {{ $icon }}" style="font-size:1.3rem;color:{{ $color }};"></i>
                 <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--tanah);line-height:1;margin:4px 0;">{{ $val }}</div>
-                <div style="font-size:0.68rem;color:var(--abu);text-transform:uppercase;letter-spacing:0.06em;">{{ $label }}</div>
-                @if($sub)<div style="font-size:0.65rem;color:var(--abu);margin-top:2px;">{{ $sub }}</div>@endif
+                <div style="color:var(--abu);text-transform:uppercase;letter-spacing:0.06em" class="t-caption">{{ $label }}</div>
+                @if($sub)<div style="color:var(--abu);margin-top:2px" class="t-caption">{{ $sub }}</div>@endif
             </div>
         </div>
     </div>
@@ -84,7 +76,7 @@
 <div class="card mb-4">
     <div class="card-header-custom">
         <span class="title">Top 10 OPK Urgensi Tertinggi (AI Score)</span>
-        <a href="{{ route('admin.opk.index') }}?kondisi=kritis" style="font-size:0.72rem;color:var(--emas);">Lihat Semua →</a>
+        <a href="{{ route('admin.opk.index') }}?kondisi=kritis" style="color:var(--emas)" class="t-caption">Lihat Semua →</a>
     </div>
     <div class="card-body p-0 table-responsive-si">
         <table class="table table-hover mb-0">
@@ -103,14 +95,14 @@
                 @foreach($topUrgensi as $i => $opk)
                 <tr>
                     <td style="padding-left:1.25rem;">
-                        <div style="width:24px;height:24px;border-radius:50%;background:{{ $i < 3 ? 'var(--merah)' : ($i < 6 ? 'var(--kuning)' : 'var(--abu)') }};color:white;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;">{{ $i+1 }}</div>
+                        <div style="width:24px;height:24px;border-radius:50%;background:{{ $i < 3 ? 'var(--merah)' : ($i < 6 ? 'var(--kuning)' : 'var(--abu)') }};color:white;display:flex;align-items:center;justify-content:center;font-weight:700" class="t-caption">{{ $i+1 }}</div>
                     </td>
                     <td>
-                        <a href="{{ route('admin.opk.show', $opk) }}" style="font-weight:600;font-size:0.85rem;color:var(--tanah);text-decoration:none;">{{ $opk->nama_opk }}</a>
+                        <a href="{{ route('admin.opk.show', $opk) }}" style="font-weight:600;color:var(--tanah);text-decoration:none" class="t-body">{{ $opk->nama_opk }}</a>
                     </td>
-                    <td><span style="background:rgba(var(--emas-rgb),0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span></td>
-                    <td style="font-size:0.82rem;">{{ $opk->kecamatan?->nama }}</td>
-                    <td><span class="badge badge-{{ $opk->kondisi }} rounded-pill px-2" style="font-size:0.68rem;">{{ ucfirst($opk->kondisi) }}</span></td>
+                    <td><x-ui.badge-kategori :ikon="$opk->kategori?->ikon" :nama="$opk->kategori?->nama" /></td>
+                    <td class="t-body">{{ $opk->kecamatan?->nama }}</td>
+                    <td><x-ui.badge-kondisi :kondisi="$opk->kondisi" /></td>
                     <td>
                         <span style="font-family:'Courier New',monospace;font-weight:700;color:{{ $opk->kondisi === 'kritis' ? 'var(--merah)' : 'var(--kuning)' }}">
                             {{ number_format($opk->ai_urgency_score, 1) }}
@@ -118,7 +110,7 @@
                     </td>
                     <td>
                         <a href="{{ route('admin.opk.show', $opk) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
-                            <i class="bi bi-eye" style="font-size:0.75rem;"></i>
+                            <i class="bi bi-eye" class="t-caption"></i>
                         </a>
                     </td>
                 </tr>

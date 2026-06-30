@@ -6,70 +6,12 @@
     <title>Login — SIOPK Badung</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root { --tanah:#2C1A0E; --emas:#C8922A; --emas-muda:#E8B84B; --tanah-gelap:#1a0f06; --krem:#F7F1E8; --abu:#9ca3af; --abu-gelap:#6b7280; --garis:#d4c9b8; --input-bg:#fdfaf5; --merah:#C0392B; }
-        body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh; margin: 0;
-            background: linear-gradient(135deg, var(--tanah) 0%, #3d2410 60%, var(--tanah-gelap) 100%);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .login-card {
-            background: white; border-radius: 6px;
-            width: 100%; max-width: 420px;
-            border-top: 4px solid var(--emas);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-            overflow: hidden;
-        }
-        .login-header {
-            background: var(--tanah);
-            padding: 2rem; text-align: center;
-        }
-        .login-logo {
-            width: 52px; height: 52px; border-radius: 50%;
-            background: var(--emas); margin: 0 auto 1rem;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Cormorant Garamond', serif;
-            font-weight: 700; font-size: 1.4rem; color: var(--tanah);
-        }
-        .login-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.6rem; font-weight: 700; color: var(--krem);
-        }
-        .login-sub { font-size: 0.75rem; color: rgba(232,184,75,0.7); margin-top: 4px; }
-        .login-body { padding: 2rem; }
-        .form-label { font-size: 0.78rem; font-weight: 600; color: var(--tanah); text-transform: uppercase; letter-spacing: 0.06em; }
-        .form-control {
-            border: 1px solid var(--garis); border-radius: 3px;
-            font-size: 0.88rem; padding: 10px 14px;
-            background: var(--input-bg);
-        }
-        .form-control:focus { border-color: var(--emas); box-shadow: 0 0 0 3px rgba(200,146,42,0.12); }
-        .btn-login {
-            background: var(--emas); color: var(--tanah);
-            border: none; width: 100%; padding: 12px;
-            font-weight: 700; font-size: 0.9rem;
-            border-radius: 3px; letter-spacing: 0.05em;
-            text-transform: uppercase; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-login:hover { background: var(--emas-muda); }
-        .alert-danger { background: rgba(192,57,43,0.08); border: none; border-left: 3px solid var(--merah); color: var(--merah); font-size: 0.82rem; border-radius: 3px; }
-        .login-footer { text-align: center; padding: 1rem 2rem 1.5rem; font-size: 0.75rem; color: var(--abu); }
-        .login-footer a { color: var(--emas); text-decoration: none; }
-        @media (max-width: 480px) {
-            .login-card { max-width: 100%; margin: 0 1rem; border-radius: 4px; }
-            .login-header { padding: 1.5rem; }
-            .login-title { font-size: 1.3rem; }
-            .login-body { padding: 1.25rem; }
-        }
-    </style>
 </head>
-<body>
+<body class="login-page-body">
 <div class="login-card">
     <div class="login-header">
         <div class="login-logo" style="background: transparent; overflow: hidden; padding: 0;">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo SIOPK Badung" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
         </div>
         <div class="login-title">SIOPK Badung</div>
         <div class="login-sub">Sistem Informasi OPK Kabupaten Badung</div>
@@ -97,7 +39,7 @@
                 <input type="password" name="password" class="form-control" placeholder="••••••••" required>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <label style="font-size:0.78rem;color:var(--abu-gelap);display:flex;align-items:center;gap:6px;cursor:pointer;">
+                <label style="color:var(--abu-gelap);display:flex;align-items:center;cursor:pointer" class="gap-xs" class="t-body">
                     <input type="checkbox" name="remember"> Ingat saya
                 </label>
             </div>

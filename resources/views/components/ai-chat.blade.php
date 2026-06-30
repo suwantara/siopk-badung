@@ -4,37 +4,37 @@
 --}}
 <div class="card" id="aiChatCard" style="border:1px solid rgba(200,146,42,0.3);">
     <div style="background:linear-gradient(135deg,var(--tanah-gelap),var(--tanah));padding:0.85rem 1.2rem;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center" class="gap-sm">
             <span style="width:8px;height:8px;border-radius:50%;background:var(--emas-muda);display:inline-block;animation:blink 2s infinite;"></span>
-            <span style="font-size:0.72rem;font-weight:700;color:var(--emas-muda);text-transform:uppercase;letter-spacing:0.1em;">AI Asisten</span>
+            <span style="font-weight:700;color:var(--emas-muda);text-transform:uppercase;letter-spacing:0.1em" class="t-caption">AI Asisten</span>
         </div>
-        <span style="font-size:0.65rem;color:rgba(247,241,232,0.4);">Claude · SIOPK Badung</span>
+        <span style="color:rgba(247,241,232,0.4)" class="t-caption">Claude · SIOPK Badung</span>
     </div>
 
     {{-- Riwayat chat --}}
     <div id="chatHistory"
-         style="height:240px;overflow-y:auto;padding:1rem;background:var(--input-bg);display:flex;flex-direction:column;gap:10px;">
-        <div class="chat-msg ai" style="background:linear-gradient(135deg,var(--tanah-gelap),var(--tanah));color:var(--krem);padding:10px 12px;border-radius:3px 12px 12px 3px;font-size:0.78rem;line-height:1.6;max-width:90%;align-self:flex-start;">
+         style="height:240px;overflow-y:auto;padding:1rem;background:var(--input-bg);display:flex;flex-direction:column" class="gap-sm">
+        <div class="chat-msg ai" style="background:linear-gradient(135deg,var(--tanah-gelap),var(--tanah));color:var(--krem);padding:10px 12px;border-radius:3px 12px 12px 3px;line-height:1.6;max-width:90%;align-self:flex-start" class="t-body">
             🙏 Halo! Saya siap membantu menganalisis laporan <strong style="color:var(--emas-muda);">{{ $laporan->nama_opk }}</strong>. Apa yang ingin Anda tanyakan?
         </div>
     </div>
 
     {{-- Input --}}
     <div style="padding:0.75rem;border-top:1px solid var(--input-bg);background:white;">
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex" class="gap-sm">
             <input type="text" id="chatInput"
                    placeholder="Tanya tentang laporan ini..."
-                   style="flex:1;border:1px solid var(--garis);border-radius:3px;padding:8px 12px;font-size:0.82rem;background:var(--input-bg);color:var(--tanah);outline:none;"
+                   style="flex:1;border:1px solid var(--garis);border-radius:3px;padding:8px 12px;background:var(--input-bg);color:var(--tanah);outline:none" class="t-body"
                    onkeydown="if(event.key==='Enter') sendChat()"
                    onfocus="this.style.borderColor='var(--emas)'" onblur="this.style.borderColor='var(--garis)'">
             <button onclick="sendChat()"
-                    style="background:var(--emas);color:var(--tanah);border:none;padding:8px 14px;border-radius:3px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;"
+                    style="background:var(--emas);color:var(--tanah);border:none;padding:8px 14px;border-radius:3px;font-weight:600;cursor:pointer;white-space:nowrap" class="t-body"
                     id="chatBtn">
                 Kirim
             </button>
         </div>
         {{-- Pertanyaan cepat --}}
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <div style="display:flex;flex-wrap:wrap;margin-top:8px" class="gap-xs">
             @foreach([
                 'Apa rekomendasi tindakan?',
                 'Mengapa skor urgensi tinggi?',
@@ -42,7 +42,7 @@
                 'Siapa yang harus dihubungi?',
             ] as $q)
             <button onclick="quickAsk('{{ $q }}')"
-                    style="font-size:0.65rem;background:rgba(200,146,42,0.08);border:1px solid rgba(200,146,42,0.2);color:var(--emas-gelap);padding:3px 8px;border-radius:10px;cursor:pointer;">
+                    style="background:var(--surface-emas);border:1px solid var(--border-emas);color:var(--emas-gelap);padding:3px 8px;border-radius:10px;cursor:pointer" class="t-caption">
                 {{ $q }}
             </button>
             @endforeach
@@ -52,7 +52,7 @@
     {{-- Re-analisis (admin) --}}
     @if(auth()->user()->isAdmin())
     <div style="padding:0.6rem 0.75rem;border-top:1px solid var(--input-bg);background:var(--input-bg);display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:0.68rem;color:var(--abu);">
+        <span style="color:var(--abu)" class="t-caption">
             Score: <strong style="color:{{ $laporan->kondisi === 'kritis' ? 'var(--merah)' : ($laporan->kondisi === 'waspada' ? 'var(--kuning)' : 'var(--hijau)') }}">
                 {{ $laporan->ai_urgency_score ? number_format($laporan->ai_urgency_score, 1).'/10' : 'Belum dianalisis' }}
             </strong>
@@ -60,7 +60,7 @@
         <form method="POST" action="{{ route('admin.ai.re-analisis', $laporan) }}">
             @csrf
             <button type="submit"
-                    style="font-size:0.65rem;background:none;border:1px solid rgba(200,146,42,0.3);color:var(--emas);padding:3px 10px;border-radius:3px;cursor:pointer;"
+                    style="background:none;border:1px solid rgba(200,146,42,0.3);color:var(--emas);padding:3px 10px;border-radius:3px;cursor:pointer" class="t-caption"
                     onclick="event.preventDefault(); swalKonfirmasi({title:'Re-analisis AI',text:'Jalankan ulang analisis AI untuk laporan ini?',icon:'info',confirmText:'Jalankan',confirmColor:'var(--emas)',onConfirm:()=>this.closest('form').submit()})">
                 🔄 Re-analisis AI
             </button>

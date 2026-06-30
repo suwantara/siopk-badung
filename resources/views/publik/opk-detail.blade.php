@@ -2,45 +2,6 @@
 
 @section('title', $opk->nama_opk . ' — SIOPK Badung')
 
-@push('styles')
-<style>
-    .container-detail { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem; }
-    .card-detail { background: white; border: 1px solid var(--garis); border-radius: 4px; margin-bottom: 1.2rem; overflow: hidden; }
-    .section-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--abu); margin-bottom: 8px; }
-    .info-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--garis-terang); font-size: 0.83rem; }
-    .info-row:last-child { border-bottom: none; }
-    .info-key { color: var(--abu); width: 130px; flex-shrink: 0; }
-    .badge-kritis  { background: rgba(192,57,43,0.1); color: var(--merah); border: 1px solid rgba(192,57,43,0.2); padding: 3px 12px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
-    .badge-waspada { background: rgba(212,160,23,0.1); color: var(--kuning); border: 1px solid rgba(212,160,23,0.2); padding: 3px 12px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
-    .badge-baik    { background: rgba(45,90,39,0.1); color: var(--hijau); border: 1px solid rgba(45,90,39,0.2); padding: 3px 12px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
-    .foto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
-    .foto-item { aspect-ratio: 1; border-radius: 3px; overflow: hidden; cursor: pointer; background: var(--placeholder); }
-    .foto-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
-    .foto-item:hover img { transform: scale(1.05); }
-
-    .foto-slider { position: relative; }
-    .foto-slider-main { position: relative; width: 100%; aspect-ratio: 16/11; border-radius: 4px; overflow: hidden; background: var(--tanah-gelap); cursor: pointer; }
-    .foto-slider-main img { width: 100%; height: 100%; object-fit: contain; transition: opacity 0.3s; }
-    .foto-slider-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; font-size: 1rem; cursor: pointer; z-index: 2; transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
-    .foto-slider-arrow:hover { background: rgba(0,0,0,0.7); }
-    .foto-slider-prev { left: 10px; }
-    .foto-slider-next { right: 10px; }
-    .foto-slider-counter { position: absolute; bottom: 10px; right: 14px; background: rgba(0,0,0,0.55); color: white; font-size: 0.72rem; padding: 3px 10px; border-radius: 10px; }
-    .foto-slider-thumbs { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; padding-bottom: 4px; }
-    .foto-slider-thumb { width: 64px; height: 48px; border-radius: 3px; overflow: hidden; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: border-color 0.2s; opacity: 0.55; }
-    .foto-slider-thumb.active { border-color: var(--emas); opacity: 1; }
-    .foto-slider-thumb:hover { opacity: 0.85; }
-    .foto-slider-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    @media (max-width: 576px) {
-        .foto-slider-thumb { width: 48px; height: 36px; }
-        .foto-slider-arrow { width: 32px; height: 32px; font-size: 0.85rem; }
-        .container-detail { padding: 1rem 0.5rem; }
-        .info-row { flex-direction: column; gap: 2px; }
-        .info-key { width: 100%; }
-    }
-</style>
-@endpush
-
 @section('content')
 <div class="container-detail">
 
@@ -54,14 +15,12 @@
                     @else {{ $opk->kategori?->ikon ?? '🏛️' }} @endif
                 </div>
                 <div class="flex-grow-1">
-                    <div style="font-size:0.65rem;color:var(--abu);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">{{ $opk->kode_laporan }}</div>
+                    <div style="color:var(--abu);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px" class="t-caption">{{ $opk->kode_laporan }}</div>
                     <h1 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;margin-bottom:8px;line-height:1.2;">{{ $opk->nama_opk }}</h1>
                     <div class="d-flex gap-2 flex-wrap">
-                        <span style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);padding:3px 10px;border-radius:2px;font-size:0.75rem;font-weight:500;">
-                            {{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}
-                        </span>
-                        <span class="badge-{{ $opk->kondisi }}">{{ ucfirst($opk->kondisi) }}</span>
-                        <span style="background:rgba(45,90,39,0.1);color:var(--hijau);padding:3px 10px;border-radius:2px;font-size:0.72rem;font-weight:500;">
+                        <x-ui.badge-kategori :ikon="$opk->kategori?->ikon" :nama="$opk->kategori?->nama" />
+                        <x-ui.badge-kondisi :kondisi="$opk->kondisi" size="md" />
+                        <span style="background:var(--surface-hijau);color:var(--hijau);padding:3px 10px;border-radius:2px;font-weight:500" class="t-caption">
                             <i class="bi bi-check-circle"></i> Terverifikasi Dinas Kebudayaan
                         </span>
                     </div>
@@ -99,16 +58,16 @@
             <div class="card-detail">
                 <div style="padding:1.2rem;">
                     <div class="section-label">Deskripsi Umum</div>
-                    <p style="font-size:0.88rem;line-height:1.8;color:var(--teks);margin-bottom:1rem;">{{ $opk->deskripsi_umum }}</p>
+                    <p style="line-height:1.8;color:var(--teks);margin-bottom:1rem" class="t-body-lg">{{ $opk->deskripsi_umum }}</p>
 
                     @if($opk->sejarah_asal_usul)
                     <div class="section-label" style="margin-top:1rem;">Sejarah & Asal-Usul</div>
-                    <p style="font-size:0.88rem;line-height:1.8;color:var(--teks);margin-bottom:0;">{{ $opk->sejarah_asal_usul }}</p>
+                    <p style="line-height:1.8;color:var(--teks);margin-bottom:0" class="t-body-lg">{{ $opk->sejarah_asal_usul }}</p>
                     @endif
 
                     @if($opk->nilai_makna_budaya)
                     <div class="section-label" style="margin-top:1rem;">Nilai & Makna Budaya</div>
-                    <p style="font-size:0.88rem;line-height:1.8;color:var(--teks);margin-bottom:0;">{{ $opk->nilai_makna_budaya }}</p>
+                    <p style="line-height:1.8;color:var(--teks);margin-bottom:0" class="t-body-lg">{{ $opk->nilai_makna_budaya }}</p>
                     @endif
                 </div>
             </div>
@@ -123,8 +82,8 @@
                            class="d-flex align-items-center gap-2 p-2 rounded text-decoration-none"
                            style="background:var(--krem);border:1px solid var(--garis);color:var(--tanah);">
                             <i class="bi bi-play-circle" style="color:var(--emas);font-size:1.2rem;"></i>
-                            <span style="font-size:0.82rem;">Buka Video Dokumentasi</span>
-                            <i class="bi bi-box-arrow-up-right ms-auto" style="font-size:0.75rem;color:var(--abu);"></i>
+                            <span class="t-body">Buka Video Dokumentasi</span>
+                            <i class="bi bi-box-arrow-up-right ms-auto" style="color:var(--abu);" class="t-caption"></i>
                         </a>
                         @endif
                     @endforeach
@@ -144,50 +103,36 @@
                 <div id="petaMini" style="height:160px;"></div>
                 @endif
                 <div style="padding:0.75rem 1.2rem;">
-                    @foreach([
+                    <x-ui.info-rows :rows="[
                         ['Kecamatan', $opk->kecamatan?->nama],
                         ['Desa Dinas', $opk->desaDinas?->nama],
                         ['Desa Adat',  $opk->nama_desa_adat],
                         ['Banjar Adat',$opk->banjar_adat],
                         ['Lokasi',     $opk->lokasi_spesifik],
-                    ] as [$k, $v])
-                        @if($v)
-                        <div class="info-row">
-                            <span class="info-key">{{ $k }}</span>
-                            <span style="font-weight:500;text-align:right;">{{ $v }}</span>
-                        </div>
-                        @endif
-                    @endforeach
+                    ]" key-width="130px" />
                 </div>
             </div>
 
             <div class="card-detail">
                 <div style="padding:1.2rem 1.2rem 0;"><div class="section-label">Informasi OPK</div></div>
                 <div style="padding:0 1.2rem 0.75rem;">
-                    @foreach([
+                    <x-ui.info-rows :rows="[
                         ['Tahun',        $opk->tahun_keterangan ?? ($opk->tahun_diketahui ? (string)$opk->tahun_diketahui : null)],
                         ['Pelindungan',  ucwords(str_replace('_',' ',$opk->status_pelindungan))],
                         ['Bahasa',       $opk->bahasa_digunakan],
                         ['Aksara',       $opk->aksara_digunakan],
                         ['Frekuensi',    $opk->frekuensi_pelaksanaan ? ucwords(str_replace('_',' ',$opk->frekuensi_pelaksanaan)) : null],
                         ['Kepemilikan',  $opk->status_kepemilikan ? ucwords(str_replace('_',' ',$opk->status_kepemilikan)) : null],
-                    ] as [$k,$v])
-                        @if($v)
-                        <div class="info-row">
-                            <span class="info-key">{{ $k }}</span>
-                            <span style="font-weight:500;text-align:right;">{{ $v }}</span>
-                        </div>
-                        @endif
-                    @endforeach
+                    ]" key-width="130px" />
                 </div>
             </div>
 
             <div style="background:linear-gradient(135deg,var(--tanah),#3d2410);border-radius:4px;padding:1.2rem;text-align:center;">
                 <i class="bi bi-heart" style="font-size:1.3rem;color:var(--emas-muda);margin-bottom:6px;display:block;"></i>
-                <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--krem);margin-bottom:6px;">Tahu OPK lain?</div>
-                <p style="font-size:0.75rem;color:rgba(247,241,232,0.65);margin-bottom:12px;line-height:1.6;">Bantu kami memetakan lebih banyak warisan budaya Bali.</p>
+                <div style="font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--krem);margin-bottom:6px" class="t-subheading">Tahu OPK lain?</div>
+                <p style="color:rgba(247,241,232,0.65);margin-bottom:12px;line-height:1.6;" class="t-caption">Bantu kami memetakan lebih banyak warisan budaya Bali.</p>
                 <a href="{{ route('publik.lapor.index') }}"
-                   style="display:block;background:var(--emas);color:var(--tanah);padding:8px;border-radius:3px;text-decoration:none;font-size:0.82rem;font-weight:600;">
+                   style="display:block;background:var(--emas);color:var(--tanah);padding:8px;border-radius:3px;text-decoration:none;font-weight:600" class="t-body">
                     Lapor OPK Sekarang
                 </a>
             </div>
@@ -199,8 +144,8 @@
 <div class="modal fade" id="modalFoto" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="background:var(--tanah-gelap);border:none;">
-            <div class="modal-header" style="border-bottom:1px solid rgba(200,146,42,0.2);">
-                <span id="modalCounter" style="color:var(--abu);font-size:0.78rem;"></span>
+            <div class="modal-header" style="border-bottom:1px solid var(--border-emas);">
+                <span id="modalCounter" style="color:var(--abu)" class="t-body"></span>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-2" style="position:relative;">

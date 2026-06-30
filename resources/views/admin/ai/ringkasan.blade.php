@@ -3,16 +3,8 @@
 @section('page-title', 'Ringkasan Eksekutif Mingguan')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin:0;">
-            Ringkasan Eksekutif Mingguan
-        </h1>
-        <p class="text-muted mb-0" style="font-size:0.82rem;">
-            Digenerate oleh AI · Diperbarui setiap 6 jam
-        </p>
-    </div>
-    <div class="d-flex gap-2">
+<x-ui.page-header title="Ringkasan Eksekutif Mingguan" subtitle="Digenerate oleh AI · Diperbarui setiap 6 jam">
+    <x-slot:action>
         @if(auth()->user()->isAdmin())
         <form method="POST" action="{{ route('admin.ai.clear-cache') }}">
             @csrf
@@ -21,8 +13,8 @@
             </button>
         </form>
         @endif
-    </div>
-</div>
+    </x-slot:action>
+</x-ui.page-header>
 
 {{-- KPI cepat --}}
 @php
@@ -48,8 +40,8 @@
             <div class="card-body py-3">
                 <i class="bi {{ $icon }}" style="font-size:1.2rem;color:{{ $type === 'kritis' ? 'var(--merah)' : ($type === 'waspada' ? 'var(--kuning)' : 'var(--emas)') }};"></i>
                 <div class="kpi-value mt-1" style="font-size:1.8rem;">{{ $val }}</div>
-                <div class="kpi-label" style="font-size:0.65rem;">{{ $label }}</div>
-                <div style="font-size:0.65rem;color:var(--abu);margin-top:2px;">{{ $sub }}</div>
+                <div class="kpi-label" class="t-caption">{{ $label }}</div>
+                <div style="color:var(--abu);margin-top:2px" class="t-caption">{{ $sub }}</div>
             </div>
         </div>
     </div>
@@ -60,26 +52,26 @@
     {{-- Ringkasan AI --}}
     <div class="col-12 col-md-7">
         <div class="ai-panel p-0 h-100" style="overflow:hidden;">
-            <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(200,146,42,0.2);display:flex;align-items:center;justify-content:space-between;">
-                <div style="display:flex;align-items:center;gap:8px;">
+            <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border-emas);display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center" class="gap-sm">
                     <span class="ai-blink" style="width:8px;height:8px;border-radius:50%;background:var(--emas-muda);display:inline-block;"></span>
-                    <span style="font-size:0.72rem;font-weight:700;color:var(--emas-muda);text-transform:uppercase;letter-spacing:0.1em;">AI · Ringkasan Eksekutif</span>
+                    <span style="font-weight:700;color:var(--emas-muda);text-transform:uppercase;letter-spacing:0.1em" class="t-caption">AI · Ringkasan Eksekutif</span>
                 </div>
                 <button onclick="loadCached()" id="btnCached"
-                        style="background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.3);color:var(--emas-muda);padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;display:none;">
+                        style="background:var(--border-emas);border:1px solid rgba(200,146,42,0.3);color:var(--emas-muda);padding:4px 12px;border-radius:3px;cursor:pointer;display:none" class="t-caption">
                     📋 Lihat Tersimpan
                 </button>
                 <button onclick="loadRingkasan()" id="btnLoad"
-                        style="background:rgba(200,146,42,0.2);border:1px solid rgba(200,146,42,0.3);color:var(--emas-muda);padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;">
+                        style="background:var(--border-emas);border:1px solid rgba(200,146,42,0.3);color:var(--emas-muda);padding:4px 12px;border-radius:3px;cursor:pointer" class="t-caption">
                     ⚡ Generate Ringkasan
                 </button>
             </div>
             <div id="ringkasanArea" style="padding:1.25rem;min-height:260px;color:var(--krem);">
-                <div style="opacity:0.4;font-size:0.82rem;text-align:center;margin-top:3rem;">
+                <div style="opacity:0.4;text-align:center;margin-top:3rem" class="t-body">
                     Klik "Generate Ringkasan" untuk meminta AI menganalisis kondisi OPK minggu ini.
                 </div>
             </div>
-            <div id="ringkasanMeta" style="padding:0.75rem 1.25rem;border-top:1px solid rgba(200,146,42,0.15);font-size:0.68rem;color:rgba(247,241,232,0.4);display:none;">
+            <div id="ringkasanMeta" style="padding:0.75rem 1.25rem;border-top:1px solid var(--surface-emas-hover);color:rgba(247,241,232,0.4);display:none" class="t-caption">
                 Dihasilkan oleh Claude AI · <span id="cacheTime"></span>
             </div>
         </div>
@@ -90,7 +82,7 @@
         <div class="card h-100">
             <div class="card-header-custom">
                 <span class="title"><i class="bi bi-bar-chart-line me-2"></i>Top 5 Prioritas AI</span>
-                <a href="{{ route('admin.opk.index') }}?kondisi=kritis" style="font-size:0.72rem;color:var(--emas);">Lihat Semua →</a>
+                <a href="{{ route('admin.opk.index') }}?kondisi=kritis" style="color:var(--emas)" class="t-caption">Lihat Semua →</a>
             </div>
             <div class="card-body p-0">
                 @php
@@ -102,23 +94,20 @@
                         ->get();
                 @endphp
                 @forelse($top5 as $i => $opk)
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 1rem;border-bottom:1px solid var(--garis-terang);">
-                    <div style="width:24px;height:24px;border-radius:50%;background:{{ $i === 0 ? 'var(--merah)' : ($i < 3 ? 'var(--kuning)' : 'var(--abu)') }};color:white;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;">
+                <div style="display:flex;align-items:center;padding:10px 1rem;border-bottom:1px solid var(--garis-terang)" class="gap-sm">
+                    <div style="width:24px;height:24px;border-radius:50%;background:{{ $i === 0 ? 'var(--merah)' : ($i < 3 ? 'var(--kuning)' : 'var(--abu)') }};color:white;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0" class="t-caption">
                         {{ $i + 1 }}
                     </div>
                     <div style="flex:1;min-width:0;">
-                        <div style="font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" class="t-body">
                             <a href="{{ route('admin.opk.show', $opk) }}" style="color:var(--tanah);text-decoration:none;">{{ $opk->nama_opk }}</a>
                         </div>
-                        <div style="font-size:0.68rem;color:var(--abu);">{{ $opk->kecamatan?->nama }} · {{ $opk->kategori?->ikon }}</div>
+                        <div style="color:var(--abu)" class="t-caption">{{ $opk->kecamatan?->nama }} · {{ $opk->kategori?->ikon }}</div>
                     </div>
-                    <div style="font-family:'Courier New',monospace;font-size:0.88rem;font-weight:700;flex-shrink:0;
-                        color:{{ $opk->kondisi === 'kritis' ? 'var(--merah)' : 'var(--kuning)' }}">
-                        {{ number_format($opk->ai_urgency_score ?? 0, 1) }}
-                    </div>
+                        <div class="flex-shrink-0"><x-ui.ai-score :score="($opk->ai_urgency_score ?? 0)" :kondisi="$opk->kondisi" size="lg" /></div>
                 </div>
                 @empty
-                <div style="padding:2rem;text-align:center;color:var(--abu);font-size:0.82rem;">
+                <div style="padding:2rem;text-align:center;color:var(--abu)" class="t-body">
                     <i class="bi bi-check-circle" style="font-size:1.5rem;color:var(--hijau);display:block;margin-bottom:8px;"></i>
                     Tidak ada OPK dengan urgensi tinggi.
                 </div>
@@ -132,7 +121,7 @@
 <div class="card mt-3">
     <div class="card-header-custom">
         <span class="title">Semua OPK Perlu Perhatian (Kritis + Waspada)</span>
-        <span style="font-size:0.72rem;color:var(--abu);">Diurutkan AI Score tertinggi</span>
+        <span style="color:var(--abu)" class="t-caption">Diurutkan AI Score tertinggi</span>
     </div>
     <div class="card-body p-0 table-responsive-si">
         <table class="table table-hover mb-0">
@@ -157,20 +146,18 @@
                 @endphp
                 @forelse($semua as $opk)
                 <tr>
-                    <td style="padding-left:1.25rem;font-weight:600;font-size:0.85rem;">
+                    <td style="padding-left:1.25rem;font-weight:600" class="t-body">
                         <a href="{{ route('admin.opk.show', $opk) }}" style="color:var(--tanah);text-decoration:none;">
                             {{ $opk->nama_opk }}
                         </a>
                     </td>
-                    <td><span style="background:rgba(200,146,42,0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-size:0.7rem;font-weight:500;">{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span></td>
-                    <td style="font-size:0.82rem;">{{ $opk->kecamatan?->nama }}</td>
-                    <td style="font-size:0.78rem;color:var(--abu-gelap);">{{ Str::limit($opk->nama_desa_adat, 20) }}</td>
-                    <td><span class="badge badge-{{ $opk->kondisi }} rounded-pill px-2" style="font-size:0.68rem;">{{ ucfirst($opk->kondisi) }}</span></td>
+                    <td><x-ui.badge-kategori :ikon="$opk->kategori?->ikon" :nama="$opk->kategori?->nama" /></td>
+                    <td class="t-body">{{ $opk->kecamatan?->nama }}</td>
+                    <td style="color:var(--abu-gelap)" class="t-body">{{ Str::limit($opk->nama_desa_adat, 20) }}</td>
+                    <td><x-ui.badge-kondisi :kondisi="$opk->kondisi" /></td>
                     <td>
-                        <div style="display:flex;align-items:center;gap:6px;">
-                            <span style="font-family:'Courier New',monospace;font-size:0.82rem;font-weight:700;color:{{ $opk->kondisi==='kritis'?'var(--merah)':'var(--kuning)' }}">
-                                {{ number_format($opk->ai_urgency_score ?? 0, 1) }}
-                            </span>
+                        <div style="display:flex;align-items:center" class="gap-xs">
+                            <x-ui.ai-score :score="$opk->ai_urgency_score ?? 0" :kondisi="$opk->kondisi" />
                             <div style="height:4px;width:50px;background:var(--input-bg);border-radius:2px;overflow:hidden;">
                                 <div style="height:100%;width:{{ ($opk->ai_urgency_score ?? 0)*10 }}%;background:{{ $opk->kondisi==='kritis'?'var(--merah)':'var(--kuning)' }};border-radius:2px;"></div>
                             </div>
@@ -178,7 +165,7 @@
                     </td>
                     <td>
                         <a href="{{ route('admin.opk.show', $opk) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
-                            <i class="bi bi-eye" style="font-size:0.75rem;"></i>
+                            <i class="bi bi-eye" class="t-caption"></i>
                         </a>
                     </td>
                 </tr>
@@ -213,8 +200,8 @@ function renderRingkasan(ringkasan) {
             const t = l.trim();
             if (t.startsWith('&lt;h4&gt;')) return t;
             if (/^\d+\./.test(t)) return `<div style="margin-top:10px;font-weight:600;color:var(--emas-muda);">${cleanMarkdown(t)}</div>`;
-            if (t.startsWith('→')) return `<div style="padding-left:12px;margin-top:4px;font-size:0.8rem;opacity:0.9;">${t}</div>`;
-            return `<div style="font-size:0.83rem;line-height:1.8;opacity:0.9;margin-top:6px;">${cleanMarkdown(t)}</div>`;
+            if (t.startsWith('→')) return `<div style="padding-left:12px;margin-top:4px;opacity:0.9" class="t-body">${t}</div>`;
+            return `<div style="line-height:1.8;opacity:0.9;margin-top:6px" class="t-body">${cleanMarkdown(t)}</div>`;
         }).join('');
 }
 
@@ -237,7 +224,7 @@ function loadCached() {
             showCached(data);
         } else {
             document.getElementById('ringkasanArea').innerHTML =
-                '<div style="opacity:0.5;font-size:0.82rem;text-align:center;margin-top:3rem;">Belum ada ringkasan tersimpan. Klik Generate.</div>';
+                '<div style="opacity:0.5;text-align:center;margin-top:3rem" class="t-body">Belum ada ringkasan tersimpan. Klik Generate.</div>';
         }
     });
 }
@@ -249,7 +236,7 @@ function loadRingkasan() {
 
     btn.textContent = '⏳ Memproses...';
     btn.disabled    = true;
-    area.innerHTML  = '<div style="opacity:0.5;font-size:0.82rem;text-align:center;margin-top:3rem;">⏳ AI sedang menganalisis data OPK minggu ini...<br><small>Mohon tunggu 10–20 detik</small></div>';
+    area.innerHTML  = '<div style="opacity:0.5;text-align:center;margin-top:3rem" class="t-body">⏳ AI sedang menganalisis data OPK minggu ini...<br><small>Mohon tunggu 10–20 detik</small></div>';
 
     fetch("{{ route('admin.ai.ringkasan') }}", {
         headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
@@ -263,7 +250,7 @@ function loadRingkasan() {
             meta.innerHTML = `Dihasilkan oleh ${data.provider} · ${data.cached_at}`;
             document.getElementById('btnCached').style.display = 'inline-block';
         } else {
-            area.innerHTML = `<div style="color:#f08080;font-size:0.82rem;text-align:center;margin-top:2rem;">
+            area.innerHTML = `<div style="color:var(--emas-muda);text-align:center;margin-top:2rem" class="t-body">
                 <i class="bi bi-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
                 ${data.message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g,'<br>') || 'Gagal mendapatkan ringkasan.'}
                 <br><small style="color:var(--abu);margin-top:8px;display:block;">Provider terkonfigurasi: ${data.provider || 'tidak diketahui'}</small>
@@ -271,7 +258,7 @@ function loadRingkasan() {
         }
     })
     .catch(() => {
-        area.innerHTML = '<div style="color:#f08080;font-size:0.82rem;">Koneksi gagal. Periksa jaringan dan API key.</div>';
+        area.innerHTML = '<div style="color:var(--emas-muda)" class="t-body">Koneksi gagal. Periksa jaringan dan API key.</div>';
     })
     .finally(() => {
         btn.textContent = '⚡ Generate Baru';

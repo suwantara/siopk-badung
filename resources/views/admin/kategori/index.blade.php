@@ -3,15 +3,13 @@
 @section('page-title','Manajemen Kategori OPK')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin:0;">Kategori OPK</h1>
-        <p class="text-muted mb-0" style="font-size:0.82rem;">10 Objek Pemajuan Kebudayaan sesuai UU No. 5 Tahun 2017</p>
-    </div>
-    <button class="btn btn-emas btn-sm" data-bs-toggle="collapse" data-bs-target="#addCatForm">
-        <i class="bi bi-plus-circle me-1"></i>Tambah Kategori
-    </button>
-</div>
+<x-ui.page-header title="Kategori OPK" subtitle="10 Objek Pemajuan Kebudayaan sesuai UU No. 5 Tahun 2017">
+    <x-slot:action>
+        <button class="btn btn-emas btn-sm" data-bs-toggle="collapse" data-bs-target="#addCatForm">
+            <i class="bi bi-plus-circle me-1"></i>Tambah Kategori
+        </button>
+    </x-slot:action>
+</x-ui.page-header>
 
 {{-- Form tambah kategori --}}
 <div class="collapse mb-4 {{ $errors->any() && old('_action') === 'store' ? 'show' : '' }}" id="addCatForm">
@@ -25,24 +23,24 @@
                 <input type="hidden" name="_action" value="store">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-1">
-                        <label class="form-label mb-1" style="font-size:0.72rem;">No</label>
+                        <label class="form-label mb-1" class="t-caption">No</label>
                         <input type="number" name="nomor" class="form-control form-control-sm @error('nomor') is-invalid @enderror"
                                value="{{ old('nomor') }}" placeholder="11" min="1" max="99" required>
                         @error('nomor')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label mb-1" style="font-size:0.72rem;">Ikon</label>
+                        <label class="form-label mb-1" class="t-caption">Ikon</label>
                         <input type="text" name="ikon" class="form-control form-control-sm @error('ikon') is-invalid @enderror"
                                value="{{ old('ikon') }}" placeholder="🎭" maxlength="10">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label mb-1" style="font-size:0.72rem;">Nama Kategori</label>
+                        <label class="form-label mb-1" class="t-caption">Nama Kategori</label>
                         <input type="text" name="nama" class="form-control form-control-sm @error('nama') is-invalid @enderror"
                                value="{{ old('nama') }}" placeholder="Contoh: Seni Pertunjukan" required>
                         @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label mb-1" style="font-size:0.72rem;">Deskripsi</label>
+                        <label class="form-label mb-1" class="t-caption">Deskripsi</label>
                         <input type="text" name="deskripsi" class="form-control form-control-sm @error('deskripsi') is-invalid @enderror"
                                value="{{ old('deskripsi') }}" placeholder="Penjelasan singkat...">
                     </div>
@@ -104,7 +102,7 @@
     </div>
 </div>
 
-<p class="text-muted mt-3" style="font-size:0.7rem;">
+<p class="text-muted mt-3" class="t-caption">
     <i class="bi bi-info-circle me-1"></i>
     Kategori yang sudah digunakan oleh laporan OPK tidak dapat dihapus. Ubah nomor untuk mengatur urutan tampilan.
 </p>

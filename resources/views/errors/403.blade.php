@@ -7,7 +7,7 @@
     </div>
     <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700;color:var(--tanah);margin-bottom:0.5rem;">403</h1>
     <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--tanah);margin-bottom:1rem;">Akses Ditolak</h2>
-    <p style="color:var(--abu-gelap);margin-bottom:1.5rem;font-size:0.9rem;">Anda tidak memiliki izin untuk mengakses halaman ini. Silakan hubungi administrator Dinas Kebudayaan Kabupaten Badung jika Anda merasa ini adalah kesalahan.</p>
+    <p style="color:var(--abu-gelap);margin-bottom:1.5rem" class="t-body-lg">Anda tidak memiliki izin untuk mengakses halaman ini. Silakan hubungi administrator Dinas Kebudayaan Kabupaten Badung jika Anda merasa ini adalah kesalahan.</p>
     <a href="{{ route('publik.dashboard') }}" class="btn" style="background:var(--emas);color:var(--tanah);font-weight:600;padding:8px 20px;text-decoration:none;">
         <i class="bi bi-house me-2"></i>Kembali ke Beranda
     </a>

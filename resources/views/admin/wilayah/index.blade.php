@@ -2,41 +2,8 @@
 @section('title','Manajemen Wilayah')
 @section('page-title','Manajemen Wilayah')
 
-@push('styles')
-<style>
-    /* Override Bootstrap list-group active agar sesuai design system */
-    .list-group-kec .list-group-item {
-        border-left: 3px solid transparent;
-        transition: all 0.15s;
-    }
-    .list-group-kec .list-group-item:hover {
-        border-left-color: rgba(200,146,42,0.3);
-    }
-    .list-group-kec .list-group-item.active {
-        background: var(--tanah);
-        border-color: var(--tanah);
-        border-left-color: var(--emas);
-        color: var(--krem);
-    }
-    .list-group-kec .list-group-item.active strong {
-        color: var(--emas-muda);
-    }
-    .list-group-kec .list-group-item.active small {
-        color: rgba(247,241,232,0.6);
-    }
-    .list-group-kec .list-group-item.active .text-muted {
-        color: rgba(247,241,232,0.5) !important;
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin:0;">Manajemen Wilayah</h1>
-        <p class="text-muted mb-0" style="font-size:0.82rem;">Kelola kecamatan, desa dinas, dan desa adat di Kabupaten Badung</p>
-    </div>
-</div>
+<x-ui.page-header title="Manajemen Wilayah" subtitle="Kelola kecamatan, desa dinas, dan desa adat di Kabupaten Badung" />
 
 <div class="row g-4">
     {{-- Sidebar: Daftar Kecamatan --}}
@@ -53,14 +20,14 @@
                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3
                               {{ $selectedId == $kec->id ? 'active' : '' }}">
                         <div>
-                            <strong style="font-size:0.85rem;">{{ $kec->nama }}</strong>
-                            <small class="d-block text-muted" style="font-size:0.7rem;">Kode: {{ $kec->kode }}</small>
+                            <strong class="t-body">{{ $kec->nama }}</strong>
+                            <small class="d-block text-muted" class="t-caption">Kode: {{ $kec->kode }}</small>
                         </div>
                         <div class="d-flex gap-2">
-                            <small class="text-muted" style="font-size:0.65rem;">
+                            <small class="text-muted" class="t-caption">
                                 {{ $kec->desa_dinas_count ?? 0 }} <i class="bi bi-building"></i>
                             </small>
-                            <small class="text-muted" style="font-size:0.65rem;">
+                            <small class="text-muted" class="t-caption">
                                 {{ $kec->desa_adats_count ?? 0 }} <i class="bi bi-house"></i>
                             </small>
                         </div>
@@ -78,13 +45,13 @@
                           id="addKecForm">
                         @csrf
                         <div class="mb-2">
-                            <label class="form-label mb-1" style="font-size:0.72rem;">Nama Kecamatan</label>
+                            <label class="form-label mb-1" class="t-caption">Nama Kecamatan</label>
                             <input type="text" name="nama" class="form-control form-control-sm @error('nama') is-invalid @enderror"
                                    value="{{ old('nama') }}" placeholder="Contoh: Kuta Utara">
                             @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="mb-2">
-                            <label class="form-label mb-1" style="font-size:0.72rem;">Kode Wilayah</label>
+                            <label class="form-label mb-1" class="t-caption">Kode Wilayah</label>
                             <input type="text" name="kode" class="form-control form-control-sm @error('kode') is-invalid @enderror"
                                    value="{{ old('kode') }}" placeholder="Contoh: 5103050">
                             @error('kode')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -114,12 +81,12 @@
                             @csrf @method('PUT')
                             <div class="row g-3 align-items-end">
                                 <div class="col-md-4">
-                                    <label class="form-label mb-1" style="font-size:0.72rem;">Nama</label>
+                                    <label class="form-label mb-1" class="t-caption">Nama</label>
                                     <input type="text" name="nama" class="form-control form-control-sm @error('kec_nama') is-invalid @enderror"
                                            value="{{ old('nama', $selectedKec->nama) }}">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label mb-1" style="font-size:0.72rem;">Kode</label>
+                                    <label class="form-label mb-1" class="t-caption">Kode</label>
                                     <input type="text" name="kode" class="form-control form-control-sm @error('kec_kode') is-invalid @enderror"
                                            value="{{ old('kode', $selectedKec->kode) }}">
                                 </div>
@@ -240,12 +207,7 @@
                 </div>
             </div>
         @else
-            <div class="card">
-                <div class="card-body text-center py-5 text-muted">
-                    <i class="bi bi-geo-alt" style="font-size:3rem;"></i>
-                    <p class="mt-3">Pilih kecamatan dari daftar di samping untuk mengelola wilayah.</p>
-                </div>
-            </div>
+            <x-ui.empty-state icon="bi-geo-alt" message="Pilih kecamatan dari daftar di samping untuk mengelola wilayah." />
         @endif
     </div>
 </div>

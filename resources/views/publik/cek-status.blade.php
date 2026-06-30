@@ -2,44 +2,16 @@
 
 @section('title', 'Cek Status Laporan — SIOPK Badung')
 
-@push('styles')
-<style>
-    .container-status { max-width: 580px; margin: 0 auto; padding: 1.5rem 1rem; }
-    .page-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; }
-    .search-card { background: white; border: 1px solid var(--garis); border-radius: 4px; padding: 1.5rem; margin-bottom: 1.5rem; border-top: 4px solid var(--emas); }
-    .form-control { border: 1px solid var(--garis); border-radius: 3px; font-size: 0.9rem; background: var(--input-bg); }
-    .form-control:focus { border-color: var(--emas); box-shadow: 0 0 0 3px rgba(200,146,42,0.12); }
-    .btn-emas { background: var(--emas); color: var(--tanah); border: none; font-weight: 600; padding: 10px 24px; border-radius: 3px; }
-    .btn-emas:hover { background: var(--emas-muda); color: var(--tanah); }
-    .result-card { background: white; border: 1px solid var(--garis); border-radius: 4px; overflow: hidden; }
-    .result-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--garis); background: var(--input-bg); }
-    .result-body { padding: 1.5rem; }
-    .info-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--garis-terang); font-size: 0.84rem; }
-    .info-row:last-child { border-bottom: none; }
-    .info-key { color: var(--abu); flex-shrink: 0; width: 140px; }
-    .info-val { font-weight: 500; text-align: right; }
-    .timeline { padding: 0; list-style: none; }
-    .timeline-item { display: flex; gap: 12px; padding-bottom: 16px; position: relative; }
-    .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; width: 2px; height: calc(100% - 24px); background: var(--input-bg); }
-    .timeline-dot { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; z-index: 1; }
-    .timeline-content { padding-top: 2px; }
-    .timeline-label { font-size: 0.8rem; font-weight: 600; }
-    .timeline-meta { font-size: 0.72rem; color: var(--abu); margin-top: 2px; }
-    .timeline-note { font-size: 0.75rem; color: var(--abu-gelap); margin-top: 4px; background: var(--krem); border-radius: 3px; padding: 6px 8px; }
-    .status-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-</style>
-@endpush
-
 @section('content')
 <div class="container-status">
     <div class="mb-4">
         <h1 class="page-title">Cek Status Laporan</h1>
-        <p style="color:var(--abu);font-size:0.85rem;">Masukkan kode laporan untuk melihat perkembangan verifikasi</p>
+        <p style="color:var(--abu)" class="t-body">Masukkan kode laporan untuk melihat perkembangan verifikasi</p>
     </div>
 
     <div class="search-card">
         <form method="GET" action="{{ route('publik.lapor.status') }}">
-            <label style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Kode Laporan</label>
+            <label style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">Kode Laporan</label>
             <div class="d-flex gap-2 mt-2">
                 <input type="text" name="kode_laporan" class="form-control"
                        value="{{ $kode }}" placeholder="Contoh: SIOPK-2025-00001"
@@ -52,7 +24,7 @@
     </div>
 
     @if($kode && !$laporan)
-        <div style="background:rgba(192,57,43,0.08);border-left:3px solid var(--merah);padding:12px 16px;border-radius:0 3px 3px 0;font-size:0.84rem;color:var(--merah);">
+        <div style="background:var(--surface-merah);border-left:3px solid var(--merah);padding:12px 16px;border-radius:0 3px 3px 0;color:var(--merah)" class="t-body">
             <i class="bi bi-exclamation-circle me-2"></i>Kode laporan <strong>{{ $kode }}</strong> tidak ditemukan. Pastikan kode sudah benar.
         </div>
     @endif
@@ -62,24 +34,24 @@
         <div class="result-header">
             <div style="display:flex;justify-content:space-between;align-items:start;">
                 <div>
-                    <div style="font-size:0.68rem;color:var(--abu);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">
+                    <div style="color:var(--abu);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px" class="t-caption">
                         {{ $laporan->kode_laporan }}
                     </div>
                     <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;">
                         {{ $laporan->nama_opk }}
                     </div>
-                    <div style="font-size:0.75rem;color:var(--abu);margin-top:2px;">
+                    <div style="color:var(--abu);margin-top:2px;" class="t-caption">
                         {{ $laporan->kategori?->ikon }} {{ $laporan->kategori?->nama }} &nbsp;·&nbsp;
                         {{ $laporan->kecamatan?->nama }}
                     </div>
                 </div>
                 @php
                     $statusConfig = [
-                        'menunggu'     => ['label'=>'Menunggu Verifikasi', 'bg'=>'rgba(212,160,23,0.1)', 'color'=>'#8a6010'],
+                        'menunggu'     => ['label'=>'Menunggu Verifikasi', 'bg'=>'var(--surface-kuning)', 'color'=>'#8a6010'],
                         'ai_review'    => ['label'=>'AI Sedang Review',    'bg'=>'rgba(41,128,185,0.1)', 'color'=>'#2980b9'],
-                        'review_dinas' => ['label'=>'Ditinjau Dinas',      'bg'=>'rgba(200,146,42,0.1)', 'color'=>'var(--emas-gelap)'],
-                        'disetujui'    => ['label'=>'Disetujui',           'bg'=>'rgba(45,90,39,0.1)',   'color'=>'var(--hijau)'],
-                        'ditolak'      => ['label'=>'Ditolak',             'bg'=>'rgba(192,57,43,0.1)', 'color'=>'var(--merah)'],
+                        'review_dinas' => ['label'=>'Ditinjau Dinas',      'bg'=>'var(--surface-emas)', 'color'=>'var(--emas-gelap)'],
+                        'disetujui'    => ['label'=>'Disetujui',           'bg'=>'var(--surface-hijau)',   'color'=>'var(--hijau)'],
+                        'ditolak'      => ['label'=>'Ditolak',             'bg'=>'var(--surface-merah)', 'color'=>'var(--merah)'],
                         'duplikat'     => ['label'=>'Duplikat',            'bg'=>'rgba(107,114,128,0.1)','color'=>'var(--abu-gelap)'],
                     ];
                     $sc = $statusConfig[$laporan->status_verifikasi] ?? $statusConfig['menunggu'];
@@ -92,7 +64,7 @@
 
         <div class="result-body">
             <div class="mb-4">
-                <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--abu);margin-bottom:8px;">Detail Laporan</div>
+                <div style="font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--abu);margin-bottom:8px" class="t-caption">Detail Laporan</div>
                 <div class="info-row">
                     <span class="info-key">Kecamatan</span>
                     <span class="info-val">{{ $laporan->kecamatan?->nama }}</span>
@@ -131,7 +103,7 @@
                 @endif
             </div>
 
-            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--abu);margin-bottom:12px;">Riwayat Status</div>
+            <div style="font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--abu);margin-bottom:12px" class="t-caption">Riwayat Status</div>
             <ul class="timeline">
                 <li class="timeline-item">
                     <div class="timeline-dot" style="background:var(--hijau);color:white;">✓</div>
@@ -172,11 +144,11 @@
             </ul>
 
             @if($laporan->status_verifikasi === 'disetujui')
-            <div style="background:rgba(45,90,39,0.08);border-left:3px solid var(--hijau);padding:12px 14px;border-radius:0 3px 3px 0;font-size:0.8rem;color:var(--hijau);margin-top:1rem;">
+            <div style="background:var(--surface-hijau);border-left:3px solid var(--hijau);padding:12px 14px;border-radius:0 3px 3px 0;color:var(--hijau);margin-top:1rem" class="t-body">
                 <strong>Laporan disetujui!</strong> OPK ini kini telah masuk ke dalam peta resmi Kabupaten Badung dan dapat dipantau oleh Dinas Kebudayaan. Terima kasih atas kontribusi Anda!
             </div>
             @elseif($laporan->status_verifikasi === 'ditolak')
-            <div style="background:rgba(192,57,43,0.08);border-left:3px solid var(--merah);padding:12px 14px;border-radius:0 3px 3px 0;font-size:0.8rem;color:var(--merah);margin-top:1rem;">
+            <div style="background:var(--surface-merah);border-left:3px solid var(--merah);padding:12px 14px;border-radius:0 3px 3px 0;color:var(--merah);margin-top:1rem" class="t-body">
                 <strong>Laporan tidak dapat diproses.</strong> Silakan perbaiki data dan kirim laporan baru jika diperlukan.
             </div>
             @endif

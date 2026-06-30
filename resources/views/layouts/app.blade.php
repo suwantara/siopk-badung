@@ -13,6 +13,8 @@
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+
 {{-- Sidebar Backdrop (mobile) --}}
 @auth
 <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="window._toggleSidebar()"></div>
@@ -20,10 +22,10 @@
 
 {{-- Sidebar --}}
 @auth
-<div class="sidebar" id="sidebarEl">
+<nav class="sidebar" id="sidebarEl" role="navigation" aria-label="Navigasi Admin">
     <div class="sidebar-brand">
         <div class="sidebar-logo" style="background: transparent; overflow: hidden; padding: 0;">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo SIOPK Badung" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
         </div>
         <div class="sidebar-title">
             SIOPK
@@ -78,22 +80,22 @@
         <i class="bi bi-globe"></i> Portal Publik
     </a>
 
-    <div class="mt-4" style="padding:1rem 1.5rem;border-top:1px solid rgba(var(--emas-rgb),0.15);">
-        <div style="font-size:0.72rem;color:rgba(247,241,232,0.4);">Login sebagai</div>
-        <div style="font-size:0.82rem;color:#e8b84b;font-weight:600;margin-top:2px;">
+    <div class="mt-4" style="padding:1rem 1.5rem;border-top:1px solid var(--surface-emas-hover);">
+        <div style="color:rgba(247,241,232,0.7)" class="t-caption">Login sebagai</div>
+        <div style="color:#e8b84b;font-weight:600;margin-top:2px" class="t-body">
             {{ auth()->user()->name }}
         </div>
-        <div style="font-size:0.68rem;color:rgba(247,241,232,0.35);text-transform:uppercase;letter-spacing:0.08em;">
+        <div style="color:rgba(247,241,232,0.6);text-transform:uppercase;letter-spacing:0.08em" class="t-caption">
             {{ auth()->user()->role }}
         </div>
         <form method="POST" action="{{ route('logout') }}" class="mt-2">
             @csrf
-            <button type="submit" style="background:none;border:none;color:rgba(var(--emas-rgb),0.5);font-size:0.75rem;cursor:pointer;padding:0;">
+            <button type="submit" style="background:none;border:none;color:rgba(var(--emas-rgb),0.7);cursor:pointer;padding:0;" class="t-caption">
                 <i class="bi bi-box-arrow-left"></i> Logout
             </button>
         </form>
     </div>
-</div>
+</nav>
 @endauth
 
 {{-- Topbar --}}
@@ -116,7 +118,7 @@
 @endauth
 
 {{-- Main Content --}}
-<div class="{{ auth()->check() ? 'main-wrapper' : '' }}">
+<div class="{{ auth()->check() ? 'main-wrapper' : '' }}" id="main-content" role="main">
     @yield('content')
 </div>
 

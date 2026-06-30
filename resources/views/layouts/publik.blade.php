@@ -59,84 +59,17 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --tanah: #2C1A0E; --emas: #C8922A; --emas-muda: #E8B84B;
-            --krem: #F7F1E8; --hijau: #2D5A27; --merah: #C0392B; --kuning: #D4A017;
-            --emas-rgb: 200,146,42; --merah-rgb: 192,57,43; --kuning-rgb: 212,160,23; --hijau-rgb: 45,90,39;
-            --emas-gelap: #7a5c1e; --abu: #9ca3af; --abu-gelap: #6b7280;
-            --garis: #d4c9b8; --garis-terang: #f0ebe3; --input-bg: #fdfaf5; --placeholder: #e8e0d4;
-            --teks: #374151; --tanah-gelap: #1a0f06;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--krem); color: var(--tanah); }
-
-        .publik-nav {
-            background: var(--tanah); padding: 0 1.5rem; height: 56px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 2px solid var(--emas); position: sticky; top: 0; z-index: 500;
-        }
-        .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .nav-brand:hover { text-decoration: none; }
-        .nav-logo { width: 32px; height: 32px; border-radius: 50%; background: var(--emas); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-weight: 700; color: var(--tanah); font-size: 0.9rem; }
-        .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--krem); }
-        .nav-title span { color: var(--emas-muda); }
-        .nav-links { display: flex; align-items: center; gap: 1.25rem; }
-        .nav-links a { color: rgba(247,241,232,0.65); text-decoration: none; font-size: 0.8rem; font-weight: 500; transition: color 0.2s; }
-        .nav-links a:hover { color: var(--emas-muda); }
-        .nav-links a.active { color: var(--emas-muda); }
-        .nav-actions { display: flex; align-items: center; gap: 1rem; }
-        .nav-login-link { color: rgba(247,241,232,0.45); text-decoration: none; font-size: 0.75rem; transition: color 0.2s; }
-        .nav-login-link:hover { color: var(--emas-muda); }
-        .btn-lapor { background: var(--emas); color: var(--tanah); border: none; padding: 6px 16px; border-radius: 3px; font-size: 0.8rem; font-weight: 600; text-decoration: none; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
-        .btn-lapor:hover { background: var(--emas-muda); color: var(--tanah); }
-
-        .nav-toggle {
-            display: none; background: none; border: none;
-            color: rgba(247,241,232,0.65); font-size: 1.4rem;
-            cursor: pointer; padding: 4px; line-height: 1;
-            margin-left: auto;
-        }
-        .nav-toggle:hover { color: var(--emas-muda); }
-
-        @media (max-width: 768px) {
-            .publik-nav { padding: 0 0.75rem; position: relative; }
-            .nav-links {
-                display: none; position: absolute; top: 56px; left: 0; right: 0;
-                background: var(--tanah); flex-direction: column; gap: 0;
-                border-bottom: 2px solid var(--emas); z-index: 600;
-                padding: 0.5rem 0;
-            }
-            .nav-links.open { display: flex; }
-            .nav-links a {
-                padding: 10px 1.5rem; font-size: 0.82rem;
-                border-bottom: 1px solid rgba(247,241,232,0.08);
-            }
-            .nav-links a:last-child { border-bottom: none; }
-            .nav-toggle { display: block; }
-            .nav-actions { gap: 0.5rem; }
-            .btn-lapor { padding: 5px 10px; font-size: 0.72rem; }
-        }
-
-        @media (max-width: 480px) {
-            .nav-title { font-size: 0.85rem; }
-            .nav-logo { width: 26px; height: 26px; }
-            .btn-lapor { font-size: 0.68rem; padding: 4px 8px; }
-            .nav-login-link { font-size: 0.65rem; }
-        }
-    </style>
     @stack('styles')
 </head>
 <body>
 
-<nav class="publik-nav">
-    <a href="{{ route('publik.dashboard') }}" class="nav-brand">
-        <div class="nav-logo" style="background: transparent; overflow: hidden; padding: 0;">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-        </div>
-        <div class="nav-title">SIOPK <span>Badung</span></div>
-    </a>
+<nav class="publik-nav" role="navigation" aria-label="Navigasi Utama">
+        <a href="{{ route('publik.dashboard') }}" class="nav-brand" aria-label="SIOPK Badung — Beranda">
+            <div class="nav-logo" style="background: transparent; overflow: hidden; padding: 0;">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo SIOPK Badung" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </div>
+            <div class="nav-title">SIOPK <span>Badung</span></div>
+        </a>
     <button class="nav-toggle" id="navToggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Toggle menu">
         <i class="bi bi-list"></i>
     </button>

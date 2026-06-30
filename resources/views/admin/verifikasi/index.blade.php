@@ -3,37 +3,19 @@
 @section('page-title', 'Verifikasi Laporan Masyarakat')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin:0;">
-            Antrian Verifikasi
-        </h1>
-        <p class="text-muted mb-0" style="font-size:0.82rem;">
-            {{ $laporans->total() }} laporan menunggu · diurutkan berdasarkan AI urgency score
-        </p>
-    </div>
-</div>
+<x-ui.page-header title="Antrian Verifikasi" :subtitle="$laporans->total() . ' laporan menunggu · diurutkan berdasarkan AI urgency score'" />
 
-{{-- Filter --}}
-<div class="card mb-4">
-    <div class="card-body py-3">
-        <form method="GET" class="row g-2 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label" style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Kondisi</label>
-                <select name="kondisi" class="form-select form-select-sm">
-                    <option value="">Semua Kondisi</option>
-                    <option value="kritis"  {{ request('kondisi') === 'kritis'  ? 'selected' : '' }}>Kritis</option>
-                    <option value="waspada" {{ request('kondisi') === 'waspada' ? 'selected' : '' }}>Waspada</option>
-                    <option value="baik"    {{ request('kondisi') === 'baik'    ? 'selected' : '' }}>Baik</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-sm btn-emas">Filter</button>
-                <a href="{{ route('admin.verifikasi.index') }}" class="btn btn-sm btn-outline-secondary ms-1">Reset</a>
-            </div>
-        </form>
+<x-ui.filter-bar reset-url="{{ route('admin.verifikasi.index') }}">
+    <div class="col-md-3">
+        <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em" class="t-caption">Kondisi</label>
+        <select name="kondisi" class="form-select form-select-sm">
+            <option value="">Semua Kondisi</option>
+            <option value="kritis"  {{ request('kondisi') === 'kritis'  ? 'selected' : '' }}>Kritis</option>
+            <option value="waspada" {{ request('kondisi') === 'waspada' ? 'selected' : '' }}>Waspada</option>
+            <option value="baik"    {{ request('kondisi') === 'baik'    ? 'selected' : '' }}>Baik</option>
+        </select>
     </div>
-</div>
+</x-ui.filter-bar>
 
 {{-- Daftar Laporan --}}
 @forelse($laporans as $laporan)
@@ -53,16 +35,12 @@
             <div class="flex-grow-1">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <h6 class="mb-1 fw-bold" style="font-size:0.92rem;">{{ $laporan->nama_opk }}</h6>
+                        <h6 class="mb-1 fw-bold" class="t-body-lg">{{ $laporan->nama_opk }}</h6>
                         <div class="d-flex gap-2 flex-wrap mb-1">
-                            <span style="font-size:0.7rem;background:rgba(200,146,42,0.1);color:var(--emas-gelap);padding:2px 8px;border-radius:2px;font-weight:500;">
-                                {{ $laporan->kategori?->ikon }} {{ $laporan->kategori?->nama }}
-                            </span>
-                            <span class="badge badge-{{ $laporan->kondisi }} rounded-pill" style="font-size:0.68rem;">
-                                {{ ucfirst($laporan->kondisi) }}
-                            </span>
+                            <x-ui.badge-kategori :ikon="$laporan->kategori?->ikon" :nama="$laporan->kategori?->nama" />
+                            <x-ui.badge-kondisi :kondisi="$laporan->kondisi" />
                         </div>
-                        <div style="font-size:0.75rem;color:var(--abu-gelap);">
+                        <div style="color:var(--abu-gelap);" class="t-caption">
                             📍 Kec. {{ $laporan->kecamatan?->nama }} &nbsp;·&nbsp;
                             🏘️ {{ $laporan->nama_desa_adat }} &nbsp;·&nbsp;
                             {{ $laporan->tipe_pelapor === 'masyarakat' ? '👤' : ($laporan->tipe_pelapor === 'tokoh_adat' ? '👘' : '🏛️') }}
@@ -76,17 +54,17 @@
                         <div style="font-family:'Courier New',monospace;font-size:1.3rem;font-weight:700;color:{{ $laporan->kondisi === 'kritis' ? 'var(--merah)' : 'var(--kuning)' }}">
                             {{ number_format($laporan->ai_urgency_score, 1) }}
                         </div>
-                        <div style="font-size:0.6rem;color:var(--abu);text-transform:uppercase;letter-spacing:0.06em;">AI Score</div>
+                        <div style="color:var(--abu);text-transform:uppercase;letter-spacing:0.06em" class="t-caption">AI Score</div>
                     </div>
                     @endif
                 </div>
 
                 {{-- AI Saran --}}
                 @if($laporan->ai_rekomendasi)
-                <div style="background:rgba(200,146,42,0.07);border:1px solid rgba(200,146,42,0.2);border-radius:3px;padding:6px 10px;margin-top:8px;font-size:0.72rem;color:var(--emas-gelap);">
+                <div style="background:rgba(200,146,42,0.07);border:1px solid var(--border-emas);border-radius:3px;padding:6px 10px;margin-top:8px;color:var(--emas-gelap)" class="t-caption">
                     🤖 <strong>AI:</strong> {{ $laporan->ai_rekomendasi }}
                     @if($laporan->ai_duplikat_score > 50)
-                        — <span style="color:var(--merah);">⚠ Potensi duplikat {{ number_format($laporan->ai_duplikat_score, 0) }}%</span>
+                        — <span style="color:var(--emas-muda);">⚠ Potensi duplikat {{ number_format($laporan->ai_duplikat_score, 0) }}%</span>
                     @endif
                 </div>
                 @endif
@@ -121,14 +99,14 @@
     <div class="modal-dialog">
         <div class="modal-content" style="border-top:4px solid var(--merah);">
             <div class="modal-header">
-                <h5 class="modal-title" style="font-size:1rem;">Tolak Laporan</h5>
+                <h5 class="modal-title" class="t-subheading">Tolak Laporan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ route('admin.verifikasi.tolak', $laporan) }}">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Alasan Penolakan</label>
+                        <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em" class="t-body">Alasan Penolakan</label>
                         <select name="alasan" class="form-select" required>
                             <option value="tidak_valid">Data tidak valid</option>
                             <option value="duplikat">Duplikat laporan lain</option>
@@ -138,7 +116,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Catatan untuk Pelapor</label>
+                        <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em" class="t-body">Catatan untuk Pelapor</label>
                         <textarea name="catatan" class="form-control" rows="3" required
                                   placeholder="Jelaskan alasan penolakan..."></textarea>
                     </div>
@@ -155,7 +133,7 @@
 <div class="card">
     <div class="card-body text-center py-5">
         <i class="bi bi-check-circle" style="font-size:2.5rem;color:var(--hijau);"></i>
-        <div class="mt-3" style="font-size:0.9rem;color:var(--abu-gelap);">Tidak ada laporan yang menunggu verifikasi.</div>
+        <div class="mt-3" style="color:var(--abu-gelap)" class="t-body-lg">Tidak ada laporan yang menunggu verifikasi.</div>
     </div>
 </div>
 @endforelse

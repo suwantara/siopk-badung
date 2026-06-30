@@ -20,7 +20,7 @@
         <div class="suggest-dropdown" id="suggestDaftarDropdown"></div>
     </div>
 
-    <form method="GET" action="{{ route('publik.daftar-opk') }}" class="filter-bar">
+    <form method="GET" action="{{ route('publik.daftar-opk') }}" class="daftar-filter-bar">
         <input type="text" name="cari" value="{{ request('cari') }}" placeholder="Cari nama, deskripsi, atau desa adat..." style="flex:1;min-width:200px;">
         <select name="kategori">
             <option value="">Semua Jenis OPK</option>

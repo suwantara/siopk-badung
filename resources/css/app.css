@@ -122,6 +122,10 @@ body.sidebar-open {
 }
 .skip-link:focus { top: 0.5rem; }
 
+/* ---- Bootstrap Modal z-index fix (above topbar 1099 + sidebar 1100) ---- */
+.modal { z-index: 1110; }
+.modal-backdrop { z-index: 1105; }
+
 /* ---- Visible Focus Ring ---- */
 :focus-visible {
     outline: 3px solid var(--emas-muda) !important;
@@ -915,6 +919,56 @@ body { font-family: 'Inter', sans-serif; background: var(--krem); color: var(--t
     .opk-list-thumb { width: 56px; height: 44px; font-size: 1.2rem; }
     .daftar-header h1 { font-size: 1.4rem; }
     .container-daftar { padding: 1rem 0.5rem; }
+}
+
+/* DAFTAR OPK: additional patterns */
+.suggest-wrap { position: relative; margin-bottom: 1rem; }
+.suggest-wrap input { width: 100%; border: 1px solid var(--border-default); border-radius: 4px; padding: 10px 16px 10px 40px; font-size: 0.9rem; background: white; outline: none; }
+.suggest-wrap input:focus { border-color: var(--emas); box-shadow: 0 0 0 3px var(--surface-emas-hover); }
+.suggest-wrap .suggest-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--abu); font-size: 1rem; }
+.result-count { font-size: 0.78rem; color: var(--abu); margin-bottom: 0.75rem; }
+
+/* DAFTAR OPK: filter bar */
+.daftar-filter-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 1.2rem; }
+.daftar-filter-bar select, .daftar-filter-bar input { border: 1px solid var(--border-default); border-radius: 3px; font-size: 0.8rem; padding: 6px 10px; background: white; color: var(--tanah); }
+.daftar-filter-bar select:focus, .daftar-filter-bar input:focus { border-color: var(--emas); outline: none; box-shadow: 0 0 0 2px var(--surface-emas-hover); }
+@media (max-width: 576px) {
+    .daftar-filter-bar { flex-direction: column; align-items: stretch; }
+    .daftar-filter-bar select, .daftar-filter-bar input[type="text"] { width: 100%; }
+}
+
+/* DAFTAR OPK: pagination */
+.pagination { gap: 4px; }
+.page-link {
+    color: var(--tanah);
+    background: white;
+    border: 1px solid var(--border-default);
+    border-radius: 3px !important;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+.page-link:hover {
+    color: var(--tanah);
+    background: var(--surface-emas);
+    border-color: var(--emas);
+}
+.page-item.active .page-link {
+    background: var(--emas);
+    border-color: var(--emas);
+    color: var(--tanah);
+    font-weight: 600;
+}
+.page-item.disabled .page-link {
+    color: var(--abu);
+    background: var(--bg-input);
+    border-color: var(--border-default);
+    pointer-events: none;
+}
+.page-item:first-child .page-link,
+.page-item:last-child .page-link {
+    padding: 6px 14px;
 }
 
 /* ================================================================

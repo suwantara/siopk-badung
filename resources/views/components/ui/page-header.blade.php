@@ -2,9 +2,9 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin:0;">{{ $title }}</h1>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin:0;">{!! $title !!}</h1>
         @if($subtitle)
-            <p class="text-muted mb-0" class="t-body">{!! $subtitle !!}</p>
+            <p class="text-muted mb-0 t-body">{!! $subtitle !!}</p>
         @endif
     </div>
     @if($actionLabel && $actionUrl)

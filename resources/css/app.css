@@ -357,7 +357,7 @@ body.sidebar-open {
 }
 .btn-emas:hover { background: var(--emas-muda); color: var(--tanah); }
 .btn-emas.btn-sm { padding: 5px 12px; font-size: var(--text-label); }
-.btn-emas.btn-lg { padding: 10px 24px; font-size: var(--text-body); }
+.btn-emas.btn-lg { padding: 12px 24px; font-size: var(--text-body); }
 
 .btn-edit {
     background: var(--surface-emas); color: var(--emas-gelap);

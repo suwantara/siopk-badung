@@ -184,7 +184,7 @@ document.querySelectorAll('.btn-tolak').forEach(btn => {
     btn.addEventListener('click', function() {
         const id = this.dataset.id;
         const kode = this.dataset.kode;
-        document.getElementById('formTolak').action = "{{ route('admin.verifikasi.tolak', '') }}/" + id;
+        document.getElementById('formTolak').action = "{{ url('admin/verifikasi') }}/" + id + "/tolak";
         document.getElementById('tolakInfo').textContent = 'Anda akan menolak laporan: ' + kode;
         new bootstrap.Modal(document.getElementById('modalTolak')).show();
     });

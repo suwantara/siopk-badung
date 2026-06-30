@@ -12,7 +12,7 @@
     #peta { width: 100%; height: 100%; border-radius: 4px; }
 
     .peta-stats {
-        position: absolute; top: 1rem; left: 1rem; z-index: 400;
+        position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 400;
         display: flex; gap: 10px;
     }
     .peta-stat {

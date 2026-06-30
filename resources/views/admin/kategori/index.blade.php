@@ -122,6 +122,9 @@
 </p>
 
 {{-- Modal Tambah --}}
+@php
+$ikonOptions = ['🎭','🎵','🎨','📜','🏛️','🗣️','👘','🎪','🍽️','🙏','📿','🎋','🏺','🪘','🎻','💃','🕉️','🌾','⚒️','🏗️'];
+@endphp
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-top:3px solid var(--emas);">
@@ -135,6 +138,23 @@
                 @csrf
                 <input type="hidden" name="_action" value="store">
                 <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="t-caption d-block mb-1">Pilih Ikon</label>
+                        <div class="d-flex flex-wrap gap-2" id="ikonPicker">
+                            @foreach($ikonOptions as $ik)
+                            <button type="button" class="btn btn-outline-secondary btn-sm ikon-opt {{ old('ikon') === $ik ? 'active' : '' }}"
+                                    data-ikon="{{ $ik }}" style="font-size:1.3rem;padding:4px 8px;min-width:44px;"
+                                    onclick="pilihIkon('{{ $ik }}', this)">{{ $ik }}</button>
+                            @endforeach
+                            <button type="button" class="btn btn-outline-secondary btn-sm ikon-opt-custom"
+                                    style="font-size:0.8rem;padding:4px 10px;min-width:44px;"
+                                    onclick="toggleCustomIkon()">Lainnya</button>
+                        </div>
+                        <input type="hidden" name="ikon" id="inputIkon" value="{{ old('ikon') }}" maxlength="10">
+                        <input type="text" id="inputIkonCustom" class="form-control form-control-sm mt-2" placeholder="Ketik emoji sendiri..."
+                               style="display:none;" maxlength="10" oninput="document.getElementById('inputIkon').value = this.value">
+                        @error('ikon')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
                     <div class="row g-3">
                         <div class="col-3">
                             <label class="t-caption d-block mb-1">Nomor</label>
@@ -142,13 +162,7 @@
                                    value="{{ old('nomor', $kategori->max('nomor') + 1) }}" min="1" max="99" required>
                             @error('nomor')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
-                        <div class="col-3">
-                            <label class="t-caption d-block mb-1">Ikon</label>
-                            <input type="text" name="ikon" class="form-control @error('ikon') is-invalid @enderror"
-                                   value="{{ old('ikon') }}" placeholder="🎭" maxlength="10">
-                            @error('ikon')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-6">
+                        <div class="col-9">
                             <label class="t-caption d-block mb-1">Nama Kategori <span style="color:var(--merah);">*</span></label>
                             <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror"
                                    value="{{ old('nama') }}" placeholder="Contoh: Seni Pertunjukan" required>
@@ -171,4 +185,29 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+function pilihIkon(ikon, btn) {
+    document.getElementById('inputIkon').value = ikon;
+    document.getElementById('inputIkonCustom').style.display = 'none';
+    document.querySelectorAll('#ikonPicker .ikon-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+function toggleCustomIkon() {
+    const custom = document.getElementById('inputIkonCustom');
+    custom.style.display = custom.style.display === 'none' ? 'block' : 'none';
+    if (custom.style.display === 'block') custom.focus();
+    document.querySelectorAll('#ikonPicker .ikon-opt').forEach(b => b.classList.remove('active'));
+    document.querySelector('#ikonPicker .ikon-opt-custom').classList.add('active');
+    document.getElementById('inputIkon').value = '';
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const val = document.getElementById('inputIkon').value;
+    if (val) {
+        const match = document.querySelector(`#ikonPicker [data-ikon="${val}"]`);
+        if (match) match.classList.add('active');
+    }
+});
+</script>
+@endpush
 @endsection

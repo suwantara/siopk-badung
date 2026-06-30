@@ -34,6 +34,9 @@
     @media (max-width: 576px) {
         .foto-slider-thumb { width: 48px; height: 36px; }
         .foto-slider-arrow { width: 32px; height: 32px; font-size: 0.85rem; }
+        .container-detail { padding: 1rem 0.5rem; }
+        .info-row { flex-direction: column; gap: 2px; }
+        .info-key { width: 100%; }
     }
 </style>
 @endpush
@@ -68,7 +71,7 @@
     </div>
 
     <div class="row g-3">
-        <div class="col-md-8">
+        <div class="col-12 col-md-8">
 
             @if($opk->fotos->count() > 0)
             <div class="card-detail">
@@ -131,7 +134,7 @@
 
         </div>
 
-        <div class="col-md-4">
+        <div class="col-12 col-md-4 mt-3 mt-md-0">
 
             <div class="card-detail">
                 <div style="padding:1.2rem 1.2rem 0;">

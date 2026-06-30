@@ -10,7 +10,7 @@
 </div>
 
 <div class="row g-3">
-    <div class="col-md-8">
+    <div class="col-12 col-md-8">
 
         {{-- Header --}}
         <div class="card mb-3">
@@ -112,7 +112,7 @@
             <div class="card-body">
                 <div class="row g-3">
                     {{-- Setujui --}}
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6 mt-3 mt-md-0">
                         <div style="background:rgba(45,90,39,0.05);border:1px solid rgba(45,90,39,0.2);border-radius:4px;padding:1.25rem;">
                             <div style="font-weight:600;color:var(--hijau);margin-bottom:8px;font-size:0.88rem;">
                                 <i class="bi bi-check-circle me-2"></i>Setujui Laporan
@@ -132,7 +132,7 @@
                         </div>
                     </div>
                     {{-- Tolak --}}
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <div style="background:rgba(192,57,43,0.05);border:1px solid rgba(192,57,43,0.2);border-radius:4px;padding:1.25rem;">
                             <div style="font-weight:600;color:var(--merah);margin-bottom:8px;font-size:0.88rem;">
                                 <i class="bi bi-x-circle me-2"></i>Tolak Laporan
@@ -164,7 +164,7 @@
 
     </div>
 
-    <div class="col-md-4">
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
         {{-- Lokasi --}}
         <div class="card mb-3">
             <div class="card-header-custom"><span class="title"><i class="bi bi-geo me-2"></i>Lokasi</span></div>

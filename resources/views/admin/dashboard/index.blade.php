@@ -26,19 +26,19 @@
 
 {{-- KPI Cards --}}
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
         <div class="card kpi-card h-100">
             <div class="card-body">
                 <div class="kpi-label">Total OPK Terdaftar</div>
                 <div class="kpi-value">{{ $stats['total_opk'] }}</div>
-                <div class="kpi-sub">Di 6 kecamatan Badung</div>
+                <div class="kpi-sub d-none d-sm-block">Di 6 kecamatan Badung</div>
                 <div class="mt-2" style="font-size:0.72rem;color:var(--hijau);">
                     <i class="bi bi-arrow-up"></i> +{{ $stats['bulan_ini'] }} bulan ini
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
         <div class="card kpi-card kritis h-100">
             <div class="card-body">
                 <div class="kpi-label">Butuh Perhatian</div>
@@ -50,7 +50,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
         <div class="card kpi-card waspada h-100">
             <div class="card-body">
                 <div class="kpi-label">Menunggu Verifikasi</div>
@@ -66,7 +66,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
         <div class="card kpi-card hijau h-100">
             <div class="card-body">
                 <div class="kpi-label">OPK Terlindungi</div>
@@ -82,7 +82,7 @@
 
 {{-- Peta + AI Panel --}}
 <div class="row g-3 mb-4">
-    <div class="col-md-8">
+    <div class="col-12 col-md-8">
         <div class="card h-100">
             <div class="card-header-custom">
                 <span class="title"><i class="bi bi-map me-2 text-warning"></i>Peta Sebaran OPK</span>
@@ -100,7 +100,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
         <div class="ai-panel h-100 p-3">
             <div class="d-flex align-items-center gap-2 mb-3 pb-2" style="border-bottom:1px solid rgba(200,146,42,0.2);">
                 <span class="ai-blink" style="width:8px;height:8px;border-radius:50%;background:var(--emas-muda);display:inline-block;"></span>
@@ -143,13 +143,13 @@
 
 {{-- Prioritas Pemeliharaan --}}
 <div class="row g-3">
-    <div class="col-md-8">
+    <div class="col-12 col-md-8">
         <div class="card">
             <div class="card-header-custom">
                 <span class="title">Prioritas Pemeliharaan <small class="text-muted fw-normal">(diurutkan AI Score)</small></span>
                 <a href="{{ route('admin.opk.index') }}" style="font-size:0.75rem;color:var(--emas);">Lihat Semua →</a>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body p-0 table-responsive-si">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
@@ -204,7 +204,7 @@
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
         <div class="card h-100">
             <div class="card-header-custom">
                 <span class="title">OPK per Kecamatan</span>

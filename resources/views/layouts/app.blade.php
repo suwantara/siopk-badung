@@ -13,13 +13,18 @@
 </head>
 <body>
 
+{{-- Sidebar Backdrop (mobile) --}}
+@auth
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="window._toggleSidebar()"></div>
+@endauth
+
 {{-- Sidebar --}}
 @auth
-<div class="sidebar">
+<div class="sidebar" id="sidebarEl">
     <div class="sidebar-brand">
         <div class="sidebar-logo" style="background: transparent; overflow: hidden; padding: 0;">
-			<img src="{{ asset('img/logo.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-		</div>
+            <img src="{{ asset('img/logo.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        </div>
         <div class="sidebar-title">
             SIOPK
             <small>Kabupaten Badung</small>
@@ -94,9 +99,14 @@
 {{-- Topbar --}}
 @auth
 <div class="topbar">
-    <div class="topbar-title">@yield('page-title', 'Dashboard')</div>
-    <div class="d-flex align-items-center gap-3">
-        <small class="text-muted">{{ now()->isoFormat('dddd, D MMMM Y') }}</small>
+    <div class="d-flex align-items-center gap-2">
+        <button class="sidebar-toggle" id="sidebarToggle" onclick="window._toggleSidebar()" aria-label="Toggle sidebar">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="topbar-title">@yield('page-title', 'Dashboard')</div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <small class="text-muted d-none d-md-inline">{{ now()->isoFormat('dddd, D MMMM Y') }}</small>
         <a href="{{ route('publik.lapor.index') }}" target="_blank"
            class="btn btn-sm btn-emas">
             <i class="bi bi-plus-circle"></i> Lapor OPK
@@ -112,6 +122,49 @@
 
 <script>
 'use strict';
+
+window._toggleSidebar = function() {
+    var sidebar = document.getElementById('sidebarEl');
+    var backdrop = document.getElementById('sidebarBackdrop');
+    if (!sidebar) return;
+    sidebar.classList.toggle('open');
+    if (backdrop) backdrop.classList.toggle('show');
+    document.body.classList.toggle('sidebar-open');
+};
+
+// Close sidebar when a link is clicked (mobile)
+document.addEventListener('DOMContentLoaded', function() {
+    var sidebar = document.getElementById('sidebarEl');
+    var backdrop = document.getElementById('sidebarBackdrop');
+    if (sidebar) {
+        sidebar.querySelectorAll('.sidebar-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('open');
+                    if (backdrop) backdrop.classList.remove('show');
+                    document.body.classList.remove('sidebar-open');
+                }
+            });
+        });
+    }
+    // Close sidebar on backdrop click
+    if (backdrop) {
+        backdrop.addEventListener('click', function() {
+            sidebar.classList.remove('open');
+            backdrop.classList.remove('show');
+            document.body.classList.remove('sidebar-open');
+        });
+    }
+    // Close sidebar on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+            if (backdrop) backdrop.classList.remove('show');
+            document.body.classList.remove('sidebar-open');
+        }
+    });
+});
+
 window.swalKonfirmasi = function(opts) {
     Swal.fire({
         title: opts.title || 'Konfirmasi',

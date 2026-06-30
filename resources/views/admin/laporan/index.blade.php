@@ -23,7 +23,7 @@
         ['Menunggu Verif.', $stats['menunggu'], 'Antrian', 'bi-clock', 'var(--abu-gelap)'],
         ['Bulan Ini', $stats['bulan_ini'], 'Laporan baru', 'bi-calendar3', '#2980b9'],
     ] as [$label, $val, $sub, $icon, $color])
-    <div class="col-md-2">
+    <div class="col-6 col-md-4 col-lg-2">
         <div class="card h-100" style="border-top:3px solid {{ $color }};">
             <div class="card-body text-center py-3">
                 <i class="bi {{ $icon }}" style="font-size:1.3rem;color:{{ $color }};"></i>
@@ -38,7 +38,7 @@
 
 <div class="row g-3 mb-4">
     {{-- Tren Bulanan --}}
-    <div class="col-md-6">
+    <div class="col-12 col-md-6">
         <div class="card h-100">
             <div class="card-header-custom"><span class="title">Tren Laporan 6 Bulan Terakhir</span></div>
             <div class="card-body">
@@ -48,7 +48,7 @@
     </div>
 
     {{-- Per Kategori (Chart) --}}
-    <div class="col-md-6">
+    <div class="col-12 col-md-6 mt-3 mt-md-0">
         <div class="card h-100">
             <div class="card-header-custom"><span class="title">Distribusi OPK per Jenis</span></div>
             <div class="card-body">
@@ -60,7 +60,7 @@
 
 <div class="row g-3 mb-4">
     {{-- Per Kecamatan (Chart) --}}
-    <div class="col-md-6">
+    <div class="col-12 col-md-6 mt-3 mt-md-0">
         <div class="card h-100">
             <div class="card-header-custom"><span class="title">OPK per Kecamatan</span></div>
             <div class="card-body">
@@ -70,7 +70,7 @@
     </div>
 
     {{-- Kondisi Breakdown --}}
-    <div class="col-md-6">
+    <div class="col-12 col-md-6 mt-3 mt-md-0">
         <div class="card h-100">
             <div class="card-header-custom"><span class="title">Kondisi OPK</span></div>
             <div class="card-body">
@@ -80,15 +80,13 @@
     </div>
 </div>
 
-<div class="row g-3 mb-4"> </div><div class="card"> </div>
-
 {{-- Top Urgensi --}}
-<div class="card">
+<div class="card mb-4">
     <div class="card-header-custom">
         <span class="title">Top 10 OPK Urgensi Tertinggi (AI Score)</span>
         <a href="{{ route('admin.opk.index') }}?kondisi=kritis" style="font-size:0.72rem;color:var(--emas);">Lihat Semua →</a>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body p-0 table-responsive-si">
         <table class="table table-hover mb-0">
             <thead>
                 <tr>

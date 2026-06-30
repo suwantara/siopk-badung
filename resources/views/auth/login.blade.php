@@ -57,6 +57,12 @@
         .alert-danger { background: rgba(192,57,43,0.08); border: none; border-left: 3px solid var(--merah); color: var(--merah); font-size: 0.82rem; border-radius: 3px; }
         .login-footer { text-align: center; padding: 1rem 2rem 1.5rem; font-size: 0.75rem; color: var(--abu); }
         .login-footer a { color: var(--emas); text-decoration: none; }
+        @media (max-width: 480px) {
+            .login-card { max-width: 100%; margin: 0 1rem; border-radius: 4px; }
+            .login-header { padding: 1.5rem; }
+            .login-title { font-size: 1.3rem; }
+            .login-body { padding: 1.25rem; }
+        }
     </style>
 </head>
 <body>

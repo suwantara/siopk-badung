@@ -20,13 +20,13 @@
 {{-- Filter --}}
 <div class="card mb-4">
     <div class="card-body py-3">
-        <form method="GET" class="row g-2 align-items-end">
-            <div class="col-md-3">
+        <form method="GET" class="row g-2 align-items-end filter-row">
+            <div class="col-6 col-md-3">
                 <label class="form-label" style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Cari Nama OPK</label>
                 <input type="text" name="search" class="form-control form-control-sm"
                        value="{{ request('search') }}" placeholder="Nama objek budaya...">
             </div>
-            <div class="col-md-2">
+            <div class="col-6 col-md-2">
                 <label class="form-label" style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Jenis OPK</label>
                 <select name="kategori_id" class="form-select form-select-sm">
                     <option value="">Semua Jenis</option>
@@ -69,7 +69,7 @@
 
 {{-- Tabel --}}
 <div class="card">
-    <div class="card-body p-0">
+    <div class="card-body p-0 table-responsive-si">
         <table class="table table-hover mb-0">
             <thead>
                 <tr>

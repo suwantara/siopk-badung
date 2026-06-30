@@ -7,8 +7,8 @@
     .container-lapor { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
 
     /* Step tabs */
-    .step-nav { display: flex; background: white; border: 1px solid var(--garis); border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }
-    .step-tab { flex: 1; padding: 10px 8px; text-align: center; cursor: pointer; border-right: 1px solid var(--garis); transition: all 0.2s; }
+    .step-nav { display: flex; background: white; border: 1px solid var(--garis); border-radius: 4px; overflow-x: auto; margin-bottom: 1.5rem; -webkit-overflow-scrolling: touch; }
+    .step-tab { flex: 1 0 auto; min-width: 80px; padding: 10px 8px; text-align: center; cursor: pointer; border-right: 1px solid var(--garis); transition: all 0.2s; white-space: nowrap; }
     .step-tab:last-child { border-right: none; }
     .step-tab.active { background: var(--emas); }
     .step-tab .step-num { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -62,6 +62,15 @@
 
     @media (max-width: 992px) {
         .lapor-sidebar { display: none; }
+    }
+    @media (max-width: 576px) {
+        .step-tab { min-width: 65px; padding: 8px 5px; }
+        .step-tab .step-num { font-size: 0.58rem; }
+        .step-tab .step-label { font-size: 0.68rem; }
+        .form-card { padding: 1rem; }
+        .kondisi-label { padding: 8px 6px; }
+        .kondisi-label > div > div:first-child { font-size: 0.75rem !important; }
+        .kondisi-label > div > div:last-child { font-size: 0.62rem !important; }
     }
 </style>
 @endpush
@@ -141,7 +150,7 @@
             </div>
 
             <div class="row g-3 mb-3">
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                     <label class="form-label">Jenis OPK <span class="required-star">*</span></label>
                     <select name="kategori_id" class="form-select @error('kategori_id') is-invalid @enderror">
                         <option value="">— Pilih Jenis —</option>
@@ -178,7 +187,7 @@
             <div class="mb-3">
                 <label class="form-label">Kondisi Saat Ini <span class="required-star">*</span></label>
                 <div class="row g-2">
-                    <div class="col-4">
+                    <div class="col-6 col-sm-4">
                         <label class="kondisi-label" id="lbl-baik">
                             <input type="radio" name="kondisi" value="baik" {{ old('kondisi','baik') === 'baik' ? 'checked' : '' }} onchange="setKondisi('baik')">
                             <div>
@@ -187,7 +196,7 @@
                             </div>
                         </label>
                     </div>
-                    <div class="col-4">
+                    <div class="col-6 col-sm-4">
                         <label class="kondisi-label" id="lbl-waspada">
                             <input type="radio" name="kondisi" value="waspada" {{ old('kondisi') === 'waspada' ? 'checked' : '' }} onchange="setKondisi('waspada')">
                             <div>
@@ -196,7 +205,7 @@
                             </div>
                         </label>
                     </div>
-                    <div class="col-4">
+                    <div class="col-6 col-sm-4">
                         <label class="kondisi-label" id="lbl-kritis">
                             <input type="radio" name="kondisi" value="kritis" {{ old('kondisi') === 'kritis' ? 'checked' : '' }} onchange="setKondisi('kritis')">
                             <div>
@@ -494,21 +503,21 @@
             <div class="mb-3">
                 <label class="form-label">Saya melaporkan sebagai <span class="required-star">*</span></label>
                 <div class="row g-2">
-                    <div class="col-4">
+                    <div class="col-6 col-sm-4">
                         <label class="tipe-label" id="lbl-masyarakat" onclick="setTipe(this,'masyarakat')">
                             <input type="radio" name="tipe_pelapor" value="masyarakat" {{ old('tipe_pelapor','masyarakat') === 'masyarakat' ? 'checked' : '' }} style="accent-color:var(--emas);">
                             <i class="bi bi-person" style="font-size:1.4rem;"></i>
                             <span style="font-size:0.75rem;font-weight:600;">Masyarakat Umum</span>
                         </label>
                     </div>
-                    <div class="col-4">
+                    <div class="col-6 col-sm-4">
                         <label class="tipe-label" id="lbl-tokoh_adat" onclick="setTipe(this,'tokoh_adat')">
                             <input type="radio" name="tipe_pelapor" value="tokoh_adat" {{ old('tipe_pelapor') === 'tokoh_adat' ? 'checked' : '' }} style="accent-color:var(--emas);">
                             <i class="bi bi-people" style="font-size:1.4rem;"></i>
                             <span style="font-size:0.75rem;font-weight:600;">Tokoh Adat / Praktisi</span>
                         </label>
                     </div>
-                    <div class="col-4">
+                    <div class="col-6 col-sm-4">
                         <label class="tipe-label" id="lbl-petugas_dinas" onclick="setTipe(this,'petugas_dinas')">
                             <input type="radio" name="tipe_pelapor" value="petugas_dinas" {{ old('tipe_pelapor') === 'petugas_dinas' ? 'checked' : '' }} style="accent-color:var(--emas);">
                             <i class="bi bi-building" style="font-size:1.4rem;"></i>

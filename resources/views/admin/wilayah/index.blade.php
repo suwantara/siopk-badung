@@ -40,7 +40,7 @@
 
 <div class="row g-4">
     {{-- Sidebar: Daftar Kecamatan --}}
-    <div class="col-lg-4">
+    <div class="col-12 col-lg-4 mb-4 mb-lg-0">
         <div class="card">
             <div class="card-header-custom">
                 <span class="title"><i class="bi bi-geo-alt me-2"></i>Kecamatan</span>
@@ -97,7 +97,7 @@
     </div>
 
     {{-- Detail Kecamatan --}}
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         @if($selectedKec)
             {{-- Edit Kecamatan --}}
             <div class="card mb-4">

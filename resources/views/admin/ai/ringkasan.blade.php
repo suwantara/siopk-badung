@@ -43,7 +43,7 @@
         ['Laporan Minggu',  $lapoMinggu, 'Masuk 7 hari terakhir', '',        'bi-inbox'],
         ['Prioritas AI≥7',  $prioritas,  'Score urgensi tinggi',  'kritis',  'bi-robot'],
     ] as [$label, $val, $sub, $type, $icon])
-    <div class="col-md-2">
+    <div class="col-6 col-md-4 col-lg-2">
         <div class="card kpi-card {{ $type }} h-100 text-center">
             <div class="card-body py-3">
                 <i class="bi {{ $icon }}" style="font-size:1.2rem;color:{{ $type === 'kritis' ? 'var(--merah)' : ($type === 'waspada' ? 'var(--kuning)' : 'var(--emas)') }};"></i>
@@ -58,7 +58,7 @@
 
 <div class="row g-3">
     {{-- Ringkasan AI --}}
-    <div class="col-md-7">
+    <div class="col-12 col-md-7">
         <div class="ai-panel p-0 h-100" style="overflow:hidden;">
             <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(200,146,42,0.2);display:flex;align-items:center;justify-content:space-between;">
                 <div style="display:flex;align-items:center;gap:8px;">
@@ -86,7 +86,7 @@
     </div>
 
     {{-- OPK Prioritas Tertinggi --}}
-    <div class="col-md-5">
+    <div class="col-12 col-md-5 mt-3 mt-md-0">
         <div class="card h-100">
             <div class="card-header-custom">
                 <span class="title"><i class="bi bi-bar-chart-line me-2"></i>Top 5 Prioritas AI</span>
@@ -134,7 +134,7 @@
         <span class="title">Semua OPK Perlu Perhatian (Kritis + Waspada)</span>
         <span style="font-size:0.72rem;color:var(--abu);">Diurutkan AI Score tertinggi</span>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body p-0 table-responsive-si">
         <table class="table table-hover mb-0">
             <thead>
                 <tr>

@@ -10,7 +10,7 @@
 </div>
 
 <div class="row g-3">
-    <div class="col-md-8">
+    <div class="col-12 col-md-8">
         <div class="card">
             <div class="card-header-custom">
                 <span class="title">Edit: {{ Str::limit($laporan->nama_opk, 50) }}</span>
@@ -156,7 +156,7 @@
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
         <div class="card">
             <div class="card-header-custom"><span class="title">Info Laporan</span></div>
             <div class="card-body p-0">

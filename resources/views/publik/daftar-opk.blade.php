@@ -35,6 +35,9 @@
         .opk-list-item { padding: 10px 12px; }
         .opk-list-thumb { width: 56px; height: 44px; font-size: 1.2rem; }
         .filter-bar { flex-direction: column; align-items: stretch; }
+        .filter-bar select, .filter-bar input[type="text"] { width: 100%; }
+        .daftar-header h1 { font-size: 1.4rem; }
+        .container-daftar { padding: 1rem 0.5rem; }
     }
 
     .suggest-wrap { position: relative; margin-bottom: 1rem; }

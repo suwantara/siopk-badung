@@ -10,7 +10,7 @@
 </div>
 
 <div class="row g-3">
-    <div class="col-md-8">
+    <div class="col-12 col-md-8">
 
         <div class="card mb-3">
             <div class="card-body">
@@ -138,7 +138,7 @@
 
     </div>
 
-    <div class="col-md-4">
+    <div class="col-12 col-md-4 mt-3 mt-md-0">
 
         <div class="card mb-3">
             <div class="card-header-custom"><span class="title"><i class="bi bi-geo me-2"></i>Lokasi & Wilayah</span></div>

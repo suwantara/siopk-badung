@@ -129,23 +129,30 @@
     }
 
     /* ── Mobile ── */
-    .mobile-toggle { display: none; position: absolute; top: 0.75rem; right: 3.5rem; z-index: 450; background: white; border: 1px solid var(--garis); border-radius: 4px; padding: 6px 10px; font-size: 0.78rem; cursor: pointer; }
+    .mobile-toggle { display: none; position: absolute; top: 0.75rem; right: 0.5rem; z-index: 1100; background: white; border: 1px solid var(--garis); border-radius: 4px; padding: 6px 10px; font-size: 0.78rem; cursor: pointer; }
     .mobile-filter-bar { display: none; position: absolute; top: 0.75rem; left: 3.5rem; right: 3.5rem; z-index: 400; overflow-x: auto; white-space: nowrap; gap: 6px; padding: 4px 0; }
 
     @media (max-width: 768px) {
         .main-layout { grid-template-columns: 1fr; }
         .sidebar-publik {
             display: none; position: fixed; top: 56px; left: 0; bottom: 0; width: 280px;
-            z-index: 600; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            z-index: 1100; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
         }
         .sidebar-publik.open { display: flex; }
-        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 550; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1099; }
         .sidebar-backdrop.show { display: block; }
         .mobile-toggle { display: block; }
-        .stats-overlay { top: 0.5rem; left: 0.5rem; padding: 6px 10px; gap: 8px; font-size: 0.7rem; }
-        .stat-num { font-size: 1.1rem; }
-        .stat-divider { height: 20px; }
+        .stats-overlay { top: 0.5rem; left: 0.5rem; right: 3.6rem; padding: 6px 8px; gap: 6px; font-size: 0.65rem; }
+        .stat-num { font-size: 1rem; }
+        .stat-divider { height: 18px; }
         .peta-legend { display: none; }
+    }
+    @media (max-width: 400px) {
+        .stats-overlay { top: 0.35rem; left: 0.35rem; right: 3rem; padding: 5px 4px; gap: 3px; justify-content: space-around; }
+        .stat-num { font-size: 0.85rem; }
+        .stat-item span:last-child { font-size: 0.5rem; }
+        .stat-divider { height: 14px; }
+        .mobile-toggle { top: 0.5rem; right: 0.35rem; font-size: 0.7rem; padding: 4px 8px; }
     }
 </style>
 @endpush

@@ -34,6 +34,9 @@ body {
     background: #f4f0e8;
     color: var(--tanah);
 }
+body.sidebar-open {
+    overflow: hidden;
+}
 
 /* ---- Utility Classes ---- */
 .badge-kategori {
@@ -70,8 +73,9 @@ body {
     background: var(--tanah);
     min-height: 100vh;
     position: fixed; top: 0; left: 0;
-    z-index: 100; overflow-y: auto;
+    z-index: 1100; overflow-y: auto;
     border-right: 2px solid var(--emas);
+    transition: transform 0.25s ease;
 }
 .sidebar-brand {
     padding: 1.25rem 1.5rem;
@@ -131,7 +135,7 @@ body {
     padding: 0 1.5rem;
     height: 56px;
     display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 99;
+    position: sticky; top: 0; z-index: 1099;
 }
 .topbar-title {
     font-family: 'Cormorant Garamond', serif;
@@ -268,9 +272,172 @@ body {
 }
 
 /* ---- Leaflet popup ---- */
+.leaflet-container a {
+    color: var(--tanah) !important;
+}
+.leaflet-container a:hover {
+    color: var(--emas-muda) !important;
+}
 .leaflet-popup-content-wrapper { border-radius: 4px; }
 .leaflet-popup-content a { color: var(--tanah); }
 .leaflet-popup-content a:hover { color: var(--emas-muda); }
 .popup-kritis  { border-top: 3px solid var(--merah); }
 .popup-waspada { border-top: 3px solid var(--kuning); }
 .popup-baik    { border-top: 3px solid var(--hijau); }
+
+/* ---- Mobile: Sidebar Toggle Button ---- */
+.sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.35rem;
+    color: var(--tanah);
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+}
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1098;
+}
+.sidebar-backdrop.show {
+    display: block;
+}
+
+/* ---- Table Responsive Wrapper ---- */
+.table-responsive-si {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.table-responsive-si table {
+    min-width: 700px;
+}
+
+/* ================================================================
+   RESPONSIVE BREAKPOINTS
+   ================================================================ */
+
+/* Tablet: sidebar still visible but narrower */
+@media (max-width: 1024px) {
+    :root { --sidebar-w: 220px; }
+    .topbar { padding: 0 1rem; }
+    .main-wrapper { padding: 1.25rem; }
+    .topbar-title { font-size: 1.05rem; }
+    .kpi-value { font-size: 2rem; }
+}
+
+/* Mobile: sidebar becomes off-canvas */
+@media (max-width: 768px) {
+    :root { --sidebar-w: 260px; }
+
+    .sidebar {
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .topbar {
+        margin-left: 0 !important;
+        padding: 0 0.75rem;
+        height: 50px;
+    }
+    .topbar-title {
+        font-size: 1rem;
+    }
+    .topbar .text-muted {
+        display: none;
+    }
+
+    .main-wrapper {
+        margin-left: 0 !important;
+        padding: 1rem 0.75rem;
+    }
+
+    .sidebar-toggle {
+        display: inline-block;
+    }
+
+    .sidebar-backdrop {
+        display: none;
+    }
+    .sidebar-backdrop.show {
+        display: block;
+    }
+
+    /* KPI Cards */
+    .kpi-value { font-size: 1.8rem; }
+
+    /* Flex row to column on mobile */
+    .d-flex-mobile-col {
+        flex-direction: column !important;
+    }
+    .d-flex-mobile-col > * {
+        width: 100%;
+    }
+
+    /* Header actions */
+    .header-actions {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+
+    /* Form filter rows */
+    .filter-row .col-md-2,
+    .filter-row .col-md-3 {
+        flex: 0 0 auto;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Table overflow */
+    .table-responsive-si table {
+        min-width: 600px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .topbar-title {
+        font-size: 0.9rem;
+    }
+    .topbar {
+        height: 46px;
+        padding: 0 0.5rem;
+    }
+    .topbar .btn-sm {
+        font-size: 0.68rem;
+        padding: 4px 8px;
+    }
+    .main-wrapper {
+        padding: 0.75rem 0.5rem;
+    }
+    h1 {
+        font-size: 1.25rem !important;
+    }
+    .card-body {
+        padding: 0.75rem;
+    }
+    .kpi-value {
+        font-size: 1.5rem;
+    }
+    .kpi-label {
+        font-size: 0.62rem;
+    }
+    .card-header-custom {
+        padding: 0.65rem 0.9rem;
+    }
+    .card-header-custom .title {
+        font-size: 0.8rem;
+    }
+    .page-link {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+    }
+}

@@ -92,12 +92,38 @@
         .btn-lapor { background: var(--emas); color: var(--tanah); border: none; padding: 6px 16px; border-radius: 3px; font-size: 0.8rem; font-weight: 600; text-decoration: none; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
         .btn-lapor:hover { background: var(--emas-muda); color: var(--tanah); }
 
+        .nav-toggle {
+            display: none; background: none; border: none;
+            color: rgba(247,241,232,0.65); font-size: 1.4rem;
+            cursor: pointer; padding: 4px; line-height: 1;
+            margin-left: auto;
+        }
+        .nav-toggle:hover { color: var(--emas-muda); }
+
         @media (max-width: 768px) {
-            .publik-nav { padding: 0 0.75rem; }
-            .nav-links { gap: 0.75rem; }
-            .nav-links a { font-size: 0.72rem; }
+            .publik-nav { padding: 0 0.75rem; position: relative; }
+            .nav-links {
+                display: none; position: absolute; top: 56px; left: 0; right: 0;
+                background: var(--tanah); flex-direction: column; gap: 0;
+                border-bottom: 2px solid var(--emas); z-index: 600;
+                padding: 0.5rem 0;
+            }
+            .nav-links.open { display: flex; }
+            .nav-links a {
+                padding: 10px 1.5rem; font-size: 0.82rem;
+                border-bottom: 1px solid rgba(247,241,232,0.08);
+            }
+            .nav-links a:last-child { border-bottom: none; }
+            .nav-toggle { display: block; }
             .nav-actions { gap: 0.5rem; }
             .btn-lapor { padding: 5px 10px; font-size: 0.72rem; }
+        }
+
+        @media (max-width: 480px) {
+            .nav-title { font-size: 0.85rem; }
+            .nav-logo { width: 26px; height: 26px; }
+            .btn-lapor { font-size: 0.68rem; padding: 4px 8px; }
+            .nav-login-link { font-size: 0.65rem; }
         }
     </style>
     @stack('styles')
@@ -111,36 +137,48 @@
         </div>
         <div class="nav-title">SIOPK <span>Badung</span></div>
     </a>
-    <div class="nav-links">
-        <a href="{{ route('publik.dashboard') }}" class="{{ request()->routeIs('publik.dashboard') ? 'active' : '' }}">
+    <button class="nav-toggle" id="navToggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Toggle menu">
+        <i class="bi bi-list"></i>
+    </button>
+    <div class="nav-links" id="navLinks">
+        <a href="{{ route('publik.dashboard') }}" class="{{ request()->routeIs('publik.dashboard') ? 'active' : '' }}" onclick="document.getElementById('navLinks').classList.remove('open')">
             <i class="bi bi-map"></i> Peta OPK
         </a>
-        <a href="{{ route('publik.daftar-opk') }}" class="{{ request()->routeIs('publik.daftar-opk') ? 'active' : '' }}">
+        <a href="{{ route('publik.daftar-opk') }}" class="{{ request()->routeIs('publik.daftar-opk') ? 'active' : '' }}" onclick="document.getElementById('navLinks').classList.remove('open')">
             <i class="bi bi-list-ul"></i> Daftar OPK
         </a>
-        <a href="{{ route('publik.lapor.index') }}" class="{{ request()->routeIs('publik.lapor.index') ? 'active' : '' }}">
+        <a href="{{ route('publik.lapor.index') }}" class="{{ request()->routeIs('publik.lapor.index') ? 'active' : '' }}" onclick="document.getElementById('navLinks').classList.remove('open')">
             <i class="bi bi-plus-circle"></i> Lapor OPK
         </a>
-        <a href="{{ route('publik.lapor.status') }}" class="{{ request()->routeIs('publik.lapor.status') ? 'active' : '' }}">
+        <a href="{{ route('publik.lapor.status') }}" class="{{ request()->routeIs('publik.lapor.status') ? 'active' : '' }}" onclick="document.getElementById('navLinks').classList.remove('open')">
             <i class="bi bi-search"></i> Cek Status
         </a>
-    </div>
-    <div class="nav-actions">
         @php
             $loggedIn = auth()->check();
             $showLaporBtn = !request()->routeIs('publik.lapor.*');
         @endphp
         @if($loggedIn)
-            <a href="{{ route('admin.dashboard') }}" class="nav-login-link">
+        <a href="{{ route('admin.dashboard') }}" class="d-md-none" onclick="document.getElementById('navLinks').classList.remove('open')">
+            <i class="bi bi-speedometer2"></i> Panel Admin
+        </a>
+        @else
+        <a href="{{ route('login') }}" class="d-md-none" onclick="document.getElementById('navLinks').classList.remove('open')">
+            <i class="bi bi-shield-lock"></i> Login Dinas
+        </a>
+        @endif
+    </div>
+    <div class="nav-actions">
+        @if($loggedIn)
+            <a href="{{ route('admin.dashboard') }}" class="nav-login-link d-none d-md-inline">
                 <i class="bi bi-speedometer2"></i> Panel Admin
             </a>
         @else
-            <a href="{{ route('login') }}" class="nav-login-link">
+            <a href="{{ route('login') }}" class="nav-login-link d-none d-md-inline">
                 <i class="bi bi-shield-lock"></i> Login Dinas
             </a>
         @endif
         @if($showLaporBtn)
-            <a href="{{ route('publik.lapor.index') }}" class="btn-lapor">
+            <a href="{{ route('publik.lapor.index') }}" class="btn-lapor d-none d-md-inline-block">
                 <i class="bi bi-plus-circle"></i> Lapor Sekarang
             </a>
         @endif

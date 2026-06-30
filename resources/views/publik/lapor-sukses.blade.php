@@ -22,9 +22,13 @@
                 ['Jenis OPK', $laporan->kategori?->ikon.' '.$laporan->kategori?->nama],
                 ['Kecamatan', $laporan->kecamatan?->nama],
                 ['Desa Adat', $laporan->nama_desa_adat],
-                ['Status', '<span style=\'background:var(--surface-kuning);color:#8a6010;padding:2px 10px;border-radius:10px;font-size:0.72rem;font-weight:600;\'>Menunggu Verifikasi</span>'],
                 ['Notifikasi', $laporan->pelapor_whatsapp],
             ]" key-width="140px" />
+
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);" class="t-body">
+                <span style="color:var(--abu);width:140px;flex-shrink:0;">Status</span>
+                <span style="background:var(--surface-kuning);color:#8a6010;padding:2px 10px;border-radius:10px;font-size:0.72rem;font-weight:600;">Menunggu Verifikasi</span>
+            </div>
 
             <div style="background:rgba(45,90,39,0.06);border-left:3px solid var(--hijau);padding:10px 12px;border-radius:0 3px 3px 0;color:var(--hijau);margin-bottom:1.5rem;line-height:1.6" class="t-body">
                 <strong>Langkah selanjutnya:</strong> Tim Dinas Kebudayaan Kabupaten Badung akan memverifikasi laporan Anda. Notifikasi akan dikirim ke WhatsApp Anda setelah proses verifikasi selesai.

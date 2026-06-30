@@ -12,8 +12,8 @@
     #peta { width: 100%; height: 100%; border-radius: 4px; }
 
     .peta-stats {
-        position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 400;
-        display: flex; gap: 10px;
+        position: absolute; top: 1rem; right: 4rem; z-index: 400;
+        display: flex; gap: 6px;
     }
     .peta-stat {
         background: rgba(255,255,255,0.95); border: 1px solid var(--border-default);

@@ -825,6 +825,7 @@ body { font-family: 'Inter', sans-serif; background: var(--krem); color: var(--t
     .stat-num { font-size: 1rem; }
     .stat-divider { height: 18px; }
     .peta-legend { display: none; }
+    .leaflet-top.leaflet-right { top: auto !important; right: auto !important; bottom: 1rem; left: 0.75rem; }
 }
 @media (max-width: 400px) {
     .stats-overlay { top: 0.35rem; left: 50%; transform: translateX(-50%); padding: 5px 4px; gap: 3px; justify-content: space-around; }

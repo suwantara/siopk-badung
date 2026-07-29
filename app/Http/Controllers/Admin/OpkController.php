@@ -76,6 +76,13 @@ class OpkController extends Controller
         $laporan->longitude = $validated['longitude'] ?? $laporan->longitude;
         $laporan->save();
 
+        PetaDataService::invalidateCache();
+        Cache::forget(CacheKeys::SIDEBAR_COUNTS);
+        Cache::forget(CacheKeys::LAPORAN_ADMIN);
+        Cache::forget(CacheKeys::RINGKASAN_EKSEKUTIF);
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kategori');
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kecamatan');
+
         $hapusIds = $this->parseHapusIds($validated['hapus_foto_ids'] ?? []);
         $this->mediaService->deleteFotos($laporan->id, $hapusIds);
 
@@ -110,6 +117,13 @@ class OpkController extends Controller
         $this->authorize('delete', $laporan);
         $laporan->delete();
 
+        PetaDataService::invalidateCache();
+        Cache::forget(CacheKeys::SIDEBAR_COUNTS);
+        Cache::forget(CacheKeys::LAPORAN_ADMIN);
+        Cache::forget(CacheKeys::RINGKASAN_EKSEKUTIF);
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kategori');
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kecamatan');
+
         return redirect()->route('admin.opk.index')
             ->with('success', 'OPK berhasil diarsipkan. Data masih tersimpan di database.');
     }
@@ -121,6 +135,13 @@ class OpkController extends Controller
         $this->authorize('restore', $laporan);
         $laporan->restore();
 
+        PetaDataService::invalidateCache();
+        Cache::forget(CacheKeys::SIDEBAR_COUNTS);
+        Cache::forget(CacheKeys::LAPORAN_ADMIN);
+        Cache::forget(CacheKeys::RINGKASAN_EKSEKUTIF);
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kategori');
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kecamatan');
+
         return redirect()->route('admin.opk.index')
             ->with('success', 'OPK berhasil dipulihkan dari arsip.');
     }
@@ -131,6 +152,13 @@ class OpkController extends Controller
         $laporan = OpkLaporan::onlyTrashed()->findOrFail($id);
         $this->authorize('forceDelete', $laporan);
         $laporan->forceDelete();
+
+        PetaDataService::invalidateCache();
+        Cache::forget(CacheKeys::SIDEBAR_COUNTS);
+        Cache::forget(CacheKeys::LAPORAN_ADMIN);
+        Cache::forget(CacheKeys::RINGKASAN_EKSEKUTIF);
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kategori');
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kecamatan');
 
         return redirect()->route('admin.opk.arsip')
             ->with('success', 'OPK berhasil dihapus permanen dari database.');

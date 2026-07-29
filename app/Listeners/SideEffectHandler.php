@@ -17,6 +17,8 @@ class SideEffectHandler
         Cache::forget(CacheKeys::SIDEBAR_COUNTS);
         Cache::forget(CacheKeys::RINGKASAN_EKSEKUTIF);
         Cache::forget(CacheKeys::LAPORAN_ADMIN);
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kategori');
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kecamatan');
     }
 
     public function handleLaporanCreated(LaporanCreated $event): void

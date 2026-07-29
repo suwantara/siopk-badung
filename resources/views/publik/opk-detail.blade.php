@@ -101,6 +101,11 @@
                 </div>
                 @if($opk->latitude && $opk->longitude)
                 <div id="petaMini" style="height:160px;"></div>
+                <div style="padding:6px 1rem 0;text-align:right;">
+                    <a href="https://www.google.com/maps?q={{ $opk->latitude }},{{ $opk->longitude }}" target="_blank" rel="noopener" style="color:var(--emas);text-decoration:none;font-weight:500" class="t-caption">
+                        <i class="bi bi-geo-alt-fill"></i> Buka di Google Maps <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </div>
                 @endif
                 <div style="padding:0.75rem 1.2rem;">
                     <x-ui.info-rows :rows="[
@@ -110,6 +115,14 @@
                         ['Banjar Adat',$opk->banjar_adat],
                         ['Lokasi',     $opk->lokasi_spesifik],
                     ]" key-width="130px" />
+                    @if($opk->latitude && $opk->longitude)
+                    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--garis-terang)">
+                        <span style="color:var(--abu);width:130px;">GPS</span>
+                        <a href="https://www.google.com/maps?q={{ $opk->latitude }},{{ $opk->longitude }}" target="_blank" rel="noopener" style="font-weight:500;text-align:right;color:var(--tanah);text-decoration:none;">
+                            {{ number_format($opk->latitude,6) }}, {{ number_format($opk->longitude,6) }} <i class="bi bi-box-arrow-up-right" style="color:var(--emas);"></i>
+                        </a>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -183,6 +196,7 @@ function sliderGo(idx) {
 function sliderPrev() { sliderGo(sliderIndex - 1); }
 function sliderNext() { sliderGo(sliderIndex + 1); }
 
+@if($opk->fotos->count() > 0)
 document.getElementById('foto-slider').addEventListener('keydown', function(e) {
     if (e.key === 'ArrowLeft') { e.preventDefault(); sliderPrev(); }
     if (e.key === 'ArrowRight') { e.preventDefault(); sliderNext(); }
@@ -197,6 +211,9 @@ document.getElementById('foto-slider').addEventListener('touchend', function(e) 
 });
 @endif
 
+document.getElementById('foto-slider').setAttribute('tabindex', '0');
+@endif
+
 function openFoto(src) {
     document.getElementById('fotoSrc').src = src;
     document.getElementById('modalCounter').textContent = (sliderIndex + 1) + ' / ' + totalFoto;
@@ -205,14 +222,14 @@ function openFoto(src) {
 function modalPrev() { sliderPrev(); document.getElementById('fotoSrc').src = fotoList[sliderIndex]; document.getElementById('modalCounter').textContent = (sliderIndex + 1) + ' / ' + totalFoto; }
 function modalNext() { sliderNext(); document.getElementById('fotoSrc').src = fotoList[sliderIndex]; document.getElementById('modalCounter').textContent = (sliderIndex + 1) + ' / ' + totalFoto; }
 
-document.getElementById('foto-slider').setAttribute('tabindex', '0');
-
+@if($opk->fotos->count() > 0)
 document.addEventListener('keydown', function(e) {
     var modal = document.getElementById('modalFoto');
     if (!modal.classList.contains('show')) return;
     if (e.key === 'ArrowLeft') { e.preventDefault(); modalPrev(); }
     if (e.key === 'ArrowRight') { e.preventDefault(); modalNext(); }
 });
+@endif
 
 @if($opk->latitude && $opk->longitude)
 const m = L.map('petaMini').setView([{{ $opk->latitude }}, {{ $opk->longitude }}], 15);

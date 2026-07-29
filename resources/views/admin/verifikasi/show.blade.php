@@ -177,6 +177,11 @@
             <div class="card-body p-0">
                 @if($laporan->latitude && $laporan->longitude)
                 <div id="petaVerif" style="height:160px;"></div>
+                <div style="padding:6px 1rem 0;text-align:right;">
+                    <a href="https://www.google.com/maps?q={{ $laporan->latitude }},{{ $laporan->longitude }}" target="_blank" rel="noopener" style="color:var(--emas);text-decoration:none;font-weight:500" class="t-caption">
+                        <i class="bi bi-geo-alt-fill"></i> Buka di Google Maps <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </div>
                 @endif
                 <div style="padding:1rem;">
                     <x-ui.info-rows :rows="[
@@ -185,8 +190,16 @@
                         ['Desa Adat', $laporan->nama_desa_adat],
                         ['Banjar Adat', $laporan->banjar_adat],
                         ['Lokasi Spesifik', $laporan->lokasi_spesifik],
-                        ['GPS', $laporan->latitude ? number_format($laporan->latitude,5).', '.number_format($laporan->longitude,5) : '—'],
                     ]" key-width="100px" />
+                    @if($laporan->latitude && $laporan->longitude)
+                    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--garis-terang)">
+                        <span style="color:var(--abu);width:100px;">GPS</span>
+                        <a href="https://www.google.com/maps?q={{ $laporan->latitude }},{{ $laporan->longitude }}" target="_blank" rel="noopener" style="font-weight:500;text-align:right;color:var(--tanah);text-decoration:none;">
+                            {{ number_format($laporan->latitude,5) }}, {{ number_format($laporan->longitude,5) }} <i class="bi bi-box-arrow-up-right" style="color:var(--emas);"></i>
+                        </a>
+                    </div>
+                    @endif
+                </div>
                 </div>
             </div>
         </div>

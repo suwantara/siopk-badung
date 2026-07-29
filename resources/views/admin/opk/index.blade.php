@@ -84,7 +84,9 @@
                     </td>
                     <td>
                         @if($opk->latitude && $opk->longitude)
-                            <i class="bi bi-geo-alt-fill" style="color:var(--hijau)" class="t-body" title="{{ $opk->latitude }}, {{ $opk->longitude }}"></i>
+                            <a href="https://www.google.com/maps?q={{ $opk->latitude }},{{ $opk->longitude }}" target="_blank" rel="noopener" title="Buka di Google Maps" style="color:var(--hijau);text-decoration:none;">
+                                <i class="bi bi-geo-alt-fill" class="t-body"></i>
+                            </a>
                         @else
                             <i class="bi bi-geo-alt" style="color:var(--abu)" class="t-body"></i>
                         @endif

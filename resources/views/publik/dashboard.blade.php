@@ -152,9 +152,20 @@ let activeKec = '';
 let selectedId = null;
 
 const peta = L.map('petaPublik', { zoomControl: true }).setView([-8.65, 115.18], 11);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors', maxZoom: 19
-}).addTo(peta);
+});
+const satelit = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles © Esri', maxZoom: 19
+});
+const topografi = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenTopoMap (CC-BY-SA)', maxZoom: 17
+});
+
+osm.addTo(peta);
+
+L.control.layers({ 'Peta': osm, 'Satelit': satelit, 'Topografi': topografi }, null, { position: 'topright', collapsed: true }).addTo(peta);
 
 const ds = {
     merah:  getComputedStyle(document.documentElement).getPropertyValue('--merah').trim(),

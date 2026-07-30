@@ -373,8 +373,14 @@ function clearFilters() {
 // ===== Export Button Loading =====
 document.getElementById('exportForm').addEventListener('submit', function() {
     const btn = document.getElementById('btnExport');
+    const orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyiapkan file...';
+    // Reset after download starts (page stays, no reload)
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+    }, 3000);
 });
 </script>
 @endpush

@@ -34,3 +34,8 @@ ARCHITECTURE_REVIEW.md
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Root markdown files except README
+/*.md
+!/README.md
+!/readme.md

@@ -6,6 +6,7 @@ use App\Helpers\CacheKeys;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateOpkRequest;
 use App\Models\Kecamatan;
+use App\Models\KondisiOpk;
 use App\Models\OpkCategory;
 use App\Models\OpkLaporan;
 use App\Services\OpkExportService;
@@ -198,11 +199,34 @@ class OpkController extends Controller
         return response()->download($filePath)->deleteFileAfterSend();
     }
 
+    public function exportForm()
+    {
+        $kategori = Cache::remember(CacheKeys::KATEGORI_LIST, 86400, fn () => OpkCategory::orderBy('nomor')->get());
+        $kecamatans = Cache::remember(CacheKeys::KECAMATAN_LIST, 86400, fn () => Kecamatan::orderBy('nama')->get());
+        $kondisiList = Cache::remember(CacheKeys::KONDISI_LIST, 86400, fn () => KondisiOpk::orderBy('urutan')->get());
+
+        $statusList = [
+            'disetujui' => 'Disetujui',
+            'ditolak' => 'Ditolak',
+            'duplikat' => 'Duplikat',
+            'menunggu' => 'Menunggu',
+            'ai_review' => 'AI Review',
+            'review_dinas' => 'Review Dinas',
+        ];
+
+        return view('admin.opk.export', compact('kategori', 'kecamatans', 'kondisiList', 'statusList'));
+    }
+
     public function exportAll(Request $request)
     {
-        $filters = $request->only(['search', 'kategori_id', 'kecamatan_id', 'kondisi']);
+        $filters = $request->only([
+            'search', 'status_verifikasi', 'kategori_id', 'kecamatan_id',
+            'kondisi', 'tanggal_dari', 'tanggal_sampai',
+        ]);
 
-        $filePath = $this->exportService->exportBatch($filters);
+        $sheets = $request->input('sheets', []);
+
+        $filePath = $this->exportService->exportBatch($filters, $sheets);
 
         return response()->download($filePath)->deleteFileAfterSend();
     }

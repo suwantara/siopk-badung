@@ -64,6 +64,9 @@
     <a href="{{ route('admin.laporan.index') }}" class="sidebar-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
         <i class="bi bi-bar-chart-line"></i> Laporan
     </a>
+    <a href="{{ route('admin.opk.export') }}" class="sidebar-link {{ request()->routeIs('admin.opk.export*') ? 'active' : '' }}">
+        <i class="bi bi-file-earmark-spreadsheet"></i> Export Data
+    </a>
     <a href="{{ route('admin.ai.ringkasan-halaman') }}" class="sidebar-link {{ request()->routeIs('admin.ai.*') ? 'active' : '' }}">
         <i class="bi bi-robot"></i> AI Ringkasan
         @if(($sidebarAiKritis ?? 0) > 0)

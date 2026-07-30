@@ -37,25 +37,43 @@ class OpkExportService
         return $filePath;
     }
 
-    public function exportBatch(array $filters = []): string
+    public function exportBatch(array $filters = [], array $sheets = []): string
     {
         $query = OpkLaporan::with([
             'kategori', 'kecamatan', 'desaDinas', 'kondisiOpk',
             'fotos', 'dokumens', 'videos', 'verifikator',
-        ])
-            ->disetujui();
+            'riwayat.user', 'duplikatDari',
+        ]);
+
+        if (! empty($filters['status_verifikasi']) && is_array($filters['status_verifikasi'])) {
+            $query->whereIn('status_verifikasi', $filters['status_verifikasi']);
+        } else {
+            $query->disetujui();
+        }
 
         if (! empty($filters['search'])) {
             $query->where('nama_opk', 'like', '%'.$filters['search'].'%');
         }
-        if (! empty($filters['kategori_id'])) {
+        if (! empty($filters['kategori_id']) && is_array($filters['kategori_id'])) {
+            $query->whereIn('kategori_id', $filters['kategori_id']);
+        } elseif (! empty($filters['kategori_id'])) {
             $query->where('kategori_id', $filters['kategori_id']);
         }
-        if (! empty($filters['kecamatan_id'])) {
+        if (! empty($filters['kecamatan_id']) && is_array($filters['kecamatan_id'])) {
+            $query->whereIn('kecamatan_id', $filters['kecamatan_id']);
+        } elseif (! empty($filters['kecamatan_id'])) {
             $query->where('kecamatan_id', $filters['kecamatan_id']);
         }
-        if (! empty($filters['kondisi'])) {
+        if (! empty($filters['kondisi']) && is_array($filters['kondisi'])) {
+            $query->whereIn('kondisi', $filters['kondisi']);
+        } elseif (! empty($filters['kondisi'])) {
             $query->where('kondisi', $filters['kondisi']);
+        }
+        if (! empty($filters['tanggal_dari'])) {
+            $query->whereDate('created_at', '>=', $filters['tanggal_dari']);
+        }
+        if (! empty($filters['tanggal_sampai'])) {
+            $query->whereDate('created_at', '<=', $filters['tanggal_sampai']);
         }
 
         $laporans = $query->latest()->get();
@@ -68,9 +86,22 @@ class OpkExportService
         $writer->openToFile($filePath);
 
         $this->writeBatchDataUtama($writer, $laporans);
-        $this->writeBatchFotos($writer, $laporans);
-        $this->writeBatchDokumens($writer, $laporans);
-        $this->writeBatchVideos($writer, $laporans);
+
+        if ($this->includeSheet($sheets, 'foto')) {
+            $this->writeBatchFotos($writer, $laporans);
+        }
+        if ($this->includeSheet($sheets, 'dokumen')) {
+            $this->writeBatchDokumens($writer, $laporans);
+        }
+        if ($this->includeSheet($sheets, 'video')) {
+            $this->writeBatchVideos($writer, $laporans);
+        }
+        if ($this->includeSheet($sheets, 'riwayat')) {
+            $this->writeBatchRiwayat($writer, $laporans);
+        }
+        if ($this->includeSheet($sheets, 'ai')) {
+            $this->writeBatchAi($writer, $laporans);
+        }
 
         $writer->close();
 
@@ -374,6 +405,60 @@ class OpkExportService
     }
 
     // ===== Helpers =====
+
+    private function includeSheet(array $sheets, string $key): bool
+    {
+        if (empty($sheets)) {
+            return true;
+        }
+
+        return in_array($key, $sheets, true);
+    }
+
+    private function writeBatchRiwayat(XlsxWriter $writer, $laporans): void
+    {
+        $sheet = $writer->addNewSheetAndMakeItCurrent();
+        $sheet->setName('Riwayat Status');
+
+        $writer->addRow(Row::fromValues(['No', 'Kode Laporan', 'Nama OPK', 'Tanggal', 'Status Baru', 'Status Lama', 'Oleh', 'Catatan']));
+
+        $no = 1;
+        foreach ($laporans as $l) {
+            foreach ($l->riwayat as $rw) {
+                $writer->addRow(Row::fromValues([
+                    $no++,
+                    $l->kode_laporan,
+                    $l->nama_opk,
+                    $rw->created_at->format('d M Y H:i'),
+                    $this->label($rw->status_baru),
+                    $this->label($rw->status_lama),
+                    $rw->user?->name,
+                    $rw->catatan,
+                ]));
+            }
+        }
+    }
+
+    private function writeBatchAi(XlsxWriter $writer, $laporans): void
+    {
+        $sheet = $writer->addNewSheetAndMakeItCurrent();
+        $sheet->setName('AI Analysis');
+
+        $writer->addRow(Row::fromValues(['No', 'Kode Laporan', 'Nama OPK', 'Urgency Score', 'Duplikat Score', 'Duplikat Dari', 'Rekomendasi AI']));
+
+        $no = 1;
+        foreach ($laporans as $l) {
+            $writer->addRow(Row::fromValues([
+                $no++,
+                $l->kode_laporan,
+                $l->nama_opk,
+                $l->ai_urgency_score,
+                $l->ai_duplikat_score,
+                $l->duplikatDari?->kode_laporan ? $l->duplikatDari->kode_laporan.' - '.$l->duplikatDari->nama_opk : '',
+                $l->ai_rekomendasi,
+            ]));
+        }
+    }
 
     private function tempPath(string $filename): string
     {

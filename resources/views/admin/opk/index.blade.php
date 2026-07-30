@@ -5,8 +5,8 @@
 @section('content')
 <x-ui.page-header title="Data OPK Kabupaten Badung" :subtitle="$laporans->total() . ' objek terdaftar · status: disetujui &amp; terverifikasi'">
     <x-slot:action>
-        <a href="{{ route('admin.opk.export', request()->only(['search','kategori_id','kecamatan_id','kondisi'])) }}" class="btn btn-sm btn-outline-success me-1" title="Export ke Excel">
-            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel
+        <a href="{{ route('admin.opk.export') }}" class="btn btn-sm btn-outline-success me-1" title="Export ke Excel">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export
         </a>
         <a href="{{ route('publik.lapor.index') }}" target="_blank" class="btn btn-sm btn-emas">
             <i class="bi bi-plus-lg me-1"></i>Tambah OPK

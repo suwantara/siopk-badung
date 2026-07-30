@@ -7,13 +7,14 @@ use App\Models\Kecamatan;
 use App\Models\KondisiOpk;
 use App\Models\OpkCategory;
 use App\Models\OpkLaporan;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class OpkStatsService
 {
-    private function kondisiKodes(): array
+    public function kondisiKodes(): array
     {
         return Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
             return KondisiOpk::orderBy('urutan')->pluck('kode')->toArray();
@@ -173,6 +174,18 @@ class OpkStatsService
         ])->orderByDesc('total')->get();
     }
 
+    public function kecamatanWithKondisiCount(): Collection
+    {
+        $counts = ['laporans as total' => fn ($q) => $q->disetujui()];
+        foreach ($this->kondisiKodes() as $kode) {
+            $counts["laporans as {$kode}"] = fn ($q) => $q->disetujui()->where('kondisi', $kode);
+        }
+
+        return Kecamatan::withCount($counts)
+            ->orderByDesc('total')
+            ->get();
+    }
+
     public static function kondisiPrioritasOrderRaw(): \Illuminate\Support\Facades\DB
     {
         $kodes = Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
@@ -184,5 +197,30 @@ class OpkStatsService
         $quoted = "'".implode("','", $ordered)."'";
 
         return \Illuminate\Support\Facades\DB::raw("FIELD(kondisi, {$quoted})");
+    }
+
+    public function trenBulanan(int $bulan = 6): \Illuminate\Support\Collection
+    {
+        $driver = DB::connection()->getDriverName();
+        $monthExpr = $driver === 'sqlite'
+            ? "CAST(strftime('%m', created_at) AS INTEGER)"
+            : 'MONTH(created_at)';
+        $yearExpr = $driver === 'sqlite'
+            ? "CAST(strftime('%Y', created_at) AS INTEGER)"
+            : 'YEAR(created_at)';
+
+        return OpkLaporan::select(
+            DB::raw("{$monthExpr} as bulan"),
+            DB::raw("{$yearExpr} as tahun"),
+            DB::raw('COUNT(*) as total')
+        )
+            ->where('created_at', '>=', now()->subMonths($bulan))
+            ->groupBy('tahun', 'bulan')
+            ->orderBy('tahun')->orderBy('bulan')
+            ->get()
+            ->map(fn ($r) => [
+                'label' => Carbon::createFromDate($r->tahun, $r->bulan, 1)->isoFormat('MMM Y'),
+                'total' => $r->total,
+            ]);
     }
 }

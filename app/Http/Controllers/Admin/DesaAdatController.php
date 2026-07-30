@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\CacheKeys;
 use App\Http\Controllers\Controller;
 use App\Models\DesaAdat;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class DesaAdatController extends Controller
         ]);
 
         DesaAdat::create($validated);
-        Cache::forget('kecamatan_with_desa');
+        Cache::forget(CacheKeys::KECAMATAN_WITH_DESA);
 
         return back()->with('success', "Desa Adat {$validated['nama']} berhasil ditambahkan.");
     }
@@ -26,7 +27,7 @@ class DesaAdatController extends Controller
     {
         $validated = $request->validate(['nama' => 'required|string|max:150']);
         $desaAdat->update($validated);
-        Cache::forget('kecamatan_with_desa');
+        Cache::forget(CacheKeys::KECAMATAN_WITH_DESA);
 
         return back()->with('success', "Desa Adat {$desaAdat->nama} berhasil diperbarui.");
     }
@@ -34,7 +35,7 @@ class DesaAdatController extends Controller
     public function destroy(DesaAdat $desaAdat)
     {
         $desaAdat->delete();
-        Cache::forget('kecamatan_with_desa');
+        Cache::forget(CacheKeys::KECAMATAN_WITH_DESA);
 
         return back()->with('success', "Desa Adat {$desaAdat->nama} berhasil dihapus.");
     }

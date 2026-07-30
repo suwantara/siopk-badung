@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\CacheKeys;
 use App\Models\OpkLaporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -25,7 +26,7 @@ class PetaDataService
     public static function invalidateCache(): void
     {
         Cache::increment('peta_data_version');
-        Cache::forget('publik_dashboard');
+        Cache::forget(CacheKeys::PUBLIK_DASHBOARD);
     }
 
     private function buildPetaData(Request $request, bool $isAdmin): array

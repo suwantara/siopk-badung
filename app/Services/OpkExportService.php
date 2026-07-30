@@ -494,4 +494,61 @@ class OpkExportService
 
         return $bytes.' B';
     }
+
+    public function exportCsv(): array
+    {
+        $filename = 'siopk-badung-'.now()->format('Y-m-d-His').'.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () {
+            $out = fopen('php://output', 'w');
+            fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($out, [
+                'Kode Laporan', 'Nama OPK', 'Kategori', 'Kondisi',
+                'Kecamatan', 'Desa Dinas', 'Desa Adat',
+                'Latitude', 'Longitude',
+                'Tahun Diketahui', 'Status Pelindungan',
+                'Frekuensi Pelaksanaan', 'Status Kepemilikan',
+                'Praktisi', 'Usia Praktisi',
+                'Urgensi (AI)', 'Rekomendasi AI',
+                'Tanggal Lapor', 'Status Verifikasi',
+            ]);
+
+            OpkLaporan::with(['kategori', 'kecamatan', 'desaDinas', 'verifikator'])
+                ->disetujui()
+                ->cursor()
+                ->each(function ($o) use ($out) {
+                    fputcsv($out, [
+                        $o->kode_laporan,
+                        $o->nama_opk,
+                        $o->kategori?->nama ?? '',
+                        $o->kondisi,
+                        $o->kecamatan?->nama ?? '',
+                        $o->desaDinas?->nama ?? '',
+                        $o->nama_desa_adat ?? '',
+                        $o->latitude,
+                        $o->longitude,
+                        $o->tahun_diketahui ?? '',
+                        $o->status_pelindungan ?? '',
+                        $o->frekuensi_pelaksanaan ?? '',
+                        $o->status_kepemilikan ?? '',
+                        $o->praktisi_nama ?? '',
+                        $o->praktisi_usia ?? '',
+                        $o->ai_urgency_score ?? '',
+                        $o->ai_rekomendasi ?? '',
+                        $o->created_at->format('Y-m-d H:i'),
+                        $o->status_verifikasi,
+                    ]);
+                });
+
+            fclose($out);
+        };
+
+        return [$headers, $callback];
+    }
 }

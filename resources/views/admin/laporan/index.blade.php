@@ -7,14 +7,15 @@
 
 {{-- KPI --}}
 <div class="row g-3 mb-4">
-    @foreach([
-        ['Total OPK Resmi', $stats['total'], '', 'bi-collection', 'var(--emas)'],
-        ['Kritis', $stats['kritis'], 'Perlu tindakan', 'bi-exclamation-triangle', 'var(--merah)'],
-        ['Waspada', $stats['waspada'], 'Perlu pantau', 'bi-eye', 'var(--kuning)'],
-        ['Baik', $stats['baik'], 'Terlindungi', 'bi-shield-check', 'var(--hijau)'],
-        ['Menunggu Verif.', $stats['menunggu'], 'Antrian', 'bi-clock', 'var(--abu-gelap)'],
-        ['Bulan Ini', $stats['bulan_ini'], 'Laporan baru', 'bi-calendar3', '#2980b9'],
-    ] as [$label, $val, $sub, $icon, $color])
+    @php
+        $kpiCards = [['Total OPK Resmi', $stats['total'], '', 'bi-collection', 'var(--emas)']];
+        foreach ($kondisiList as $k) {
+            $kpiCards[] = [$k->nama, $stats[$k->kode] ?? 0, '', 'bi-circle-fill', $k->warna];
+        }
+        $kpiCards[] = ['Menunggu Verif.', $stats['menunggu'], 'Antrian', 'bi-clock', 'var(--abu-gelap)'];
+        $kpiCards[] = ['Bulan Ini', $stats['bulan_ini'], 'Laporan baru', 'bi-calendar3', '#2980b9'];
+    @endphp
+    @foreach($kpiCards as [$label, $val, $sub, $icon, $color])
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card h-100" style="border-top:3px solid {{ $color }};">
             <div class="card-body text-center py-3">
@@ -184,37 +185,49 @@ new Chart(document.getElementById('chartKategori'), {
 });
 
 // Per Kecamatan
+@php
+$kondisiKodes = $kondisiList->map(fn($k) => ['kode' => $k->kode, 'nama' => $k->nama, 'warna' => $k->warna]);
+@endphp
+const kecData = @json($perKecamatan);
+const kondisiKodes = @json($kondisiKodes);
+const datasets2 = kondisiKodes.map(k => ({
+    label: k.nama,
+    data: kecData.map(kc => kc[k.kode] || 0),
+    backgroundColor: k.warna + '99',
+}));
 new Chart(document.getElementById('chartKecamatan'), {
     type: 'bar',
     data: {
-        labels: @json($perKecamatan->pluck('nama')),
-        datasets: [{
-            label: 'Kritis',
-            data: @json($perKecamatan->pluck('kritis')),
-            backgroundColor: ds.merah + '99',
-        }, {
-            label: 'Non-Kritis',
-            data: @json($perKecamatan->map(fn($k) => $k->total - $k->kritis)),
-            backgroundColor: ds.hijau + '99',
-        }]
+        labels: kecData.map(kc => kc.nama),
+        datasets: datasets2,
     },
     options: {
         responsive: true,
         scales: {
             x: { stacked: true },
             y: { stacked: true }
+        },
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true } }
         }
     }
 });
 
 // Kondisi
+@php
+$kondisiData = $kondisiList->map(fn($k) => [
+    'kode' => $k->kode, 'nama' => $k->nama, 'warna' => $k->warna,
+    'total' => $stats[$k->kode] ?? 0,
+]);
+@endphp
+const kondisiData = @json($kondisiData);
 new Chart(document.getElementById('chartKondisi'), {
     type: 'doughnut',
     data: {
-        labels: ['Kritis', 'Waspada', 'Baik'],
+        labels: kondisiData.map(d => d.nama),
         datasets: [{
-            data: [{{ $stats['kritis'] }}, {{ $stats['waspada'] }}, {{ $stats['baik'] }}],
-            backgroundColor: [ds.merah + 'CC', ds.kuning + 'CC', ds.hijau + 'CC'],
+            data: kondisiData.map(d => d.total),
+            backgroundColor: kondisiData.map(d => d.warna + 'CC'),
             borderColor: 'white',
             borderWidth: 2,
         }]

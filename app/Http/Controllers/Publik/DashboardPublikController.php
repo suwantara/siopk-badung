@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Publik;
 
 use App\Helpers\CacheKeys;
 use App\Http\Controllers\Controller;
-use App\Models\Kecamatan;
-use App\Models\OpkCategory;
 use App\Models\OpkLaporan;
 use App\Services\OpkStatsService;
 use App\Services\PetaDataService;
@@ -120,9 +118,11 @@ class DashboardPublikController extends Controller
 
         $opks = $query->paginate(20)->withQueryString();
 
-        $kategori = Cache::remember(CacheKeys::DAFTAR_OPK_FILTERS.'_kategori', 300, fn () => OpkCategory::withCount(['laporans as total' => fn ($q) => $q->disetujui()])->orderByDesc('total')->get()
+        $kategori = Cache::remember(CacheKeys::DAFTAR_OPK_FILTERS.'_kategori', 300,
+            fn () => $this->statsService->kategoriWithOpkCount()
         );
-        $kecamatans = Cache::remember(CacheKeys::DAFTAR_OPK_FILTERS.'_kecamatan', 300, fn () => Kecamatan::withCount(['laporans as total' => fn ($q) => $q->disetujui()])->orderByDesc('total')->get()
+        $kecamatans = Cache::remember(CacheKeys::DAFTAR_OPK_FILTERS.'_kecamatan', 300,
+            fn () => $this->statsService->kecamatanWithOpkCount()
         );
 
         return view('publik.daftar-opk', compact('opks', 'kategori', 'kecamatans'));

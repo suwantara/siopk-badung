@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\CacheKeys;
 use App\Http\Controllers\Controller;
 use App\Models\OpkCategory;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class KategoriController extends Controller
         ]);
 
         $cat = OpkCategory::create($validated);
-        Cache::forget('kategori_list');
+        Cache::forget(CacheKeys::KATEGORI_LIST);
 
         return back()->with('success', "Kategori '{$cat->nama}' berhasil ditambahkan.");
     }
@@ -47,7 +48,7 @@ class KategoriController extends Controller
         ]);
 
         $kategori->update($validated);
-        Cache::forget('kategori_list');
+        Cache::forget(CacheKeys::KATEGORI_LIST);
 
         return back()->with('success', "Kategori '{$kategori->nama}' berhasil diperbarui.");
     }
@@ -60,7 +61,7 @@ class KategoriController extends Controller
 
         $nama = $kategori->nama;
         $kategori->delete();
-        Cache::forget('kategori_list');
+        Cache::forget(CacheKeys::KATEGORI_LIST);
 
         return back()->with('success', "Kategori '{$nama}' berhasil dihapus.");
     }

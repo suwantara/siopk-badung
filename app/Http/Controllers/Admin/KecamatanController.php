@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\CacheKeys;
 use App\Http\Controllers\Controller;
 use App\Models\Kecamatan;
 use Illuminate\Database\QueryException;
@@ -34,7 +35,7 @@ class KecamatanController extends Controller
         ], ['kode.unique' => 'Kode kecamatan sudah digunakan.']);
 
         $kec = Kecamatan::create($validated);
-        Cache::forget('kecamatan_list');
+        Cache::forget(CacheKeys::KECAMATAN_LIST);
 
         return redirect()->route('admin.wilayah.index', ['kecamatan_id' => $kec->id])
             ->with('success', "Kecamatan {$kec->nama} berhasil ditambahkan.");
@@ -48,7 +49,7 @@ class KecamatanController extends Controller
         ], ['kode.unique' => 'Kode kecamatan sudah digunakan.']);
 
         $kecamatan->update($validated);
-        Cache::forget('kecamatan_list');
+        Cache::forget(CacheKeys::KECAMATAN_LIST);
 
         return back()->with('success', "Kecamatan {$kecamatan->nama} berhasil diperbarui.");
     }
@@ -58,8 +59,8 @@ class KecamatanController extends Controller
         $nama = $kecamatan->nama;
         try {
             $kecamatan->delete();
-            Cache::forget('kecamatan_list');
-            Cache::forget('kecamatan_with_desa');
+            Cache::forget(CacheKeys::KECAMATAN_LIST);
+            Cache::forget(CacheKeys::KECAMATAN_WITH_DESA);
 
             return redirect()->route('admin.wilayah.index')
                 ->with('success', "Kecamatan {$nama} dan semua desa/desa adat terkait berhasil dihapus.");

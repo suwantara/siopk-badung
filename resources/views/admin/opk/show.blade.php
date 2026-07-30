@@ -67,6 +67,37 @@
         </div>
         @endif
 
+        @if($laporan->videos->count() > 0)
+        <div class="card mb-3">
+            <div class="card-header-custom"><span class="title"><i class="bi bi-play-circle me-2"></i>Video ({{ $laporan->videos->count() }})</span></div>
+            <div class="card-body">
+                @foreach($laporan->videos as $video)
+                <div class="mb-3">
+                    @if($video->embedProvider() === 'youtube')
+                        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:4px;">
+                            <iframe src="{{ $video->embedUrl() }}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    @elseif($video->embedProvider() === 'googledrive')
+                        <iframe src="{{ $video->embedUrl() }}" style="width:100%;height:400px;border:0;border-radius:4px;" allowfullscreen></iframe>
+                    @else
+                        <a href="{{ $video->link_eksternal }}" target="_blank" rel="noopener"
+                           class="d-flex align-items-center gap-2 p-3 rounded text-decoration-none"
+                           style="background:var(--krem);border:1px solid var(--garis);color:var(--tanah);">
+                            <i class="bi bi-play-circle" style="color:var(--emas);font-size:1.2rem;"></i>
+                            <span class="t-body">Buka Video Eksternal</span>
+                            <i class="bi bi-box-arrow-up-right ms-auto" style="color:var(--abu);"></i>
+                        </a>
+                    @endif
+                    @if($video->keterangan)
+                        <div style="color:var(--abu);margin-top:6px;font-style:italic" class="t-caption">{{ $video->keterangan }}</div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         <div class="card mb-3">
             <div class="card-header-custom"><span class="title"><i class="bi bi-file-text me-2"></i>Deskripsi & Detail</span></div>
             <div class="card-body">

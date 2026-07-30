@@ -77,13 +77,20 @@
                 <div style="padding:1.2rem;">
                     <div class="section-label">Video Dokumentasi</div>
                     @foreach($opk->videos as $video)
-                        @if($video->link_eksternal)
+                        @if($video->embedProvider() === 'youtube')
+                        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:4px;margin-top:8px;">
+                            <iframe src="{{ $video->embedUrl() }}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        @elseif($video->embedProvider() === 'googledrive')
+                        <iframe src="{{ $video->embedUrl() }}" style="width:100%;height:340px;border:0;border-radius:4px;margin-top:8px;" allowfullscreen></iframe>
+                        @elseif($video->link_eksternal)
                         <a href="{{ $video->link_eksternal }}" target="_blank" rel="noopener"
-                           class="d-flex align-items-center gap-2 p-2 rounded text-decoration-none"
+                           class="d-flex align-items-center gap-2 p-2 rounded text-decoration-none mt-2"
                            style="background:var(--krem);border:1px solid var(--garis);color:var(--tanah);">
                             <i class="bi bi-play-circle" style="color:var(--emas);font-size:1.2rem;"></i>
                             <span class="t-body">Buka Video Dokumentasi</span>
-                            <i class="bi bi-box-arrow-up-right ms-auto" style="color:var(--abu);" class="t-caption"></i>
+                            <i class="bi bi-box-arrow-up-right ms-auto" style="color:var(--abu);"></i>
                         </a>
                         @endif
                     @endforeach

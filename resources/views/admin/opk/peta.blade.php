@@ -55,11 +55,11 @@
 <x-ui.page-header title="Peta Sebaran OPK" subtitle="Distribusi geografis Objek Pemajuan Kebudayaan Kabupaten Badung">
     <x-slot:action>
         <div class="d-flex gap-2 align-items-center">
-            <select id="filterKondisiPeta" class="form-select form-select-sm" style="width:140px;">
-                <option value="">Semua Status</option>
-                <option value="kritis">🔴 Kritis</option>
-                <option value="waspada">🟡 Waspada</option>
-                <option value="baik">🟢 Baik</option>
+            <select id="filterKondisiPeta" class="form-select form-select-sm" style="width:160px;">
+                <option value="">Semua Kondisi</option>
+                @foreach($kondisiList as $k)
+                <option value="{{ $k->kode }}">{{ $k->nama }}</option>
+                @endforeach
             </select>
             <a href="{{ route('admin.opk.index') }}" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-table me-1"></i>Tabel
@@ -85,9 +85,12 @@
     </div>
 
     <div class="peta-legend">
-        <div class="peta-legend-item"><span class="peta-legend-dot" style="background:var(--merah);"></span> Kritis — perlu tindakan</div>
-        <div class="peta-legend-item"><span class="peta-legend-dot" style="background:var(--kuning);"></span> Waspada — perlu pantau</div>
-        <div class="peta-legend-item"><span class="peta-legend-dot" style="background:var(--hijau);"></span> Baik — terlindungi</div>
+        @foreach($kondisiList as $k)
+        <div class="peta-legend-item">
+            <span class="peta-legend-dot" style="background:{{ $k->warna }};"></span>
+            {{ $k->nama }}
+        </div>
+        @endforeach
     </div>
 
     <div class="peta-loading" id="petaLoading">

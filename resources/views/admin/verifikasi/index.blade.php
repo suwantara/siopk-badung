@@ -45,9 +45,9 @@
         <label class="t-caption d-block mb-1">Kondisi</label>
         <select name="kondisi" class="form-select form-select-sm">
             <option value="">Semua Kondisi</option>
-            <option value="kritis"  {{ request('kondisi') === 'kritis'  ? 'selected' : '' }}>🔴 Kritis</option>
-            <option value="waspada" {{ request('kondisi') === 'waspada' ? 'selected' : '' }}>🟡 Waspada</option>
-            <option value="baik"    {{ request('kondisi') === 'baik'    ? 'selected' : '' }}>🟢 Baik</option>
+            @foreach($kondisiList as $k)
+            <option value="{{ $k->kode }}" {{ request('kondisi') === $k->kode ? 'selected' : '' }}>{{ $k->nama }}</option>
+            @endforeach
         </select>
     </div>
 </x-ui.filter-bar>
@@ -85,7 +85,7 @@
 
                     @if($laporan->ai_urgency_score)
                     <div class="queue-ai-score ms-3">
-                        <div class="queue-ai-val" style="color:{{ $laporan->kondisi === 'kritis' ? 'var(--merah)' : ($laporan->kondisi === 'waspada' ? 'var(--kuning)' : 'var(--hijau)') }}">
+                        <div class="queue-ai-val score-{{ $laporan->kondisi }}">
                             {{ number_format($laporan->ai_urgency_score, 1) }}
                         </div>
                         <div class="queue-ai-label" style="color:var(--abu);">AI Score</div>

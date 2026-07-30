@@ -24,9 +24,6 @@
     .peta-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 700; line-height: 1; }
     .peta-stat-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--abu-gelap); margin-top: 2px; }
     .peta-stat.total .peta-stat-num { color: var(--tanah); }
-    .peta-stat.kritis .peta-stat-num { color: var(--merah); }
-    .peta-stat.waspada .peta-stat-num { color: var(--kuning); }
-    .peta-stat.baik .peta-stat-num { color: var(--hijau); }
 
     .peta-legend {
         position: absolute; bottom: 1.5rem; left: 1rem; z-index: 400;
@@ -79,18 +76,12 @@
             <div class="peta-stat-num" id="statTotal">-</div>
             <div class="peta-stat-label">Total</div>
         </div>
-        <div class="peta-stat kritis">
-            <div class="peta-stat-num" id="statKritis">-</div>
-            <div class="peta-stat-label">Kritis</div>
+        @foreach($kondisiList as $k)
+        <div class="peta-stat" data-kode="{{ $k->kode }}">
+            <div class="peta-stat-num" id="stat-{{ $k->kode }}" style="color:{{ $k->warna }};">-</div>
+            <div class="peta-stat-label">{{ $k->nama }}</div>
         </div>
-        <div class="peta-stat waspada">
-            <div class="peta-stat-num" id="statWaspada">-</div>
-            <div class="peta-stat-label">Waspada</div>
-        </div>
-        <div class="peta-stat baik">
-            <div class="peta-stat-num" id="statBaik">-</div>
-            <div class="peta-stat-label">Baik</div>
-        </div>
+        @endforeach
     </div>
 
     <div class="peta-legend">
@@ -124,14 +115,15 @@ const ds = {
 };
 
 function getColor(kondisi) {
-    return kondisi === 'kritis' ? ds.merah : kondisi === 'waspada' ? ds.kuning : ds.hijau;
+    return window.kondisiColor(kondisi);
 }
 
 function makeIcon(kondisi) {
     const color = getColor(kondisi);
+    const pulse = kondisi && kondisi !== 'baik';
     return L.divIcon({
         className: '',
-        html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);${kondisi==='kritis'?'animation:pulse 1.5s infinite':''}"></div>`,
+        html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);${pulse?'animation:pulse 1.5s infinite':''}"></div>`,
         iconSize: [14, 14],
         iconAnchor: [7, 7],
     });
@@ -150,13 +142,12 @@ function loadPeta(kondisi = '') {
             if (markerCluster) peta.removeLayer(markerCluster);
             markerCluster = L.markerClusterGroup({ maxClusterRadius: 50 });
 
-            let kritis = 0, waspada = 0, baik = 0;
+            const conditionCounts = {};
+            window.kondisiList.forEach(k => { conditionCounts[k.kode] = 0; });
 
             data.forEach(opk => {
                 if (!opk.lat || !opk.lng) return;
-                if (opk.kondisi === 'kritis') kritis++;
-                else if (opk.kondisi === 'waspada') waspada++;
-                else baik++;
+                conditionCounts[opk.kondisi] = (conditionCounts[opk.kondisi] || 0) + 1;
 
                 const marker = L.marker([opk.lat, opk.lng], { icon: makeIcon(opk.kondisi) });
                 marker.bindPopup(`
@@ -176,9 +167,10 @@ function loadPeta(kondisi = '') {
             peta.addLayer(markerCluster);
 
             document.getElementById('statTotal').textContent = data.length;
-            document.getElementById('statKritis').textContent = kritis;
-            document.getElementById('statWaspada').textContent = waspada;
-            document.getElementById('statBaik').textContent = baik;
+            window.kondisiList.forEach(k => {
+                const el = document.getElementById('stat-' + k.kode);
+                if (el) el.textContent = conditionCounts[k.kode] || 0;
+            });
         })
         .finally(() => {
             loading.style.display = 'none';

@@ -35,11 +35,11 @@
     </div>
     <div class="col-md-2">
         <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em" class="t-caption">Kondisi</label>
-        <select name="kondisi" class="form-select form-select-sm">
+         <select name="kondisi" class="form-select form-select-sm">
             <option value="">Semua Kondisi</option>
-            <option value="kritis"  {{ request('kondisi') === 'kritis'  ? 'selected' : '' }}>Kritis</option>
-            <option value="waspada" {{ request('kondisi') === 'waspada' ? 'selected' : '' }}>Waspada</option>
-            <option value="baik"    {{ request('kondisi') === 'baik'    ? 'selected' : '' }}>Baik</option>
+            @foreach($kondisiList as $k)
+            <option value="{{ $k->kode }}" {{ request('kondisi') === $k->kode ? 'selected' : '' }}>{{ $k->nama }}</option>
+            @endforeach
         </select>
     </div>
 </x-ui.filter-bar>

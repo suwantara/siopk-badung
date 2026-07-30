@@ -1,9 +1,5 @@
 @extends('layouts.publik')
 
-@php
-    $kondisiIkon = ['baik'=>'<i class="bi bi-check-circle-fill" style="color:var(--hijau);"></i>','waspada'=>'<i class="bi bi-exclamation-triangle-fill" style="color:var(--kuning);"></i>','kritis'=>'<i class="bi bi-exclamation-circle-fill" style="color:var(--merah);"></i>'];
-@endphp
-
 @section('title', 'Daftar OPK — SIOPK Badung')
 
 @section('content')
@@ -40,15 +36,15 @@
         </select>
         <select name="kondisi">
             <option value="">Semua Kondisi</option>
-            <option value="baik" {{ request('kondisi') === 'baik' ? 'selected' : '' }}>Baik</option>
-            <option value="waspada" {{ request('kondisi') === 'waspada' ? 'selected' : '' }}>Waspada</option>
-            <option value="kritis" {{ request('kondisi') === 'kritis' ? 'selected' : '' }}>Kritis</option>
+            @foreach($kondisiList as $k)
+            <option value="{{ $k->kode }}" {{ request('kondisi') === $k->kode ? 'selected' : '' }}>{{ $k->nama }}</option>
+            @endforeach
         </select>
         <select name="urut">
             <option value="terbaru" {{ request('urut','terbaru') === 'terbaru' ? 'selected' : '' }}>Terbaru</option>
             <option value="terlama" {{ request('urut') === 'terlama' ? 'selected' : '' }}>Terlama</option>
             <option value="nama" {{ request('urut') === 'nama' ? 'selected' : '' }}>Nama A-Z</option>
-            <option value="kritis" {{ request('urut') === 'kritis' ? 'selected' : '' }}>Prioritas Kritis</option>
+            <option value="prioritas" {{ request('urut') === 'prioritas' ? 'selected' : '' }}>Prioritas Kondisi</option>
         </select>
         <button type="submit" class="btn-emas btn-sm">
             <i class="bi bi-search"></i>
@@ -81,7 +77,7 @@
                 <span>{{ $opk->kategori?->ikon }} {{ $opk->kategori?->nama }}</span>
                 <span>· {{ $opk->kecamatan?->nama }}</span>
                 <span>· {{ $opk->nama_desa_adat }}</span>
-                <span class="opk-list-badge badge-{{ $opk->kondisi }}">{{ ucfirst($opk->kondisi) }}</span>
+                <span class="opk-list-badge badge-kondisi-{{ $opk->kondisi }}">{{ $opk->kondisiOpk?->nama ?? $opk->kondisi }}</span>
             </div>
         </div>
         <div class="opk-list-arrow"><i class="bi bi-chevron-right"></i></div>
@@ -151,7 +147,7 @@
                                 <div class="suggest-nama">${opk.nama}</div>
                                 <div class="suggest-meta">
                                     ${opk.ikon || ''} ${opk.kategori || ''} · ${opk.kec || ''}
-                                    <span class="opk-list-badge badge-${opk.kondisi}">${opk.kondisi.charAt(0).toUpperCase()+opk.kondisi.slice(1)}</span>
+                                    <span class="opk-list-badge badge-kondisi-${opk.kondisi}">${window.kondisiLabel(opk.kondisi)}</span>
                                 </div>
                             </div>
                         </div>

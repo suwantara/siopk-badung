@@ -40,9 +40,9 @@
                         <div class="col-md-6">
                             <label class="form-label" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;" class="t-caption">Kondisi <span style="color:var(--merah)">*</span></label>
                             <select name="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
-                                <option value="baik"    {{ old('kondisi',$laporan->kondisi) === 'baik'    ? 'selected' : '' }}>✅ Baik</option>
-                                <option value="waspada" {{ old('kondisi',$laporan->kondisi) === 'waspada' ? 'selected' : '' }}>⚠️ Waspada</option>
-                                <option value="kritis"  {{ old('kondisi',$laporan->kondisi) === 'kritis'  ? 'selected' : '' }}>🔴 Kritis</option>
+                                @foreach($kondisiList as $k)
+                                <option value="{{ $k->kode }}" {{ old('kondisi',$laporan->kondisi) === $k->kode ? 'selected' : '' }}>{{ $k->nama }}</option>
+                                @endforeach
                             </select>
                             @error('kondisi')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>

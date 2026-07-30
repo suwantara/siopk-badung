@@ -35,15 +35,11 @@
                 <button class="filter-btn active" data-kondisi="" onclick="window._filterKondisi(this, '')">
                     <span class="filter-dot" style="background:var(--abu);"></span> Semua
                 </button>
-                <button class="filter-btn" data-kondisi="kritis" onclick="window._filterKondisi(this, 'kritis')">
-                    <span class="filter-dot" style="background:var(--merah);"></span> Kritis
+                @foreach($kondisiList as $k)
+                <button class="filter-btn" data-kondisi="{{ $k->kode }}" onclick="window._filterKondisi(this, '{{ $k->kode }}')">
+                    <span class="filter-dot" style="background:{{ $k->warna }};"></span> {{ $k->nama }}
                 </button>
-                <button class="filter-btn" data-kondisi="waspada" onclick="window._filterKondisi(this, 'waspada')">
-                    <span class="filter-dot" style="background:var(--kuning);"></span> Waspada
-                </button>
-                <button class="filter-btn" data-kondisi="baik" onclick="window._filterKondisi(this, 'baik')">
-                    <span class="filter-dot" style="background:var(--hijau);"></span> Baik
-                </button>
+                @endforeach
             </div>
 
             <div class="filter-group">
@@ -79,7 +75,7 @@
                     <div class="terbaru-info">
                         <div class="terbaru-nama">{{ $opk->nama_opk }}</div>
                         <div class="terbaru-meta">{{ $opk->kecamatan?->nama }}</div>
-                        <span class="kondisi-pill pill-{{ $opk->kondisi }}">{{ ucfirst($opk->kondisi) }}</span>
+                        <span class="kondisi-pill pill-{{ $opk->kondisi }}">{{ $opk->kondisiOpk?->nama ?? $opk->kondisi }}</span>
                     </div>
                 </a>
                 @endforeach
@@ -98,29 +94,22 @@
                 <span style="color:var(--abu);text-transform:uppercase;letter-spacing:0.05em" class="t-caption">Total</span>
             </div>
             <div class="stat-divider"></div>
+            @foreach($kondisiList as $k)
+            @php $cnt = $stats[$k->kode] ?? 0; @endphp
             <div class="stat-item">
-                <span class="stat-dot" style="background:var(--merah);"></span>
-                <span class="stat-num" style="color:var(--merah);">{{ $stats['kritis'] }}</span>
-                <span style="color:var(--abu);text-transform:uppercase;letter-spacing:0.05em" class="t-caption">Kritis</span>
+                <span class="stat-dot" style="background:{{ $k->warna }};"></span>
+                <span class="stat-num" style="color:{{ $k->warna }};">{{ $cnt }}</span>
+                <span style="color:var(--abu);text-transform:uppercase;letter-spacing:0.05em" class="t-caption">{{ $k->nama }}</span>
             </div>
-            <div class="stat-item">
-                <span class="stat-dot" style="background:var(--kuning);"></span>
-                <span class="stat-num" style="color:var(--kuning);">{{ $stats['waspada'] }}</span>
-                <span style="color:var(--abu);text-transform:uppercase;letter-spacing:0.05em" class="t-caption">Waspada</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-dot" style="background:var(--hijau);"></span>
-                <span class="stat-num" style="color:var(--hijau);">{{ $stats['baik'] }}</span>
-                <span style="color:var(--abu);text-transform:uppercase;letter-spacing:0.05em" class="t-caption">Baik</span>
-            </div>
+            @endforeach
         </div>
 
         {{-- Legend --}}
         <div class="peta-legend">
             <div class="legend-title">Legenda</div>
-            <div class="legend-item"><span class="stat-dot" style="background:var(--merah);border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span> Kritis</div>
-            <div class="legend-item"><span class="stat-dot" style="background:var(--kuning);border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span> Waspada</div>
-            <div class="legend-item"><span class="stat-dot" style="background:var(--hijau);border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span> Baik</div>
+            @foreach($kondisiList as $k)
+            <div class="legend-item"><span class="stat-dot" style="background:{{ $k->warna }};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span> {{ $k->nama }}</div>
+            @endforeach
         </div>
 
         {{-- Loading --}}
@@ -175,13 +164,17 @@ const ds = {
 };
 
 function getColor(kondisi) {
-    return kondisi === 'kritis' ? ds.merah : kondisi === 'waspada' ? ds.kuning : ds.hijau;
+    return window.kondisiColor(kondisi);
+}
+
+function isNonBaik(kondisi) {
+    return kondisi && kondisi !== 'baik';
 }
 
 function makeIcon(kondisi, selected) {
     const color = getColor(kondisi);
     const size  = selected ? 18 : 13;
-    const pulse = kondisi === 'kritis'
+    const pulse = isNonBaik(kondisi)
         ? `<div style="position:absolute;inset:-4px;border-radius:50%;border:2px solid ${color};animation:pulseRing 1.5s infinite;"></div>`
         : '';
     return L.divIcon({
@@ -220,12 +213,12 @@ function renderMarkers(data) {
     data.forEach(opk => {
         if (!opk.lat || !opk.lng) return;
         const m = L.marker([opk.lat, opk.lng], { icon: makeIcon(opk.kondisi) });
-        const kondisiColor = getColor(opk.kondisi);
+        const kondisiColor = window.kondisiColor(opk.kondisi);
         m.bindPopup(`
-            <div class="peta-popup" style="border-top:3px solid ${kondisiColor};padding-top:6px;">
+            <div class="popup-${opk.kondisi}" style="min-width:200px;padding:10px 12px 12px;">
                 <div class="peta-popup-nama">${opk.nama}</div>
                 <div class="peta-popup-meta">${opk.ikon || ''} ${opk.kategori || ''} &nbsp;·&nbsp; ${opk.kec || ''}</div>
-                <span class="peta-popup-kondisi" style="background:${kondisiColor}22;color:${kondisiColor};">${opk.kondisi.charAt(0).toUpperCase()+opk.kondisi.slice(1)}</span>
+                <span class="peta-popup-kondisi" style="background:${kondisiColor}22;color:${kondisiColor};">${window.kondisiLabel(opk.kondisi)}</span>
                 <a href="${opk.url}" class="peta-popup-btn">Lihat Detail <i class="bi bi-arrow-right"></i></a>
             </div>
         `, { maxWidth: 230 });
@@ -257,7 +250,7 @@ function renderList(data) {
                 <div class="opk-nama">${opk.nama}</div>
                 <div class="opk-meta">
                     ${opk.kec || ''} · ${opk.desa || ''}
-                    <span class="kondisi-pill pill-${opk.kondisi}">${opk.kondisi.charAt(0).toUpperCase()+opk.kondisi.slice(1)}</span>
+                    <span class="kondisi-pill pill-${opk.kondisi}">${window.kondisiLabel(opk.kondisi)}</span>
                 </div>
                 <div class="opk-meta">${opk.ikon || ''} ${opk.kategori || ''}</div>
             </div>
@@ -353,7 +346,7 @@ function fetchSuggest(q) {
                             <div class="suggest-nama">${opk.nama}</div>
                             <div class="suggest-meta">
                                 ${opk.ikon || ''} ${opk.kategori || ''} · ${opk.kec || ''}
-                                <span class="kondisi-pill pill-${opk.kondisi}">${opk.kondisi.charAt(0).toUpperCase()+opk.kondisi.slice(1)}</span>
+                    <span class="kondisi-pill pill-${opk.kondisi}">${window.kondisiLabel(opk.kondisi)}</span>
                             </div>
                         </div>
                     </div>

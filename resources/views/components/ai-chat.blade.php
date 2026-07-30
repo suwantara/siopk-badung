@@ -51,7 +51,7 @@
     @if(auth()->user()->isAdmin())
     <div style="padding:0.6rem 0.75rem;border-top:1px solid var(--input-bg);background:var(--input-bg);display:flex;justify-content:space-between;align-items:center;">
         <span style="color:var(--abu)" class="t-caption">
-            Score: <strong style="color:{{ $laporan->kondisi === 'kritis' ? 'var(--merah)' : ($laporan->kondisi === 'waspada' ? 'var(--kuning)' : 'var(--hijau)') }}">
+            Score: <strong class="score-{{ $laporan->kondisi }}">
                 {{ $laporan->ai_urgency_score ? number_format($laporan->ai_urgency_score, 1).'/10' : 'Belum dianalisis' }}
             </strong>
         </span>

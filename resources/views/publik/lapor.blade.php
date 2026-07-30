@@ -114,33 +114,19 @@
             <div class="mb-3">
                 <label class="form-label">Kondisi Saat Ini <span class="required-star">*</span></label>
                 <div class="row g-2">
+                    @foreach($kondisiList as $k)
                     <div class="col-6 col-sm-4">
-                        <label class="kondisi-label" id="lbl-baik">
-                            <input type="radio" name="kondisi" value="baik" {{ old('kondisi','baik') === 'baik' ? 'checked' : '' }} onchange="setKondisi('baik')">
+                        <label class="kondisi-label" id="lbl-{{ $k->kode }}">
+                            <input type="radio" name="kondisi" value="{{ $k->kode }}"
+                                   {{ old('kondisi', $kondisiList->first()->kode) === $k->kode ? 'checked' : '' }}
+                                   onchange="setKondisi('{{ $k->kode }}')">
                             <div>
-                                <div style="font-weight:600" class="t-body"><i class="bi bi-check-circle-fill" style="color:var(--hijau);"></i> Baik</div>
-                                <div style="color:var(--abu)" class="t-caption">Aktif & terpelihara</div>
+                                <div style="font-weight:600" class="t-body"><i class="bi bi-dot" style="color:{{ $k->warna }};font-size:1.5rem;line-height:0.8;"></i> {{ $k->nama }}</div>
+                                <div style="color:var(--abu)" class="t-caption">{{ $k->deskripsi }}</div>
                             </div>
                         </label>
                     </div>
-                    <div class="col-6 col-sm-4">
-                        <label class="kondisi-label" id="lbl-waspada">
-                            <input type="radio" name="kondisi" value="waspada" {{ old('kondisi') === 'waspada' ? 'checked' : '' }} onchange="setKondisi('waspada')">
-                            <div>
-                                <div style="font-weight:600" class="t-body"><i class="bi bi-exclamation-triangle-fill" style="color:var(--kuning);"></i> Waspada</div>
-                                <div style="color:var(--abu)" class="t-caption">Praktisi berkurang</div>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="col-6 col-sm-4">
-                        <label class="kondisi-label" id="lbl-kritis">
-                            <input type="radio" name="kondisi" value="kritis" {{ old('kondisi') === 'kritis' ? 'checked' : '' }} onchange="setKondisi('kritis')">
-                            <div>
-                                <div style="font-weight:600" class="t-body"><i class="bi bi-exclamation-circle-fill" style="color:var(--merah);"></i> Kritis</div>
-                                <div style="color:var(--abu)" class="t-caption">Terancam punah</div>
-                            </div>
-                        </label>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 
@@ -648,15 +634,14 @@ document.querySelectorAll('#stepNav .step-tab').forEach(function(tab) {
 });
 
 function setKondisi(val) {
-    ['baik','waspada','kritis'].forEach(k => {
-        const lbl = document.getElementById('lbl-' + k);
-        lbl.style.borderColor = '';
-        lbl.style.background = '';
+    window.kondisiList.forEach(function(k) {
+        var lbl = document.getElementById('lbl-' + k.kode);
+        if (lbl) { lbl.style.borderColor = ''; lbl.style.background = ''; }
     });
-    const colors = { baik: ['var(--hijau)','rgba(45,90,39,0.06)'], waspada: ['var(--kuning)','rgba(212,160,23,0.06)'], kritis: ['var(--merah)','rgba(192,57,43,0.06)'] };
-    const el = document.getElementById('lbl-' + val);
-    el.style.borderColor = colors[val][0];
-    el.style.background   = colors[val][1];
+    var c = window.kondisiColor(val);
+    var el = document.getElementById('lbl-' + val);
+    el.style.borderColor = c;
+    el.style.background = c + '15';
 }
 
 function setTipe(el, val) {

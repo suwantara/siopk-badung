@@ -98,7 +98,7 @@ class LaporController extends Controller
     public function sukses(Request $request)
     {
         $kode = $request->kode;
-        $laporan = OpkLaporan::with(['kategori', 'kecamatan'])->where('kode_laporan', $kode)->firstOrFail();
+        $laporan = OpkLaporan::with(['kategori', 'kecamatan', 'kondisiOpk'])->where('kode_laporan', $kode)->firstOrFail();
 
         return view('publik.lapor-sukses', compact('laporan'));
     }
@@ -109,7 +109,7 @@ class LaporController extends Controller
         $kode = $request->kode_laporan;
         $laporan = null;
         if ($kode) {
-            $laporan = OpkLaporan::with(['kategori', 'kecamatan', 'desaDinas', 'riwayat.user'])
+            $laporan = OpkLaporan::with(['kategori', 'kecamatan', 'desaDinas', 'kondisiOpk', 'riwayat.user'])
                 ->where('kode_laporan', $kode)->first();
         }
 

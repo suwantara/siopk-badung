@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\KondisiOpk;
 use App\Enums\StatusVerifikasi;
+use App\Models\KondisiOpk;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -46,6 +46,10 @@ class OpkLaporan extends Model
     ];
 
     // ---- Relasi ----
+    public function kondisiOpk()
+    {
+        return $this->belongsTo(KondisiOpk::class, 'kondisi', 'kode');
+    }
     public function kategori()
     {
         return $this->belongsTo(OpkCategory::class, 'kategori_id');
@@ -110,12 +114,12 @@ class OpkLaporan extends Model
 
     public function scopeKritis($query)
     {
-        return $query->where('kondisi', KondisiOpk::Kritis->value);
+        return $query->where('kondisi', 'kritis');
     }
 
     public function scopeWaspada($query)
     {
-        return $query->where('kondisi', KondisiOpk::Waspada->value);
+        return $query->where('kondisi', 'waspada');
     }
 
     public function scopeMenunggu($query)
@@ -143,11 +147,28 @@ class OpkLaporan extends Model
 
     public function getKondisiBadgeAttribute(): array
     {
-        return match ($this->kondisi) {
-            KondisiOpk::Baik->value => ['label' => 'Baik',    'color' => 'success'],
-            KondisiOpk::Waspada->value => ['label' => 'Waspada', 'color' => 'warning'],
-            KondisiOpk::Kritis->value => ['label' => 'Kritis',  'color' => 'danger'],
-            default => ['label' => '-',        'color' => 'secondary'],
-        };
+        $k = $this->kondisiOpk;
+
+        if ($k) {
+            return ['label' => $k->nama, 'color' => $this->badgeColorFromHex($k->warna), 'hex' => $k->warna];
+        }
+
+        return ['label' => $this->kondisi ?? '-', 'color' => 'secondary', 'hex' => '#6c757d'];
+    }
+
+    private static function badgeColorFromHex(string $hex): string
+    {
+        $colors = [
+            '#2D5A27' => 'success', '#28a745' => 'success', '#198754' => 'success',
+            '#B8860B' => 'warning', '#ffc107' => 'warning',
+            '#C0392B' => 'danger',  '#dc3545' => 'danger',
+            '#17a2b8' => 'info',    '#0dcaf0' => 'info',
+            '#6c757d' => 'secondary',
+            '#343a40' => 'dark',
+        ];
+
+        $hex = strtolower($hex);
+
+        return $colors[$hex] ?? 'secondary';
     }
 }

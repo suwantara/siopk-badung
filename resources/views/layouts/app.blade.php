@@ -9,6 +9,16 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Dynamic kondisi CSS — generated from $kondisiList */
+        @foreach($kondisiList as $k)
+        .pill-{{ $k->kode }} { background: {{ $k->warna }}18; color: {{ $k->warna }}; }
+        .badge-kondisi-{{ $k->kode }} { background-color: {{ $k->warna }}18; color: {{ $k->warna }}; border: 1px solid {{ $k->warna }}33; }
+        .kpi-card.{{ $k->kode }} { border-top-color: {{ $k->warna }} !important; }
+        .popup-{{ $k->kode }} { border-top: 3px solid {{ $k->warna }}; }
+        .score-{{ $k->kode }} { color: {{ $k->warna }}; }
+        @endforeach
+    </style>
     @stack('styles')
 </head>
 <body>
@@ -72,6 +82,9 @@
     <a href="{{ route('admin.kategori.index') }}" class="sidebar-link {{ request()->routeIs('admin.kategori.*') ? 'active' : '' }}">
         <i class="bi bi-tags"></i> Kategori OPK
     </a>
+    <a href="{{ route('admin.kondisi.index') }}" class="sidebar-link {{ request()->routeIs('admin.kondisi.*') ? 'active' : '' }}">
+        <i class="bi bi-heart-pulse"></i> Kondisi OPK
+    </a>
     <a href="{{ route('admin.opk.arsip') }}" class="sidebar-link {{ request()->routeIs('admin.opk.arsip') ? 'active' : '' }}">
         <i class="bi bi-archive"></i> Arsip OPK
     </a>
@@ -131,6 +144,17 @@ document.addEventListener('DOMContentLoaded', function() {
         Swal = Swal.mixin({ customClass: { container: 'swal2-container' } });
     }
 });
+
+// Global kondisi OPK data — tersedia di semua halaman
+window.kondisiList = @json($kondisiList->map(fn($k) => ['kode' => $k->kode, 'nama' => $k->nama, 'warna' => $k->warna]));
+window.kondisiColor = function(kode) {
+    var found = window.kondisiList.find(function(k) { return k.kode === kode; });
+    return found ? found.warna : '#6c757d';
+};
+window.kondisiLabel = function(kode) {
+    var found = window.kondisiList.find(function(k) { return k.kode === kode; });
+    return found ? found.nama : kode;
+};
 
 window._toggleSidebar = function() {
     var sidebar = document.getElementById('sidebarEl');

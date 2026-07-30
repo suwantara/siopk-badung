@@ -2,23 +2,43 @@
 
 namespace App\Services;
 
+use App\Helpers\CacheKeys;
 use App\Models\Kecamatan;
+use App\Models\KondisiOpk;
 use App\Models\OpkCategory;
 use App\Models\OpkLaporan;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class OpkStatsService
 {
+    private function kondisiKodes(): array
+    {
+        return Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
+            return KondisiOpk::orderBy('urutan')->pluck('kode')->toArray();
+        });
+    }
+
+    private function kondisiNonBaikKodes(): array
+    {
+        $all = $this->kondisiKodes();
+
+        return array_values(array_filter($all, fn ($k) => $k !== 'baik'));
+    }
+
     public function dashboardAdmin(): array
     {
         $startOfMonth = now()->startOfMonth()->toDateString();
         $endOfMonth = now()->endOfMonth()->toDateString();
+        $nonBaik = $this->kondisiNonBaikKodes();
+        $nonBaikIn = "'".implode("','", $nonBaik)."'";
+
         $row = DB::table('opk_laporans')
             ->selectRaw("
                 SUM(CASE WHEN status_verifikasi = 'disetujui' THEN 1 ELSE 0 END) as total_opk,
-                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'kritis' THEN 1 ELSE 0 END) as kritis,
-                SUM(CASE WHEN status_verifikasi IN ('menunggu', 'review_dinas') THEN 1 ELSE 0 END) as menunggu,
+                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi IN ({$nonBaikIn}) THEN 1 ELSE 0 END) as kritis,
+                SUM(CASE WHEN status_verifikasi IN ('menunggu', 'ai_review', 'review_dinas') THEN 1 ELSE 0 END) as menunggu,
                 SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'baik' THEN 1 ELSE 0 END) as terlindungi,
                 SUM(CASE WHEN DATE(created_at) BETWEEN ? AND ? THEN 1 ELSE 0 END) as bulan_ini
             ", [$startOfMonth, $endOfMonth])
@@ -36,71 +56,90 @@ class OpkStatsService
 
     public function dashboardPublik(): array
     {
-        $row = OpkLaporan::selectRaw("
-                COUNT(*) as total,
-                SUM(CASE WHEN kondisi = 'kritis'  THEN 1 ELSE 0 END) as kritis,
-                SUM(CASE WHEN kondisi = 'waspada' THEN 1 ELSE 0 END) as waspada,
-                SUM(CASE WHEN kondisi = 'baik'    THEN 1 ELSE 0 END) as baik
-            ")
-            ->disetujui()
-            ->first();
+        $kodus = $this->kondisiKodes();
+        if (empty($kodus)) {
+            return ['total' => 0, 'kritis' => 0, 'waspada' => 0, 'baik' => 0];
+        }
 
-        return [
-            'total' => (int) ($row->total ?? 0),
-            'kritis' => (int) ($row->kritis ?? 0),
-            'waspada' => (int) ($row->waspada ?? 0),
-            'baik' => (int) ($row->baik ?? 0),
-        ];
+        $counts = OpkLaporan::selectRaw('kondisi, COUNT(*) as jumlah')
+            ->disetujui()
+            ->groupBy('kondisi')
+            ->pluck('jumlah', 'kondisi')
+            ->toArray();
+
+        $result = ['total' => 0];
+        foreach ($kodus as $k) {
+            $result[$k] = (int) ($counts[$k] ?? 0);
+            $result['total'] += $result[$k];
+        }
+
+        return $result;
     }
 
     public function laporanAdmin(): array
     {
         $startOfMonth = now()->startOfMonth()->toDateString();
         $endOfMonth = now()->endOfMonth()->toDateString();
+        $kodus = $this->kondisiKodes();
+
+        $caseStatements = [];
+        foreach ($kodus as $k) {
+            $caseStatements[] = "SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = '{$k}' THEN 1 ELSE 0 END) as {$k}";
+        }
+
+        $sql = implode(', ', $caseStatements);
+        $earlyNonBaik = array_values(array_filter($kodus, fn ($k) => $k !== 'baik'));
+        $earlyIn = "'".implode("','", $earlyNonBaik)."'";
+
         $row = DB::table('opk_laporans')
             ->selectRaw("
                 SUM(CASE WHEN status_verifikasi = 'disetujui' THEN 1 ELSE 0 END) as disetujui,
-                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'kritis' THEN 1 ELSE 0 END) as kritis,
-                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'waspada' THEN 1 ELSE 0 END) as waspada,
-                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'baik' THEN 1 ELSE 0 END) as baik,
+                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi IN ({$earlyIn}) THEN 1 ELSE 0 END) as kritis,
+                {$sql},
                 SUM(CASE WHEN status_verifikasi = 'ditolak' THEN 1 ELSE 0 END) as ditolak,
-                SUM(CASE WHEN status_verifikasi IN ('menunggu', 'review_dinas') THEN 1 ELSE 0 END) as menunggu,
+                SUM(CASE WHEN status_verifikasi IN ('menunggu', 'ai_review', 'review_dinas') THEN 1 ELSE 0 END) as menunggu,
                 SUM(CASE WHEN DATE(created_at) BETWEEN ? AND ? THEN 1 ELSE 0 END) as bulan_ini
             ", [$startOfMonth, $endOfMonth])
             ->whereNull('deleted_at')
             ->first();
 
-        return [
+        $result = [
             'total' => (int) ($row->disetujui ?? 0),
-            'kritis' => (int) ($row->kritis ?? 0),
-            'waspada' => (int) ($row->waspada ?? 0),
-            'baik' => (int) ($row->baik ?? 0),
             'disetujui' => (int) ($row->disetujui ?? 0),
             'ditolak' => (int) ($row->ditolak ?? 0),
             'menunggu' => (int) ($row->menunggu ?? 0),
+            'kritis' => (int) ($row->kritis ?? 0),
             'bulan_ini' => (int) ($row->bulan_ini ?? 0),
         ];
+
+        foreach ($kodus as $k) {
+            $result[$k] = (int) ($row->{$k} ?? 0);
+        }
+
+        return $result;
     }
 
     public function ringkasanEksekutif(): array
     {
         $sevenDaysAgo = now()->subDays(7)->format('Y-m-d');
+        $nonBaik = $this->kondisiNonBaikKodes();
+        $nonBaikIn = "'".implode("','", $nonBaik)."'";
+
         $row = DB::table('opk_laporans')
             ->selectRaw("
                 SUM(CASE WHEN status_verifikasi = 'disetujui' THEN 1 ELSE 0 END) as total_opk,
-                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'kritis' THEN 1 ELSE 0 END) as kritis,
-                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'waspada' THEN 1 ELSE 0 END) as waspada,
+                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi IN ({$nonBaikIn}) THEN 1 ELSE 0 END) as kritis,
                 SUM(CASE WHEN status_verifikasi = 'disetujui' AND ai_urgency_score >= 7 THEN 1 ELSE 0 END) as prioritas_tinggi,
                 SUM(CASE WHEN status_verifikasi = 'disetujui' AND DATE(updated_at) >= ? THEN 1 ELSE 0 END) as disetujui_7hari,
                 SUM(CASE WHEN status_verifikasi = 'ditolak' AND DATE(updated_at) >= ? THEN 1 ELSE 0 END) as ditolak_7hari,
-                SUM(CASE WHEN status_verifikasi IN ('menunggu', 'review_dinas') THEN 1 ELSE 0 END) as menunggu,
+                SUM(CASE WHEN status_verifikasi IN ('menunggu', 'ai_review', 'review_dinas') THEN 1 ELSE 0 END) as menunggu,
                 SUM(CASE WHEN DATE(created_at) >= ? THEN 1 ELSE 0 END) as laporan_baru
             ", [$sevenDaysAgo, $sevenDaysAgo, $sevenDaysAgo])
             ->whereNull('deleted_at')
             ->first();
 
         $kritis = OpkLaporan::where('status_verifikasi', 'disetujui')
-            ->kritis()
+            ->whereIn('kondisi', $nonBaik)
             ->with('kecamatan')
             ->orderByDesc('ai_urgency_score')
             ->limit(5)
@@ -112,7 +151,6 @@ class OpkStatsService
             'total_opk' => (int) ($row->total_opk ?? 0),
             'laporan_baru' => (int) ($row->laporan_baru ?? 0),
             'kritis' => (int) ($row->kritis ?? 0),
-            'waspada' => (int) ($row->waspada ?? 0),
             'disetujui' => (int) ($row->disetujui_7hari ?? 0),
             'ditolak' => (int) ($row->ditolak_7hari ?? 0),
             'menunggu' => (int) ($row->menunggu ?? 0),
@@ -133,5 +171,18 @@ class OpkStatsService
         return Kecamatan::withCount([
             'laporans as total' => fn ($q) => $q->disetujui(),
         ])->orderByDesc('total')->get();
+    }
+
+    public static function kondisiPrioritasOrderRaw(): \Illuminate\Support\Facades\DB
+    {
+        $kodes = Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
+            return KondisiOpk::orderBy('urutan')->pluck('kode')->toArray();
+        });
+        $nonBaik = array_filter($kodes, fn ($k) => $k !== 'baik');
+        $baik = in_array('baik', $kodes) ? ['baik'] : [];
+        $ordered = array_merge($nonBaik, $baik);
+        $quoted = "'".implode("','", $ordered)."'";
+
+        return \Illuminate\Support\Facades\DB::raw("FIELD(kondisi, {$quoted})");
     }
 }

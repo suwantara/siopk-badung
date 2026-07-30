@@ -79,11 +79,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-key">Kondisi</span>
-                    <span class="info-val">
-                        @if($laporan->kondisi === 'kritis') Kritis
-                        @elseif($laporan->kondisi === 'waspada') Waspada
-                        @else Baik @endif
-                    </span>
+                    <span class="info-val">{{ $laporan->kondisiOpk?->nama ?? ucfirst($laporan->kondisi) }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-key">Tanggal Lapor</span>

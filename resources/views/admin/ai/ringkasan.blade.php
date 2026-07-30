@@ -18,30 +18,46 @@
 
 {{-- KPI cepat --}}
 @php
-    $totalOpk    = \App\Models\OpkLaporan::where('status_verifikasi','disetujui')->count();
-    $kritis      = \App\Models\OpkLaporan::where('status_verifikasi','disetujui')->where('kondisi','kritis')->count();
-    $waspada     = \App\Models\OpkLaporan::where('status_verifikasi','disetujui')->where('kondisi','waspada')->count();
-    $menunggu    = \App\Models\OpkLaporan::whereIn('status_verifikasi',['menunggu','review_dinas'])->count();
-    $lapoMinggu  = \App\Models\OpkLaporan::whereDate('created_at','>=',now()->subDays(7))->count();
-    $prioritas   = \App\Models\OpkLaporan::where('status_verifikasi','disetujui')->where('ai_urgency_score','>=',7)->count();
+    $totalOpk  = \App\Models\OpkLaporan::where('status_verifikasi','disetujui')->count();
+    $menunggu  = \App\Models\OpkLaporan::whereIn('status_verifikasi',['menunggu','review_dinas'])->count();
+    $lapoMinggu = \App\Models\OpkLaporan::whereDate('created_at','>=',now()->subDays(7))->count();
+    $prioritas = \App\Models\OpkLaporan::where('status_verifikasi','disetujui')->where('ai_urgency_score','>=',7)->count();
+    $condCounts = [];
+    foreach ($kondisiList as $k) {
+        $condCounts[$k->kode] = \App\Models\OpkLaporan::where('status_verifikasi','disetujui')->where('kondisi', $k->kode)->count();
+    }
 @endphp
 
 <div class="row g-3 mb-4">
-    @foreach([
-        ['Total OPK',       $totalOpk,   'Terverifikasi resmi',   '',        'bi-collection'],
-        ['Kritis',          $kritis,     'Perlu tindakan segera', 'kritis',  'bi-exclamation-triangle'],
-        ['Waspada',         $waspada,    'Perlu pemantauan',      'waspada', 'bi-eye'],
-        ['Antrian',         $menunggu,   'Menunggu verifikasi',   '',        'bi-clock'],
-        ['Laporan Minggu',  $lapoMinggu, 'Masuk 7 hari terakhir', '',        'bi-inbox'],
-        ['Prioritas AI≥7',  $prioritas,  'Score urgensi tinggi',  'kritis',  'bi-robot'],
-    ] as [$label, $val, $sub, $type, $icon])
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="card kpi-card {{ $type }} h-100 text-center">
+        <div class="card kpi-card h-100 text-center">
             <div class="card-body py-3">
-                <i class="bi {{ $icon }}" style="font-size:1.2rem;color:{{ $type === 'kritis' ? 'var(--merah)' : ($type === 'waspada' ? 'var(--kuning)' : 'var(--emas)') }};"></i>
-                <div class="kpi-value mt-1" style="font-size:1.8rem;">{{ $val }}</div>
-                <div class="kpi-label" class="t-caption">{{ $label }}</div>
-                <div style="color:var(--abu);margin-top:2px" class="t-caption">{{ $sub }}</div>
+                <i class="bi bi-collection" style="font-size:1.2rem;color:var(--emas);"></i>
+                <div class="kpi-value mt-1" style="font-size:1.8rem;">{{ $totalOpk }}</div>
+                <div class="kpi-label" class="t-caption">Total OPK</div>
+                <div style="color:var(--abu);margin-top:2px" class="t-caption">Terverifikasi resmi</div>
+            </div>
+        </div>
+    </div>
+    @foreach($kondisiList as $kk)
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card kpi-card {{ $kk->kode }} h-100 text-center">
+            <div class="card-body py-3">
+                <i class="bi {{ $kk->kode === 'baik' ? 'bi-check-circle' : 'bi-exclamation-triangle' }}" style="font-size:1.2rem;color:{{ $kk->warna }};"></i>
+                <div class="kpi-value mt-1" style="font-size:1.8rem;">{{ $condCounts[$kk->kode] ?? 0 }}</div>
+                <div class="kpi-label" class="t-caption">{{ $kk->nama }}</div>
+                <div style="color:var(--abu);margin-top:2px" class="t-caption">Kondisi {{ $kk->nama }}</div>
+            </div>
+        </div>
+    </div>
+    @endforeach
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="card kpi-card h-100 text-center">
+            <div class="card-body py-3">
+                <i class="bi bi-clock" style="font-size:1.2rem;color:var(--emas);"></i>
+                <div class="kpi-value mt-1" style="font-size:1.8rem;">{{ $menunggu }}</div>
+                <div class="kpi-label" class="t-caption">Antrian</div>
+                <div style="color:var(--abu);margin-top:2px" class="t-caption">Menunggu verifikasi</div>
             </div>
         </div>
     </div>
@@ -82,13 +98,16 @@
         <div class="card h-100">
             <div class="card-header-custom">
                 <span class="title"><i class="bi bi-bar-chart-line me-2"></i>Top 5 Prioritas AI</span>
-                <a href="{{ route('admin.opk.index') }}?kondisi=kritis" style="color:var(--emas)" class="t-caption">Lihat Semua →</a>
+                @php $nonBaikKodes = $kondisiList->filter(fn($k) => $k->kode !== 'baik')->pluck('kode')->toArray(); $firstKritis = $kondisiList->firstWhere('kode', '!=', 'baik'); @endphp
+                @if($firstKritis)
+                <a href="{{ route('admin.opk.index') }}?kondisi={{ $firstKritis->kode }}" style="color:var(--emas)" class="t-caption">Lihat Semua →</a>
+                @endif
             </div>
             <div class="card-body p-0">
                 @php
-                    $top5 = \App\Models\OpkLaporan::with(['kategori','kecamatan'])
+                    $top5 = \App\Models\OpkLaporan::with(['kategori','kecamatan','kondisiOpk'])
                         ->where('status_verifikasi','disetujui')
-                        ->whereIn('kondisi',['kritis','waspada'])
+                        ->whereIn('kondisi', $nonBaikKodes)
                         ->orderByDesc('ai_urgency_score')
                         ->limit(5)
                         ->get();
@@ -120,7 +139,7 @@
 {{-- Tabel semua OPK butuh perhatian --}}
 <div class="card mt-3">
     <div class="card-header-custom">
-        <span class="title">Semua OPK Perlu Perhatian (Kritis + Waspada)</span>
+        <span class="title">Semua OPK Perlu Perhatian</span>
         <span style="color:var(--abu)" class="t-caption">Diurutkan AI Score tertinggi</span>
     </div>
     <div class="card-body p-0 table-responsive-si">
@@ -138,9 +157,9 @@
             </thead>
             <tbody>
                 @php
-                    $semua = \App\Models\OpkLaporan::with(['kategori','kecamatan'])
+                    $semua = \App\Models\OpkLaporan::with(['kategori','kecamatan','kondisiOpk'])
                         ->where('status_verifikasi','disetujui')
-                        ->whereIn('kondisi',['kritis','waspada'])
+                        ->whereIn('kondisi', $nonBaikKodes)
                         ->orderByDesc('ai_urgency_score')
                         ->paginate(15);
                 @endphp
@@ -159,7 +178,7 @@
                         <div style="display:flex;align-items:center" class="gap-xs">
                             <x-ui.ai-score :score="$opk->ai_urgency_score ?? 0" :kondisi="$opk->kondisi" />
                             <div style="height:4px;width:50px;background:var(--input-bg);border-radius:2px;overflow:hidden;">
-                                <div style="height:100%;width:{{ ($opk->ai_urgency_score ?? 0)*10 }}%;background:{{ $opk->kondisi==='kritis'?'var(--merah)':'var(--kuning)' }};border-radius:2px;"></div>
+                                <div style="height:100%;width:{{ ($opk->ai_urgency_score ?? 0)*10 }}%;background:{{ $opk->kondisiOpk?->warna ?? 'var(--kuning)' }};border-radius:2px;"></div>
                             </div>
                         </div>
                     </td>

@@ -10,6 +10,10 @@ class CacheKeys
 
     const SIDEBAR_COUNTS = 'sidebar_opk_counts';
 
+    const KONDISI_LIST = 'kondisi_list';
+
+    const KONDISI_KODES = 'kondisi_kodes';
+
     const KATEGORI_LIST = 'kategori_list';
 
     const KECAMATAN_LIST = 'kecamatan_list';

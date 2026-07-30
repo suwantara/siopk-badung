@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Helpers\CacheKeys;
+use App\Models\KondisiOpk;
 use App\Models\OpkLaporan;
 use App\Services\Ai\AiProviderFactory;
 use App\Services\Ai\AiProviderInterface;
@@ -266,11 +268,19 @@ PROMPT;
 
     private function defaultAnalysis(OpkLaporan $laporan): array
     {
-        $score = match ($laporan->kondisi) {
-            'kritis' => 7.5,
-            'waspada' => 4.5,
-            default => 2.0,
-        };
+        $nonBaik = Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
+            return KondisiOpk::orderBy('urutan')->pluck('kode')
+                ->filter(fn ($k) => $k !== 'baik')
+                ->toArray();
+        });
+
+        if (($laporan->kondisi) && in_array($laporan->kondisi, $nonBaik, true)) {
+            $score = 7.5;
+        } elseif ($laporan->kondisi !== 'baik') {
+            $score = 4.5;
+        } else {
+            $score = 2.0;
+        }
 
         if ($laporan->praktisi_usia && $laporan->praktisi_usia > 60) {
             $score = min(10, $score + 1.5);

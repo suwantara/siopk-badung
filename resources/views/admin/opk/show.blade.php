@@ -242,7 +242,7 @@
 @if($laporan->latitude && $laporan->longitude)
 const m = L.map('petaDetail').setView([{{ $laporan->latitude }},{{ $laporan->longitude }}], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
-L.marker([{{ $laporan->latitude }},{{ $laporan->longitude }}],{icon:L.divIcon({className:'',html:'<div style="width:14px;height:14px;border-radius:50%;background:{{ $laporan->kondisi==="kritis"?'var(--merah)':($laporan->kondisi==="waspada"?'var(--kuning)':'var(--hijau)') }};border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',iconSize:[14,14],iconAnchor:[7,7]})}).addTo(m);
+L.marker([{{ $laporan->latitude }},{{ $laporan->longitude }}],{icon:L.divIcon({className:'',html:'<div style="width:14px;height:14px;border-radius:50%;background:{{ $laporan->kondisiOpk?->warna ?? 'var(--hijau)' }};border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',iconSize:[14,14],iconAnchor:[7,7]})}).addTo(m);
 @endif
 </script>
 @endpush

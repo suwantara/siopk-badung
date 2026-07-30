@@ -10,6 +10,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             OpkCategorySeeder::class,
+            KondisiOpkSeeder::class,
             WilayahSeeder::class,
             UserSeeder::class,
         ]);

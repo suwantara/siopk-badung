@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\MediaLimitExceededException;
 use App\Models\OpkFoto;
 use App\Models\OpkLaporan;
 use Illuminate\Support\Facades\Storage;
@@ -31,7 +32,7 @@ class OpkMediaService
         $newCount = count($files);
 
         if (($existingCount - $deletedCount + $newCount) > 10) {
-            throw new \RuntimeException(
+            throw new MediaLimitExceededException(
                 'Maksimal 10 foto per OPK. Anda memiliki '.($existingCount - $deletedCount).' foto, mencoba upload '.$newCount.' foto baru.'
             );
         }

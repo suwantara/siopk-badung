@@ -76,7 +76,10 @@
 <div class="card mb-4">
     <div class="card-header-custom">
         <span class="title">Top 10 OPK Urgensi Tertinggi (AI Score)</span>
-        <a href="{{ route('admin.opk.index') }}?kondisi=kritis" style="color:var(--emas)" class="t-caption">Lihat Semua →</a>
+        @php $firstKritis = $kondisiList->firstWhere('kode', '!=', 'baik'); @endphp
+        @if($firstKritis)
+        <a href="{{ route('admin.opk.index') }}?kondisi={{ $firstKritis->kode }}" style="color:var(--emas)" class="t-caption">Lihat Semua →</a>
+        @endif
     </div>
     <div class="card-body p-0 table-responsive-si">
         <table class="table table-hover mb-0">
@@ -104,7 +107,7 @@
                     <td class="t-body">{{ $opk->kecamatan?->nama }}</td>
                     <td><x-ui.badge-kondisi :kondisi="$opk->kondisi" /></td>
                     <td>
-                        <span style="font-family:'Courier New',monospace;font-weight:700;color:{{ $opk->kondisi === 'kritis' ? 'var(--merah)' : 'var(--kuning)' }}">
+                        <span style="font-family:'Courier New',monospace;font-weight:700;" class="score-{{ $opk->kondisi }}">
                             {{ number_format($opk->ai_urgency_score, 1) }}
                         </span>
                     </td>

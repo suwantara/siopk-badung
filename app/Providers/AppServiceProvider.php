@@ -6,6 +6,7 @@ use App\Contracts\LaporanServiceInterface;
 use App\Contracts\OpkStatsServiceInterface;
 use App\Contracts\PetaDataServiceInterface;
 use App\Contracts\VerifikasiServiceInterface;
+use App\Http\View\Composers\KondisiComposer;
 use App\Http\View\Composers\SidebarComposer;
 use App\Models\Observers\OpkLaporanObserver;
 use App\Models\OpkLaporan;
@@ -42,5 +43,6 @@ class AppServiceProvider extends ServiceProvider
         OpkLaporan::observe(OpkLaporanObserver::class);
 
         View::composer('layouts.app', SidebarComposer::class);
+        View::composer('*', KondisiComposer::class);
     }
 }

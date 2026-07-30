@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\CacheKeys;
+use App\Models\KondisiOpk;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 class StoreLaporanRequest extends FormRequest
@@ -14,6 +17,8 @@ class StoreLaporanRequest extends FormRequest
 
     public function rules(): array
     {
+        $kondisiKodes = $this->getKondisiKodes();
+
         return [
             // Step 1
             'nama_opk' => 'required|string|max:200',
@@ -21,7 +26,7 @@ class StoreLaporanRequest extends FormRequest
             'tahun_diketahui' => 'nullable|integer|min:1|max:'.date('Y'),
             'tahun_keterangan' => 'nullable|string|max:100',
             'status_pelindungan' => 'required|in:belum_terdaftar,sudah_didata_dinas,sk_kabupaten,sk_provinsi,wbtb_nasional',
-            'kondisi' => 'required|in:baik,waspada,kritis',
+            'kondisi' => ['required', Rule::in($kondisiKodes)],
             // Step 2
             'kecamatan_id' => 'required|exists:kecamatans,id',
             'desa_dinas_id' => ['required', Rule::exists('desa_dinas', 'id')->where('kecamatan_id', $this->kecamatan_id)],
@@ -85,5 +90,12 @@ class StoreLaporanRequest extends FormRequest
             'setuju_1.accepted' => 'Anda harus menyetujui pernyataan pertama.',
             'setuju_2.accepted' => 'Anda harus menyetujui pernyataan kedua.',
         ];
+    }
+
+    private function getKondisiKodes(): array
+    {
+        return Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
+            return KondisiOpk::orderBy('urutan')->pluck('kode')->toArray();
+        });
     }
 }

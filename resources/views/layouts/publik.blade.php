@@ -59,6 +59,15 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        @foreach($kondisiList as $k)
+        .pill-{{ $k->kode }} { background: {{ $k->warna }}18; color: {{ $k->warna }}; }
+        .badge-kondisi-{{ $k->kode }} { background-color: {{ $k->warna }}18; color: {{ $k->warna }}; border: 1px solid {{ $k->warna }}33; }
+        .kpi-card.{{ $k->kode }} { border-top-color: {{ $k->warna }} !important; }
+        .popup-{{ $k->kode }} { border-top: 3px solid {{ $k->warna }}; }
+        .score-{{ $k->kode }} { color: {{ $k->warna }}; }
+        @endforeach
+    </style>
     @stack('styles')
 </head>
 <body>
@@ -120,6 +129,17 @@
 
 @yield('content')
 
+<script>
+window.kondisiList = @json($kondisiList->map(fn($k) => ['kode' => $k->kode, 'nama' => $k->nama, 'warna' => $k->warna]));
+window.kondisiColor = function(kode) {
+    var found = window.kondisiList.find(function(k) { return k.kode === kode; });
+    return found ? found.warna : '#6c757d';
+};
+window.kondisiLabel = function(kode) {
+    var found = window.kondisiList.find(function(k) { return k.kode === kode; });
+    return found ? found.nama : kode;
+};
+</script>
 @stack('scripts')
 </body>
 </html>

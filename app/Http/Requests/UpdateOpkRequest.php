@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\CacheKeys;
+use App\Models\KondisiOpk;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 
 class UpdateOpkRequest extends FormRequest
 {
@@ -13,9 +17,11 @@ class UpdateOpkRequest extends FormRequest
 
     public function rules(): array
     {
+        $kondisiKodes = $this->getKondisiKodes();
+
         return [
             'nama_opk' => 'required|string|max:200',
-            'kondisi' => 'required|in:baik,waspada,kritis',
+            'kondisi' => ['required', Rule::in($kondisiKodes)],
             'status_pelindungan' => 'required|string',
             'deskripsi_umum' => 'required|string|min:10',
             'sejarah_asal_usul' => 'nullable|string',
@@ -38,5 +44,12 @@ class UpdateOpkRequest extends FormRequest
             'fotos.*.max' => 'Ukuran foto maksimal 2MB per file.',
             'fotos.max' => 'Maksimal 10 foto per upload.',
         ];
+    }
+
+    private function getKondisiKodes(): array
+    {
+        return Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
+            return KondisiOpk::orderBy('urutan')->pluck('kode')->toArray();
+        });
     }
 }

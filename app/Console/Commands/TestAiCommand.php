@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Kecamatan;
+use App\Models\KondisiOpk;
 use App\Models\OpkCategory;
 use App\Models\OpkLaporan;
 use App\Services\AiOpkAnalyzer;
@@ -51,9 +52,11 @@ class TestAiCommand extends Command
         $this->info('');
         $this->info('Menguji analisis laporan dummy...');
 
+        $nonBaikKode = KondisiOpk::where('kode', '!=', 'baik')->orderBy('urutan')->value('kode') ?? 'kritis';
+
         $laporan = new OpkLaporan([
             'nama_opk' => 'Lontar Usada Desa Pedawa',
-            'kondisi' => 'kritis',
+            'kondisi' => $nonBaikKode,
             'nama_desa_adat' => 'Desa Adat Pedawa',
             'deskripsi_umum' => 'Naskah lontar berisi ilmu pengobatan tradisional Bali. Kondisi rusak berat, belum ada digitalisasi.',
             'praktisi_nama' => 'Jro Mangku Sari',

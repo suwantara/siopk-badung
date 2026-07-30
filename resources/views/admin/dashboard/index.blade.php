@@ -113,10 +113,13 @@
                    style="background:var(--surface-emas-hover);border:1px solid var(--border-emas);color:var(--krem);padding:8px 12px;border-radius:3px;text-decoration:none;display:flex;align-items:center;justify-content:space-between" class="t-body">
                     <span>✓ Review Laporan Warga</span> <span style="opacity:0.5;">→</span>
                 </a>
-                <a href="{{ route('admin.opk.index') }}?kondisi=kritis"
+                @php $firstKritis = $kondisiList->firstWhere('kode', '!=', 'baik'); @endphp
+                @if($firstKritis)
+                <a href="{{ route('admin.opk.index') }}?kondisi={{ $firstKritis->kode }}"
                    style="background:var(--surface-emas-hover);border:1px solid var(--border-emas);color:var(--krem);padding:8px 12px;border-radius:3px;text-decoration:none;display:flex;align-items:center;justify-content:space-between" class="t-body">
-                    <span>🔴 OPK Status Kritis</span> <span style="opacity:0.5;">→</span>
+                    <span>OPK Status {{ $firstKritis->nama }}</span> <span style="opacity:0.5;">→</span>
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -156,7 +159,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <x-ui.ai-score :score="$opk->ai_urgency_score ?? 0" :kondisi="$opk->kondisi" />
                                     <div class="urgency-bar" style="width:50px;">
-                                        <div class="urgency-fill" style="width:{{ ($opk->ai_urgency_score ?? 0) * 10 }}%;background:{{ $opk->kondisi === 'kritis' ? 'var(--merah)' : 'var(--kuning)' }}"></div>
+                                        <div class="urgency-fill" style="width:{{ ($opk->ai_urgency_score ?? 0) * 10 }}%;background:{{ $opk->kondisiOpk?->warna ?? 'var(--kuning)' }}"></div>
                                     </div>
                                 </div>
                             </td>
@@ -218,14 +221,15 @@ const ds = {
 };
 
 function getColor(kondisi) {
-    return kondisi === 'kritis' ? ds.merah : kondisi === 'waspada' ? ds.kuning : ds.hijau;
+    return window.kondisiColor(kondisi);
 }
 
 function makeIcon(kondisi) {
     const color = getColor(kondisi);
+    const pulse = kondisi && kondisi !== 'baik';
     return L.divIcon({
         className: '',
-        html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);${kondisi==='kritis'?'animation:pulse 1.5s infinite':''}"></div>`,
+        html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);${pulse?'animation:pulse 1.5s infinite':''}"></div>`,
         iconSize: [14, 14],
         iconAnchor: [7, 7],
     });

@@ -262,9 +262,6 @@ body.sidebar-open {
 
 /* ---- KPI Cards ---- */
 .kpi-card { border-top: 3px solid var(--emas) !important; }
-.kpi-card.kritis  { border-top-color: var(--merah)  !important; }
-.kpi-card.waspada { border-top-color: var(--kuning) !important; }
-.kpi-card.hijau   { border-top-color: var(--hijau)  !important; }
 .kpi-value {
     font-family: 'Cormorant Garamond', serif;
     font-size: 2.4rem; font-weight: 700;
@@ -280,24 +277,7 @@ body.sidebar-open {
 }
 
 /* ---- Status Badges ---- */
-.badge-kritis {
-    background-color: rgba(var(--merah-rgb),0.15);
-    color: var(--merah);
-    font-weight: 600;
-    border: 1px solid rgba(var(--merah-rgb),0.25);
-}
-.badge-waspada {
-    background-color: rgba(var(--kuning-rgb),0.15);
-    color: #8a6010;
-    font-weight: 600;
-    border: 1px solid rgba(var(--kuning-rgb),0.25);
-}
-.badge-baik {
-    background-color: rgba(var(--hijau-rgb),0.15);
-    color: var(--hijau);
-    font-weight: 600;
-    border: 1px solid rgba(var(--hijau-rgb),0.25);
-}
+/* Kondisi-specific badges generated dynamically via layout (pill-{kode}, badge-kondisi-{kode}) */
 
 /* ---- Peta ---- */
 #peta { border-radius: 4px; }
@@ -464,9 +444,7 @@ body.sidebar-open {
 .leaflet-popup-content-wrapper { border-radius: 4px; }
 .leaflet-popup-content a { color: var(--tanah); }
 .leaflet-popup-content a:hover { color: var(--emas-muda); }
-.popup-kritis  { border-top: 3px solid var(--merah); }
-.popup-waspada { border-top: 3px solid var(--kuning); }
-.popup-baik    { border-top: 3px solid var(--hijau); }
+/* Kondisi-specific popup borders generated dynamically via layout (popup-{kode}) */
 
 /* ---- Mobile: Sidebar Toggle Button ---- */
 .sidebar-toggle {
@@ -784,9 +762,7 @@ body { font-family: 'Inter', sans-serif; background: var(--krem); color: var(--t
 .opk-nama { font-weight: 600; font-size: 0.8rem; color: var(--tanah); line-height: 1.3; }
 .opk-meta { font-size: 0.66rem; color: var(--abu); margin-top: 2px; }
 .kondisi-pill { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 0.6rem; font-weight: 700; }
-.pill-kritis { background: var(--surface-merah); color: var(--merah); }
-.pill-waspada { background: var(--surface-kuning); color: var(--kuning); }
-.pill-baik { background: var(--surface-hijau); color: var(--hijau); }
+/* Kondisi-specific pill colors generated dynamically via layout (pill-{kode}) */
 .terbaru-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0.75rem; }
 .terbaru-card { border: 1px solid var(--border-default); border-radius: 3px; overflow: hidden; cursor: pointer; transition: box-shadow 0.2s; text-decoration: none; color: var(--tanah); }
 .terbaru-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }

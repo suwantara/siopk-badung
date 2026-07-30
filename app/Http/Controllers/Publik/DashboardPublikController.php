@@ -26,7 +26,7 @@ class DashboardPublikController extends Controller
             $kategori = $this->statsService->kategoriWithOpkCount();
             $kecamatans = $this->statsService->kecamatanWithOpkCount();
 
-            $terbaru = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama'])
+            $terbaru = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama', 'kondisiOpk'])
                 ->disetujui()
                 ->latest()
                 ->limit(6)
@@ -85,7 +85,7 @@ class DashboardPublikController extends Controller
 
     public function daftarOpk(Request $request)
     {
-        $query = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama'])
+        $query = OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama', 'kondisiOpk'])
             ->disetujui();
 
         if ($request->filled('cari')) {
@@ -114,7 +114,7 @@ class DashboardPublikController extends Controller
             'terbaru' => $query->latest(),
             'terlama' => $query->oldest(),
             'nama' => $query->orderBy('nama_opk'),
-            'kritis' => $query->orderByRaw("FIELD(kondisi, 'kritis', 'waspada', 'baik')"),
+            'kritis', 'prioritas' => $query->orderByRaw(OpkStatsService::kondisiPrioritasOrderRaw()),
             default => $query->latest(),
         };
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DesaAdatController;
 use App\Http\Controllers\Admin\DesaDinasController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\KecamatanController;
+use App\Http\Controllers\Admin\KondisiController;
 use App\Http\Controllers\Admin\LaporanAdminController;
 use App\Http\Controllers\Admin\OpkController;
 use App\Http\Controllers\Admin\PenggunaController;
@@ -140,6 +141,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::post('/', [KategoriController::class, 'store'])->name('store');
         Route::put('/{kategori}', [KategoriController::class, 'update'])->name('update');
         Route::delete('/{kategori}', [KategoriController::class, 'destroy'])->name('destroy');
+    });
+
+    // Kondisi OPK
+    Route::prefix('kondisi')->name('kondisi.')->middleware('role:superadmin,admin')->group(function () {
+        Route::get('/', [KondisiController::class, 'index'])->name('index');
+        Route::post('/', [KondisiController::class, 'store'])->name('store');
+        Route::put('/{kondisi}', [KondisiController::class, 'update'])->name('update');
+        Route::delete('/{kondisi}', [KondisiController::class, 'destroy'])->name('destroy');
     });
 
     // AI

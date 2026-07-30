@@ -3,7 +3,6 @@
 namespace Tests\Unit;
 
 use App\Enums\AiProvider;
-use App\Enums\KondisiOpk;
 use App\Enums\StatusVerifikasi;
 use App\Enums\UserRole;
 use Tests\TestCase;
@@ -24,19 +23,6 @@ class EnumsTest extends TestCase
         $this->assertEquals('disetujui', StatusVerifikasi::Disetujui->value);
         $this->assertEquals('ditolak', StatusVerifikasi::Ditolak->value);
         $this->assertEquals('duplikat', StatusVerifikasi::Duplikat->value);
-    }
-
-    public function test_kondisi_opk_has_three_values(): void
-    {
-        $cases = KondisiOpk::cases();
-        $this->assertCount(3, $cases);
-    }
-
-    public function test_kondisi_opk_values(): void
-    {
-        $this->assertEquals('baik', KondisiOpk::Baik->value);
-        $this->assertEquals('waspada', KondisiOpk::Waspada->value);
-        $this->assertEquals('kritis', KondisiOpk::Kritis->value);
     }
 
     public function test_ai_provider_values(): void

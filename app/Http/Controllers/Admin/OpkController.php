@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateOpkRequest;
 use App\Models\Kecamatan;
 use App\Models\OpkCategory;
 use App\Models\OpkLaporan;
+use App\Services\OpkExportService;
 use App\Services\OpkMediaService;
 use App\Services\PetaDataService;
 use Illuminate\Http\Request;
@@ -17,7 +18,8 @@ class OpkController extends Controller
 {
     public function __construct(
         private readonly PetaDataService $petaService,
-        private readonly OpkMediaService $mediaService
+        private readonly OpkMediaService $mediaService,
+        private readonly OpkExportService $exportService,
     ) {}
 
     public function index(Request $request)
@@ -185,5 +187,23 @@ class OpkController extends Controller
             ->paginate(20);
 
         return view('admin.opk.arsip', compact('laporans'));
+    }
+
+    public function exportOne(OpkLaporan $laporan)
+    {
+        $includePrivate = auth()->user()->isAdmin() || auth()->user()->isSuperAdmin();
+
+        $filePath = $this->exportService->exportSingle($laporan, $includePrivate);
+
+        return response()->download($filePath)->deleteFileAfterSend();
+    }
+
+    public function exportAll(Request $request)
+    {
+        $filters = $request->only(['search', 'kategori_id', 'kecamatan_id', 'kondisi']);
+
+        $filePath = $this->exportService->exportBatch($filters);
+
+        return response()->download($filePath)->deleteFileAfterSend();
     }
 }

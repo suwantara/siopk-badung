@@ -75,10 +75,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // OPK Resmi
     Route::middleware('role:superadmin,admin,verifikator,petugas')->group(function () {
         Route::get('/opk', [OpkController::class, 'index'])->name('opk.index');
+        Route::get('/opk/export', [OpkController::class, 'exportAll'])->name('opk.export');
         Route::get('/opk/peta', [OpkController::class, 'peta'])->name('opk.peta');
         Route::get('/opk/arsip', [OpkController::class, 'arsip'])->name('opk.arsip')
             ->middleware('role:superadmin,admin');
         Route::get('/opk/{laporan}', [OpkController::class, 'show'])->name('opk.show');
+        Route::get('/opk/{laporan}/export', [OpkController::class, 'exportOne'])->name('opk.export-one');
     });
 
     Route::middleware('role:superadmin,admin')->group(function () {

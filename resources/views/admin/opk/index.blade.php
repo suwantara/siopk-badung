@@ -3,7 +3,16 @@
 @section('page-title', 'Data OPK Resmi')
 
 @section('content')
-<x-ui.page-header title="Data OPK Kabupaten Badung" :subtitle="$laporans->total() . ' objek terdaftar · status: disetujui &amp; terverifikasi'" action-label="Tambah OPK" action-url="{{ route('publik.lapor.index') }}" action-target="_blank" />
+<x-ui.page-header title="Data OPK Kabupaten Badung" :subtitle="$laporans->total() . ' objek terdaftar · status: disetujui &amp; terverifikasi'">
+    <x-slot:action>
+        <a href="{{ route('admin.opk.export', request()->only(['search','kategori_id','kecamatan_id','kondisi'])) }}" class="btn btn-sm btn-outline-success me-1" title="Export ke Excel">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel
+        </a>
+        <a href="{{ route('publik.lapor.index') }}" target="_blank" class="btn btn-sm btn-emas">
+            <i class="bi bi-plus-lg me-1"></i>Tambah OPK
+        </a>
+    </x-slot:action>
+</x-ui.page-header>
 
 <x-ui.filter-bar reset-url="{{ route('admin.opk.index') }}">
     <div class="col-6 col-md-3">

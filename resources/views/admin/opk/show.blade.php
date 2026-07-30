@@ -27,6 +27,11 @@
                             <span style="background:var(--surface-hijau);color:var(--hijau);padding:3px 10px;border-radius:2px;font-weight:500" class="t-caption">✓ Terverifikasi</span>
                         </div>
                     </div>
+                    <div class="d-flex gap-1">
+                    <a href="{{ route('admin.opk.export-one', $laporan) }}" class="btn btn-sm btn-outline-success" title="Export ke Excel">
+                        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export
+                    </a>
+                    </div>
                     @if(auth()->user()->isAdmin())
                     <div class="d-flex gap-1">
                     <a href="{{ route('admin.opk.edit', $laporan) }}" class="btn-edit btn-sm">

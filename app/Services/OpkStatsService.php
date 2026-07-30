@@ -21,7 +21,7 @@ class OpkStatsService
         });
     }
 
-    private function kondisiNonBaikKodes(): array
+    public function kondisiNonBaikKodes(): array
     {
         $all = $this->kondisiKodes();
 
@@ -183,6 +183,38 @@ class OpkStatsService
 
         return Kecamatan::withCount($counts)
             ->orderByDesc('total')
+            ->get();
+    }
+
+    public function prioritas(int $limit = 10): Collection
+    {
+        return OpkLaporan::with(['kategori', 'kecamatan', 'fotoUtama', 'kondisiOpk'])
+            ->disetujui()
+            ->whereIn('kondisi', $this->kondisiNonBaikKodes())
+            ->orderByDesc('ai_urgency_score')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function antrian(int $limit = 7): Collection
+    {
+        return OpkLaporan::with(['kategori', 'kecamatan'])
+            ->menunggu()
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+
+    public function petaDataDashboard(): Collection
+    {
+        return OpkLaporan::select([
+            'id', 'kode_laporan', 'nama_opk', 'kondisi',
+            'latitude', 'longitude', 'kategori_id', 'kecamatan_id',
+        ])
+            ->with(['kategori:id,nama,ikon', 'kecamatan:id,nama'])
+            ->disetujui()
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
             ->get();
     }
 

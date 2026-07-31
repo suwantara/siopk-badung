@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\StatusVerifikasi;
 use App\Helpers\CacheKeys;
 use App\Http\Controllers\Controller;
 use App\Jobs\AnalisisOpkJob;
@@ -43,7 +44,12 @@ class AiController extends Controller
     // ─────────────────────────────────────────────
     public function reAnalisis(OpkLaporan $laporan)
     {
-        // Reset status dulu
+        $currentStatus = StatusVerifikasi::tryFrom($laporan->status_verifikasi);
+
+        if (! $currentStatus || $currentStatus->isTerminal()) {
+            return back()->with('error', "Laporan {$laporan->kode_laporan} sudah dalam status final ({$laporan->status_verifikasi}). Tidak dapat dianalisis ulang.");
+        }
+
         $laporan->update([
             'status_verifikasi' => 'ai_review',
             'ai_urgency_score' => null,
@@ -51,7 +57,6 @@ class AiController extends Controller
             'ai_duplikat_score' => null,
         ]);
 
-        // Dispatch ulang job
         AnalisisOpkJob::dispatch($laporan->id);
 
         return back()->with('success', "AI sedang menganalisis ulang laporan {$laporan->kode_laporan}. Refresh halaman dalam beberapa detik.");

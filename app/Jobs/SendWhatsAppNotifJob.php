@@ -28,7 +28,7 @@ class SendWhatsAppNotifJob implements ShouldQueue
 
     public function handle(WhatsAppService $wa): void
     {
-        Log::warning("SendWhatsAppNotifJob: {$this->action} ke {$this->nomorWa} untuk {$this->kodeLaporan}");
+        Log::info("SendWhatsAppNotifJob: {$this->action} ke ".$this->maskWa()." untuk {$this->kodeLaporan}");
 
         match ($this->action) {
             'laporan_diterima' => $wa->notifikasiLaporanDiterima($this->nomorWa, $this->kodeLaporan, $this->namaOpk),
@@ -41,5 +41,14 @@ class SendWhatsAppNotifJob implements ShouldQueue
     public function failed(\Throwable $e): void
     {
         Log::warning("SendWhatsAppNotifJob FAILED action {$this->action}: ".$e->getMessage());
+    }
+
+    private function maskWa(): string
+    {
+        if (strlen($this->nomorWa) <= 4) {
+            return '***';
+        }
+
+        return substr($this->nomorWa, 0, 3) . str_repeat('*', max(0, strlen($this->nomorWa) - 5)) . substr($this->nomorWa, -2);
     }
 }

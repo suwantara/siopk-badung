@@ -10,4 +10,26 @@ enum StatusVerifikasi: string
     case Disetujui = 'disetujui';
     case Ditolak = 'ditolak';
     case Duplikat = 'duplikat';
+
+    public function canTransitionTo(self $target): bool
+    {
+        return in_array($target, $this->allowedTransitions(), true);
+    }
+
+    public function allowedTransitions(): array
+    {
+        return match ($this) {
+            self::Menunggu    => [self::AiReview],
+            self::AiReview    => [self::ReviewDinas],
+            self::ReviewDinas => [self::Disetujui, self::Ditolak, self::Duplikat],
+            self::Disetujui   => [],
+            self::Ditolak     => [],
+            self::Duplikat   => [],
+        };
+    }
+
+    public function isTerminal(): bool
+    {
+        return empty($this->allowedTransitions());
+    }
 }

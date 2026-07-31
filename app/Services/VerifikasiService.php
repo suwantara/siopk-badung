@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\StatusVerifikasi;
 use App\Events\LaporanVerified;
 use App\Models\OpkLaporan;
 use App\Models\OpkRiwayatStatus;
@@ -28,12 +29,25 @@ class VerifikasiService
 
     private function updateStatus(OpkLaporan $laporan, User $verifikator, string $statusBaru, ?string $catatan): void
     {
+        $statusLama = StatusVerifikasi::tryFrom($laporan->status_verifikasi);
+        $target = StatusVerifikasi::tryFrom($statusBaru);
+
+        if (! $statusLama || ! $target) {
+            throw new \InvalidArgumentException("Status tidak valid: dari '{$laporan->status_verifikasi}' ke '{$statusBaru}'.");
+        }
+
+        if (! $statusLama->canTransitionTo($target)) {
+            throw new \RuntimeException(
+                "Transisi status tidak diizinkan: dari '{$statusLama->value}' ke '{$target->value}' pada laporan {$laporan->kode_laporan}."
+            );
+        }
+
         DB::beginTransaction();
         try {
-            $statusLama = $laporan->status_verifikasi;
+            $statusLamaStr = $laporan->status_verifikasi;
 
             $laporan->update([
-                'status_verifikasi' => $statusBaru,
+                'status_verifikasi' => $target->value,
                 'diverifikasi_oleh' => $verifikator->id,
                 'tanggal_verifikasi' => now(),
                 'catatan_verifikasi' => $catatan,
@@ -41,15 +55,15 @@ class VerifikasiService
 
             OpkRiwayatStatus::create([
                 'laporan_id' => $laporan->id,
-                'status_lama' => $statusLama,
-                'status_baru' => $statusBaru,
+                'status_lama' => $statusLamaStr,
+                'status_baru' => $target->value,
                 'user_id' => $verifikator->id,
-                'catatan' => $catatan ?? ($statusBaru === 'disetujui' ? 'Disetujui oleh verifikator.' : 'Ditolak oleh verifikator.'),
+                'catatan' => $catatan ?? ($target === StatusVerifikasi::Disetujui ? 'Disetujui oleh verifikator.' : 'Ditolak oleh verifikator.'),
             ]);
 
             DB::commit();
 
-            LaporanVerified::dispatch($laporan, $statusBaru);
+            LaporanVerified::dispatch($laporan, $target->value);
             PetaDataService::invalidateCache();
 
         } catch (\Exception $e) {

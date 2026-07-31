@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\DesaDinas;
 use App\Models\Kecamatan;
+use App\Models\KondisiOpk;
 use App\Models\OpkCategory;
 use App\Models\OpkLaporan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,6 +19,10 @@ class OpkLaporanTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        KondisiOpk::create(['kode' => 'baik', 'nama' => 'Baik', 'warna' => '#2D5A27', 'urutan' => 1]);
+        KondisiOpk::create(['kode' => 'waspada', 'nama' => 'Waspada', 'warna' => '#B8860B', 'urutan' => 2]);
+        KondisiOpk::create(['kode' => 'kritis', 'nama' => 'Kritis', 'warna' => '#C0392B', 'urutan' => 3]);
 
         OpkCategory::create(['nomor' => 7, 'nama' => 'Seni', 'ikon' => '🎨']);
         $kecamatan = Kecamatan::create(['nama' => 'Kuta Selatan', 'kode' => 'KS']);

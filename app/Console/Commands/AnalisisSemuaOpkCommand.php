@@ -14,7 +14,7 @@ class AnalisisSemuaOpkCommand extends Command
 
     public function handle(): int
     {
-        $query = OpkLaporan::whereIn('status_verifikasi', ['menunggu', 'review_dinas', 'disetujui']);
+        $query = OpkLaporan::whereIn('status_verifikasi', ['menunggu', 'review_dinas']);
 
         if (! $this->option('force')) {
             $query->whereNull('ai_urgency_score');

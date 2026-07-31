@@ -14,6 +14,7 @@ use App\Services\OpkMediaService;
 use App\Services\PetaDataService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class OpkController extends Controller
 {
@@ -69,32 +70,36 @@ class OpkController extends Controller
     {
         $validated = $request->validated();
 
-        $laporan->nama_opk = $validated['nama_opk'];
-        $laporan->kondisi = $validated['kondisi'];
-        $laporan->status_pelindungan = $validated['status_pelindungan'];
-        $laporan->deskripsi_umum = $validated['deskripsi_umum'];
-        $laporan->sejarah_asal_usul = $validated['sejarah_asal_usul'] ?? $laporan->sejarah_asal_usul;
-        $laporan->nilai_makna_budaya = $validated['nilai_makna_budaya'] ?? $laporan->nilai_makna_budaya;
-        $laporan->latitude = $validated['latitude'] ?? $laporan->latitude;
-        $laporan->longitude = $validated['longitude'] ?? $laporan->longitude;
-        $laporan->save();
+        DB::beginTransaction();
+        try {
+            $laporan->nama_opk = $validated['nama_opk'];
+            $laporan->kondisi = $validated['kondisi'];
+            $laporan->status_pelindungan = $validated['status_pelindungan'];
+            $laporan->deskripsi_umum = $validated['deskripsi_umum'];
+            $laporan->sejarah_asal_usul = $validated['sejarah_asal_usul'] ?? $laporan->sejarah_asal_usul;
+            $laporan->nilai_makna_budaya = $validated['nilai_makna_budaya'] ?? $laporan->nilai_makna_budaya;
+            $laporan->latitude = $validated['latitude'] ?? $laporan->latitude;
+            $laporan->longitude = $validated['longitude'] ?? $laporan->longitude;
+            $laporan->save();
+
+            $hapusIds = $this->parseHapusIds($validated['hapus_foto_ids'] ?? []);
+            $this->mediaService->deleteFotos($laporan->id, $hapusIds);
+
+            if ($request->hasFile('fotos')) {
+                $this->mediaService->uploadFotos($laporan, $request->file('fotos'), count($hapusIds));
+            }
+
+            if (! empty($validated['foto_utama_id'])) {
+                $this->mediaService->setFotoUtama($laporan->id, $validated['foto_utama_id']);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
 
         $this->invalidateCaches();
-
-        $hapusIds = $this->parseHapusIds($validated['hapus_foto_ids'] ?? []);
-        $this->mediaService->deleteFotos($laporan->id, $hapusIds);
-
-        if ($request->hasFile('fotos')) {
-            try {
-                $this->mediaService->uploadFotos($laporan, $request->file('fotos'), count($hapusIds));
-            } catch (\RuntimeException $e) {
-                return back()->withInput()->with('error', $e->getMessage());
-            }
-        }
-
-        if (! empty($validated['foto_utama_id'])) {
-            $this->mediaService->setFotoUtama($laporan->id, $validated['foto_utama_id']);
-        }
 
         return redirect()->route('admin.opk.show', $laporan)
             ->with('success', 'Data OPK berhasil diperbarui.');

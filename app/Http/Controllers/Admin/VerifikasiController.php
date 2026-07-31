@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\OpkLaporan;
+use App\Models\OpkRiwayatStatus;
 use App\Services\VerifikasiService;
 use Illuminate\Http\Request;
 
@@ -44,6 +45,8 @@ class VerifikasiController extends Controller
 
     public function setujui(Request $request, OpkLaporan $laporan)
     {
+        $this->authorize('verify', $laporan);
+
         $request->validate(['catatan' => 'nullable|string|max:500']);
 
         try {
@@ -58,6 +61,8 @@ class VerifikasiController extends Controller
 
     public function tolak(Request $request, OpkLaporan $laporan)
     {
+        $this->authorize('verify', $laporan);
+
         $request->validate([
             'catatan' => 'required|string|max:500',
             'alasan' => 'required|in:tidak_valid,duplikat,kurang_data,diluar_wilayah,lainnya',
@@ -83,6 +88,18 @@ class VerifikasiController extends Controller
         $laporan->update([
             'ai_urgency_score' => $request->ai_urgency_score,
             'ai_rekomendasi' => $request->ai_rekomendasi,
+        ]);
+
+        OpkRiwayatStatus::create([
+            'laporan_id' => $laporan->id,
+            'status_lama' => $laporan->status_verifikasi,
+            'status_baru' => $laporan->status_verifikasi,
+            'user_id' => auth()->id(),
+            'catatan' => sprintf(
+                'AI score manual: %.1f | %s',
+                $request->ai_urgency_score,
+                $request->ai_rekomendasi ?? '-'
+            ),
         ]);
 
         return back()->with('success', 'AI score diperbarui.');

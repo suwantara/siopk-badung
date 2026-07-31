@@ -24,7 +24,7 @@ class SideEffectHandler
     public function handleLaporanCreated(LaporanCreated $event): void
     {
         $this->clearSidebarCache();
-        Log::warning("[SIOPK] Laporan dibuat: {$event->laporan->kode_laporan}, WA: {$event->laporan->pelapor_whatsapp}");
+        Log::info("[SIOPK] Laporan dibuat: {$event->laporan->kode_laporan}, WA: ".$this->maskWa($event->laporan->pelapor_whatsapp));
 
         SendWhatsAppNotifJob::dispatch(
             'laporan_diterima',
@@ -61,5 +61,14 @@ class SideEffectHandler
     {
         $this->clearSidebarCache();
         Log::info("AI selesai analisis: {$event->laporan->kode_laporan}");
+    }
+
+    private function maskWa(string $number): string
+    {
+        if (strlen($number) <= 4) {
+            return '***';
+        }
+
+        return substr($number, 0, 3) . str_repeat('*', max(0, strlen($number) - 5)) . substr($number, -2);
     }
 }

@@ -150,7 +150,7 @@ class OpkLaporan extends Model
         $k = $this->kondisiOpk;
 
         if ($k) {
-            return ['label' => $k->nama, 'color' => $this->badgeColorFromHex($k->warna), 'hex' => $k->warna];
+            return ['label' => $k->nama, 'color' => self::badgeColorFromHex($k->warna), 'hex' => $k->warna];
         }
 
         return ['label' => $this->kondisi ?? '-', 'color' => 'secondary', 'hex' => '#6c757d'];
@@ -159,16 +159,14 @@ class OpkLaporan extends Model
     private static function badgeColorFromHex(string $hex): string
     {
         $colors = [
-            '#2D5A27' => 'success', '#28a745' => 'success', '#198754' => 'success',
-            '#B8860B' => 'warning', '#ffc107' => 'warning',
-            '#C0392B' => 'danger',  '#dc3545' => 'danger',
+            '#2d5a27' => 'success', '#28a745' => 'success', '#198754' => 'success',
+            '#b8860b' => 'warning', '#ffc107' => 'warning',
+            '#c0392b' => 'danger',  '#dc3545' => 'danger',
             '#17a2b8' => 'info',    '#0dcaf0' => 'info',
             '#6c757d' => 'secondary',
             '#343a40' => 'dark',
         ];
 
-        $hex = strtolower($hex);
-
-        return $colors[$hex] ?? 'secondary';
+        return $colors[strtolower($hex)] ?? 'secondary';
     }
 }

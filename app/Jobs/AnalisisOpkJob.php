@@ -80,9 +80,19 @@ class AnalisisOpkJob implements ShouldQueue
             AiAnalysisCompleted::dispatch($laporan);
 
         } catch (\Exception $e) {
-            Log::error("AnalisisOpkJob gagal untuk {$laporan->kode_laporan}: ".$e->getMessage());
+            Log::error("AnalisisOpkJob gagal untuk {$laporan->kode_laporan}: ".$e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
 
-            // Kembalikan ke antrian manual jika AI gagal
+            OpkRiwayatStatus::create([
+                'laporan_id' => $laporan->id,
+                'status_lama' => 'ai_review',
+                'status_baru' => 'ai_review',
+                'catatan' => 'AI gagal: '.$e->getMessage().' | Laporan tetap bisa diverifikasi manual.',
+            ]);
+
             $laporan->update(['status_verifikasi' => 'review_dinas']);
         }
     }

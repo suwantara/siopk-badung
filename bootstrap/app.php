@@ -34,6 +34,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             SecurityHeaders::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'webhook/fonnte/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -72,9 +72,17 @@ class AdminOpkTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->put('/admin/opk/'.$this->laporan->id, [
             'nama_opk' => 'Tari Legong Updated',
+            'kategori_id' => 1,
             'kondisi' => 'waspada',
             'status_pelindungan' => 'belum_terdaftar',
+            'kecamatan_id' => 1,
+            'desa_dinas_id' => 1,
+            'nama_desa_adat' => 'Desa Adat Test',
             'deskripsi_umum' => 'Updated description for testing.',
+            'tipe_pelapor' => 'masyarakat',
+            'pelapor_nama' => 'Test User Updated',
+            'pelapor_nik' => '1234567890123456',
+            'pelapor_whatsapp' => '08123456789',
         ]);
 
         $response->assertRedirect();

@@ -59,7 +59,7 @@ class OpkController extends Controller
     public function edit(OpkLaporan $laporan)
     {
         $this->authorize('update', $laporan);
-        $laporan->load(['kategori', 'kecamatan', 'fotos']);
+        $laporan->load(['kategori', 'kecamatan', 'desaDinas', 'fotos', 'videos', 'dokumens']);
         $kategori = Cache::remember(CacheKeys::KATEGORI_LIST, 86400, fn () => OpkCategory::orderBy('nomor')->get());
         $kecamatans = Cache::remember(CacheKeys::KECAMATAN_WITH_DESA, 86400, fn () => Kecamatan::with('desaDinas')->orderBy('nama')->get());
 
@@ -73,13 +73,33 @@ class OpkController extends Controller
         DB::beginTransaction();
         try {
             $laporan->nama_opk = $validated['nama_opk'];
+            $laporan->kategori_id = $validated['kategori_id'];
+            $laporan->tahun_diketahui = $validated['tahun_diketahui'] ?? $laporan->tahun_diketahui;
+            $laporan->tahun_keterangan = $validated['tahun_keterangan'] ?? $laporan->tahun_keterangan;
             $laporan->kondisi = $validated['kondisi'];
             $laporan->status_pelindungan = $validated['status_pelindungan'];
+            $laporan->kecamatan_id = $validated['kecamatan_id'];
+            $laporan->desa_dinas_id = $validated['desa_dinas_id'];
+            $laporan->nama_desa_adat = $validated['nama_desa_adat'];
+            $laporan->banjar_adat = $validated['banjar_adat'] ?? $laporan->banjar_adat;
+            $laporan->lokasi_spesifik = $validated['lokasi_spesifik'] ?? $laporan->lokasi_spesifik;
+            $laporan->latitude = $validated['latitude'] ?? $laporan->latitude;
+            $laporan->longitude = $validated['longitude'] ?? $laporan->longitude;
             $laporan->deskripsi_umum = $validated['deskripsi_umum'];
             $laporan->sejarah_asal_usul = $validated['sejarah_asal_usul'] ?? $laporan->sejarah_asal_usul;
             $laporan->nilai_makna_budaya = $validated['nilai_makna_budaya'] ?? $laporan->nilai_makna_budaya;
-            $laporan->latitude = $validated['latitude'] ?? $laporan->latitude;
-            $laporan->longitude = $validated['longitude'] ?? $laporan->longitude;
+            $laporan->bahasa_digunakan = $validated['bahasa_digunakan'] ?? $laporan->bahasa_digunakan;
+            $laporan->aksara_digunakan = $validated['aksara_digunakan'] ?? $laporan->aksara_digunakan;
+            $laporan->frekuensi_pelaksanaan = $validated['frekuensi_pelaksanaan'] ?? $laporan->frekuensi_pelaksanaan;
+            $laporan->status_kepemilikan = $validated['status_kepemilikan'] ?? $laporan->status_kepemilikan;
+            $laporan->praktisi_nama = $validated['praktisi_nama'] ?? $laporan->praktisi_nama;
+            $laporan->praktisi_usia = $validated['praktisi_usia'] ?? $laporan->praktisi_usia;
+            $laporan->praktisi_kontak = $validated['praktisi_kontak'] ?? $laporan->praktisi_kontak;
+            $laporan->tipe_pelapor = $validated['tipe_pelapor'];
+            $laporan->pelapor_nama = $validated['pelapor_nama'];
+            $laporan->pelapor_nik = $validated['pelapor_nik'];
+            $laporan->pelapor_whatsapp = $validated['pelapor_whatsapp'];
+            $laporan->pelapor_email = $validated['pelapor_email'] ?? $laporan->pelapor_email;
             $laporan->save();
 
             $hapusIds = $this->parseHapusIds($validated['hapus_foto_ids'] ?? []);
@@ -91,6 +111,20 @@ class OpkController extends Controller
 
             if (! empty($validated['foto_utama_id'])) {
                 $this->mediaService->setFotoUtama($laporan->id, $validated['foto_utama_id']);
+            }
+
+            $hapusVideoIds = $this->parseHapusIds($validated['hapus_video_ids'] ?? []);
+            $this->mediaService->deleteVideos($laporan->id, $hapusVideoIds);
+
+            if (! empty($validated['video_links'])) {
+                $this->mediaService->addVideos($laporan, $validated['video_links']);
+            }
+
+            $hapusDokumenIds = $this->parseHapusIds($validated['hapus_dokumen_ids'] ?? []);
+            $this->mediaService->deleteDokumens($laporan->id, $hapusDokumenIds);
+
+            if ($request->hasFile('dokumen_baru')) {
+                $this->mediaService->uploadDokumens($laporan, $request->file('dokumen_baru'));
             }
 
             DB::commit();

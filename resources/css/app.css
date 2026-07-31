@@ -167,7 +167,7 @@ body.sidebar-open {
 .sidebar {
     width: var(--sidebar-w);
     background: var(--tanah);
-    min-height: 100vh;
+    height: 100vh;
     position: fixed; top: 0; left: 0;
     z-index: 1100; overflow-y: auto;
     border-right: 2px solid var(--emas);
@@ -1007,3 +1007,161 @@ body { font-family: 'Inter', sans-serif; background: var(--krem); color: var(--t
 .list-group-kec .list-group-item.active strong { color: var(--emas-muda); }
 .list-group-kec .list-group-item.active small { color: rgba(247,241,232,0.6); }
 .list-group-kec .list-group-item.active .text-muted { color: rgba(247,241,232,0.5) !important; }
+
+/* ================================================================
+   ADMIN OPK EDIT PAGE
+   ================================================================ */
+.section-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--tanah);
+    margin-bottom: 1rem;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--emas);
+}
+.info-callout {
+    background: var(--krem);
+    border: 1px solid var(--garis);
+    border-radius: 4px;
+    padding: 1rem;
+}
+.edit-tipe-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 14px;
+    border: 2px solid var(--garis);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+.edit-tipe-label:hover {
+    border-color: var(--emas);
+    background: var(--surface-emas-light);
+}
+.edit-tipe-label.selected {
+    border-color: var(--emas);
+    background: var(--surface-emas-light);
+}
+.edit-foto-thumb {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.edit-foto-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.edit-foto-thumb-utama {
+    border: 2px solid var(--emas);
+}
+.edit-foto-thumb-normal {
+    border: 2px solid var(--garis);
+}
+.edit-foto-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(220,53,69,0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+}
+.edit-foto-utama-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--emas);
+    color: white;
+    text-align: center;
+    padding: 1px 0;
+    font-size: 0.6rem;
+}
+.edit-foto-set-utama {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.5rem;
+    padding: 1px 4px;
+    cursor: pointer;
+}
+.edit-foto-preview {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid var(--garis);
+}
+.edit-foto-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.edit-foto-preview-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 0.5rem;
+    text-align: center;
+    padding: 1px 0;
+}
+.edit-media-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 6px 10px;
+    background: var(--input-bg);
+    border-radius: 4px;
+    margin-bottom: var(--space-sm);
+}
+.edit-media-item-name {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.edit-media-item-remove {
+    color: var(--merah);
+    padding: 0 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+.edit-nav-link {
+    color: var(--emas);
+    text-decoration: none;
+    cursor: pointer;
+}
+.edit-nav-link:hover {
+    color: var(--emas-muda);
+    text-decoration: underline;
+}
+.text-abu { color: var(--abu); }
+.text-required { color: var(--merah); }
+.text-emas { color: var(--emas); }
+.text-emas-link { color: var(--emas); text-decoration: none; }
+.text-emas-link:hover { color: var(--emas-muda); text-decoration: underline; }
+.text-hijau { color: var(--hijau); }
+.cursor-pointer { cursor: pointer; }
+.accent-emas { accent-color: var(--emas); }
+.mb-12 { margin-bottom: 12px; }

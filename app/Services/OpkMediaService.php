@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Exceptions\MediaLimitExceededException;
+use App\Models\OpkDokumen;
 use App\Models\OpkFoto;
 use App\Models\OpkLaporan;
+use App\Models\OpkVideo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -61,5 +63,60 @@ class OpkMediaService
         OpkFoto::where('laporan_id', $laporanId)
             ->where('id', $fotoId)
             ->update(['is_utama' => true]);
+    }
+
+    public function deleteVideos(int $laporanId, array $ids): void
+    {
+        if (empty($ids)) {
+            return;
+        }
+
+        OpkVideo::where('laporan_id', $laporanId)
+            ->whereIn('id', $ids)
+            ->delete();
+    }
+
+    public function addVideos(OpkLaporan $laporan, array $urls): void
+    {
+        foreach ($urls as $url) {
+            if (! empty(trim($url))) {
+                OpkVideo::create([
+                    'laporan_id' => $laporan->id,
+                    'link_eksternal' => trim($url),
+                ]);
+            }
+        }
+    }
+
+    public function deleteDokumens(int $laporanId, array $ids): void
+    {
+        if (empty($ids)) {
+            return;
+        }
+
+        $dokumens = OpkDokumen::where('laporan_id', $laporanId)
+            ->whereIn('id', $ids)
+            ->get();
+
+        foreach ($dokumens as $dok) {
+            Storage::disk('public')->delete($dok->path);
+            $dok->delete();
+        }
+    }
+
+    public function uploadDokumens(OpkLaporan $laporan, array $files): void
+    {
+        foreach ($files as $dokumen) {
+            $namaDok = Str::uuid().'.'.$dokumen->getClientOriginalExtension();
+            $path = $dokumen->storeAs('dokumen_opk/'.$laporan->id, $namaDok, 'public');
+
+            OpkDokumen::create([
+                'laporan_id' => $laporan->id,
+                'nama_file' => $dokumen->getClientOriginalName(),
+                'path' => $path,
+                'jenis' => 'dokumen_pendukung',
+                'ukuran_bytes' => $dokumen->getSize(),
+            ]);
+        }
     }
 }

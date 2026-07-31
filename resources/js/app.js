@@ -22,3 +22,5 @@ L.Icon.Default.mergeOptions({
 
 window.Chart = Chart;
 window.Swal = Swal;
+
+import './opk-edit.js';

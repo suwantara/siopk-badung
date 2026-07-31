@@ -6,31 +6,41 @@
 <x-ui.page-header title="Dashboard OPK" subtitle="Pemantauan real-time Objek Pemajuan Kebudayaan · Kabupaten Badung" action-label="Tambah Laporan" action-url="{{ route('publik.lapor.index') }}" action-target="_blank" action-icon="bi-plus-circle" />
 
 {{-- KPI Cards --}}
+@php
+    $perKondisi = $stats['per_kondisi'] ?? [];
+    $firstKritis = $kondisiList->firstWhere('kode', '!=', 'baik');
+@endphp
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="card kpi-card h-100">
             <div class="card-body">
                 <div class="kpi-label">Total OPK Terdaftar</div>
                 <div class="kpi-value">{{ $stats['total_opk'] }}</div>
-                <div class="kpi-sub d-none d-sm-block">Di 6 kecamatan Badung</div>
+                <div class="kpi-sub d-none d-sm-block">Di {{ $stats['kecamatan_count'] ?? 0 }} kecamatan Badung</div>
                 <div class="mt-2" style="color:var(--hijau)" class="t-caption">
                     <i class="bi bi-arrow-up"></i> +{{ $stats['bulan_ini'] }} bulan ini
                 </div>
             </div>
         </div>
     </div>
+    @foreach($kondisiList as $kk)
     <div class="col-6 col-md-3">
-        <div class="card kpi-card kritis h-100">
+        <div class="card kpi-card h-100" style="border-left:3px solid {{ $kk->warna }};">
             <div class="card-body">
-                <div class="kpi-label">Butuh Perhatian</div>
-                <div class="kpi-value text-danger">{{ $stats['kritis'] }}</div>
-                <div class="kpi-sub">Status kritis / terancam</div>
-                <div class="mt-2" style="color:#c0392b" class="t-caption">
-                    <i class="bi bi-exclamation-triangle"></i> Perlu tindakan segera
+                <div class="kpi-label">{{ $kk->nama }}</div>
+                <div class="kpi-value" style="color:{{ $kk->warna }};">{{ $perKondisi[$kk->kode] ?? 0 }}</div>
+                <div class="kpi-sub">Kondisi {{ strtolower($kk->nama) }}</div>
+                @if($firstKritis && $kk->kode === $firstKritis->kode)
+                <div class="mt-2">
+                    <a href="{{ route('admin.opk.index') }}?kondisi={{ $kk->kode }}" style="color:{{ $kk->warna }};" class="t-caption">
+                        Lihat Semua →
+                    </a>
                 </div>
+                @endif
             </div>
         </div>
     </div>
+    @endforeach
     <div class="col-6 col-md-3">
         <div class="card kpi-card waspada h-100">
             <div class="card-body">
@@ -44,18 +54,6 @@
                     </a>
                 </div>
                 @endif
-            </div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="card kpi-card hijau h-100">
-            <div class="card-body">
-                <div class="kpi-label">OPK Terlindungi</div>
-                <div class="kpi-value" style="color:var(--hijau)">{{ $stats['terlindungi'] }}</div>
-                <div class="kpi-sub">Kondisi baik & aktif</div>
-                <div class="mt-2" style="color:var(--hijau)" class="t-caption">
-                    {{ $stats['total_opk'] > 0 ? round($stats['terlindungi']/$stats['total_opk']*100) : 0 }}% dari total terdaftar
-                </div>
             </div>
         </div>
     </div>
@@ -113,7 +111,6 @@
                    style="background:var(--surface-emas-hover);border:1px solid var(--border-emas);color:var(--krem);padding:8px 12px;border-radius:3px;text-decoration:none;display:flex;align-items:center;justify-content:space-between" class="t-body">
                     <span>✓ Review Laporan Warga</span> <span style="opacity:0.5;">→</span>
                 </a>
-                @php $firstKritis = $kondisiList->firstWhere('kode', '!=', 'baik'); @endphp
                 @if($firstKritis)
                 <a href="{{ route('admin.opk.index') }}?kondisi={{ $firstKritis->kode }}"
                    style="background:var(--surface-emas-hover);border:1px solid var(--border-emas);color:var(--krem);padding:8px 12px;border-radius:3px;text-decoration:none;display:flex;align-items:center;justify-content:space-between" class="t-body">

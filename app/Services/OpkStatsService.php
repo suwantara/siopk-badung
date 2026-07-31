@@ -33,18 +33,37 @@ class OpkStatsService
         $startOfMonth = now()->startOfMonth()->toDateString();
         $endOfMonth = now()->endOfMonth()->toDateString();
         $nonBaik = $this->kondisiNonBaikKodes();
-        $nonBaikIn = "'".implode("','", $nonBaik)."'";
+        $nonBaikIn = $nonBaik ? "'".implode("','", $nonBaik)."'" : "'__none__'";
+        $nonBaikCondition = $nonBaik ? "SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi IN ({$nonBaikIn}) THEN 1 ELSE 0 END) as kritis," : '0 as kritis,';
+
+        $kodus = $this->kondisiKodes();
+        $kondisiSelects = [];
+        foreach ($kodus as $k) {
+            $kondisiSelects[] = "SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = '{$k}' THEN 1 ELSE 0 END) as kondisi_{$k}";
+        }
+        $kondisiSql = $kondisiSelects ? implode(', ', $kondisiSelects).',' : '';
 
         $row = DB::table('opk_laporans')
             ->selectRaw("
                 SUM(CASE WHEN status_verifikasi = 'disetujui' THEN 1 ELSE 0 END) as total_opk,
-                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi IN ({$nonBaikIn}) THEN 1 ELSE 0 END) as kritis,
+                {$nonBaikCondition}
                 SUM(CASE WHEN status_verifikasi IN ('menunggu', 'ai_review', 'review_dinas') THEN 1 ELSE 0 END) as menunggu,
                 SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'baik' THEN 1 ELSE 0 END) as terlindungi,
                 SUM(CASE WHEN DATE(created_at) BETWEEN ? AND ? THEN 1 ELSE 0 END) as bulan_ini
+                {$kondisiSql}
             ", [$startOfMonth, $endOfMonth])
             ->whereNull('deleted_at')
             ->first();
+
+        $kecamatanCount = OpkLaporan::disetujui()
+            ->distinct('kecamatan_id')
+            ->count('kecamatan_id');
+
+        $perKondisi = [];
+        foreach ($kodus as $k) {
+            $key = "kondisi_{$k}";
+            $perKondisi[$k] = (int) ($row->{$key} ?? 0);
+        }
 
         return [
             'total_opk' => (int) ($row->total_opk ?? 0),
@@ -52,6 +71,8 @@ class OpkStatsService
             'menunggu' => (int) ($row->menunggu ?? 0),
             'terlindungi' => (int) ($row->terlindungi ?? 0),
             'bulan_ini' => (int) ($row->bulan_ini ?? 0),
+            'kecamatan_count' => $kecamatanCount,
+            'per_kondisi' => $perKondisi,
         ];
     }
 
@@ -88,15 +109,20 @@ class OpkStatsService
             $caseStatements[] = "SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = '{$k}' THEN 1 ELSE 0 END) as {$k}";
         }
 
-        $sql = implode(', ', $caseStatements);
+        $kondisiSql = implode(', ', $caseStatements);
+        $selectPrefix = $kondisiSql ? "{$kondisiSql}," : '';
         $earlyNonBaik = array_values(array_filter($kodus, fn ($k) => $k !== 'baik'));
         $earlyIn = "'".implode("','", $earlyNonBaik)."'";
+
+        $nonBaikSql = $earlyNonBaik
+            ? "SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi IN ({$earlyIn}) THEN 1 ELSE 0 END) as kritis,"
+            : '0 as kritis,';
 
         $row = DB::table('opk_laporans')
             ->selectRaw("
                 SUM(CASE WHEN status_verifikasi = 'disetujui' THEN 1 ELSE 0 END) as disetujui,
-                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi IN ({$earlyIn}) THEN 1 ELSE 0 END) as kritis,
-                {$sql},
+                {$nonBaikSql}
+                {$selectPrefix}
                 SUM(CASE WHEN status_verifikasi = 'ditolak' THEN 1 ELSE 0 END) as ditolak,
                 SUM(CASE WHEN status_verifikasi IN ('menunggu', 'ai_review', 'review_dinas') THEN 1 ELSE 0 END) as menunggu,
                 SUM(CASE WHEN DATE(created_at) BETWEEN ? AND ? THEN 1 ELSE 0 END) as bulan_ini
@@ -130,6 +156,7 @@ class OpkStatsService
             ->selectRaw("
                 SUM(CASE WHEN status_verifikasi = 'disetujui' THEN 1 ELSE 0 END) as total_opk,
                 SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi IN ({$nonBaikIn}) THEN 1 ELSE 0 END) as kritis,
+                SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = 'waspada' THEN 1 ELSE 0 END) as waspada,
                 SUM(CASE WHEN status_verifikasi = 'disetujui' AND ai_urgency_score >= 7 THEN 1 ELSE 0 END) as prioritas_tinggi,
                 SUM(CASE WHEN status_verifikasi = 'disetujui' AND DATE(updated_at) >= ? THEN 1 ELSE 0 END) as disetujui_7hari,
                 SUM(CASE WHEN status_verifikasi = 'ditolak' AND DATE(updated_at) >= ? THEN 1 ELSE 0 END) as ditolak_7hari,
@@ -152,6 +179,7 @@ class OpkStatsService
             'total_opk' => (int) ($row->total_opk ?? 0),
             'laporan_baru' => (int) ($row->laporan_baru ?? 0),
             'kritis' => (int) ($row->kritis ?? 0),
+            'waspada' => (int) ($row->waspada ?? 0),
             'disetujui' => (int) ($row->disetujui_7hari ?? 0),
             'ditolak' => (int) ($row->ditolak_7hari ?? 0),
             'menunggu' => (int) ($row->menunggu ?? 0),

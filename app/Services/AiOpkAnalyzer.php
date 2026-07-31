@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Helpers\CacheKeys;
 use App\Models\KondisiOpk;
 use App\Models\OpkLaporan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use App\Services\Ai\AiProviderFactory;
 use App\Services\Ai\AiProviderInterface;
 
@@ -262,6 +264,13 @@ PROMPT;
         $clean = trim($clean);
 
         $data = json_decode($clean, true);
+
+        if (! is_array($data)) {
+            Log::warning('AI JSON parse failed', [
+                'raw_length' => strlen($content),
+                'cleaned_preview' => mb_substr($clean, 0, 200),
+            ]);
+        }
 
         return is_array($data) ? $data : [];
     }

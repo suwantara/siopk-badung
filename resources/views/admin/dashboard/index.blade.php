@@ -66,11 +66,11 @@
             <div class="card-header-custom">
                 <span class="title"><i class="bi bi-map me-2 text-warning"></i>Peta Sebaran OPK</span>
                 <div class="d-flex gap-2 align-items-center">
-                    <select id="filterKondisiPeta" class="form-select form-select-sm" style="width:120px;">
+                    <select id="filterKondisiPeta" class="form-select form-select-sm" style="width:140px;">
                         <option value="">Semua Status</option>
-                        <option value="kritis">Kritis</option>
-                        <option value="waspada">Waspada</option>
-                        <option value="baik">Baik</option>
+                        @foreach($kondisiList as $kk)
+                        <option value="{{ $kk->kode }}">{{ $kk->nama }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>

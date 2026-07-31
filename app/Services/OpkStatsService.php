@@ -41,7 +41,7 @@ class OpkStatsService
         foreach ($kodus as $k) {
             $kondisiSelects[] = "SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = '{$k}' THEN 1 ELSE 0 END) as kondisi_{$k}";
         }
-        $kondisiSql = $kondisiSelects ? implode(', ', $kondisiSelects).',' : '';
+        $kondisiSql = $kondisiSelects ? ', ' . implode(', ', $kondisiSelects) : '';
 
         $row = DB::table('opk_laporans')
             ->selectRaw("

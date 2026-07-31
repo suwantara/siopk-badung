@@ -77,6 +77,8 @@ class KondisiController extends Controller
         Cache::forget(CacheKeys::KONDISI_LIST);
         Cache::forget(CacheKeys::KONDISI_KODES);
         Cache::forget(CacheKeys::SIDEBAR_COUNTS);
+        Cache::forget(CacheKeys::PUBLIK_DASHBOARD);
+        Cache::forget(CacheKeys::adminDashboard(auth()->id()));
     }
 
     private function messages(): array

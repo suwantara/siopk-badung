@@ -145,6 +145,8 @@ class OpkController extends Controller
         Cache::forget(CacheKeys::SIDEBAR_COUNTS);
         Cache::forget(CacheKeys::LAPORAN_ADMIN);
         Cache::forget(CacheKeys::RINGKASAN_EKSEKUTIF);
+        Cache::forget(CacheKeys::PUBLIK_DASHBOARD);
+        Cache::forget(CacheKeys::adminDashboard(auth()->id()));
         Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS.'_kategori');
         Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS.'_kecamatan');
     }

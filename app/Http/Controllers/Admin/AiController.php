@@ -11,6 +11,7 @@ use App\Services\AiOpkAnalyzer;
 use App\Services\OpkStatsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class AiController extends Controller
 {
@@ -79,13 +80,30 @@ class AiController extends Controller
             ]);
         }
 
-        $stats = $this->statsService->ringkasanEksekutif();
-        $result = $this->ai->ringkasanEksekutif($stats);
-
         $provider = config('services.ai.provider', 'AI');
         $providerLabel = $provider === 'deepseek' ? 'DeepSeek AI' : ($provider === 'claude' ? 'Claude (Anthropic)' : ucfirst($provider));
 
-        if ($result === 'Ringkasan tidak tersedia.') {
+        try {
+            $stats = $this->statsService->ringkasanEksekutif();
+            $result = $this->ai->ringkasanEksekutif($stats);
+        } catch (\Throwable $e) {
+            Log::error('Ringkasan eksekutif gagal', [
+                'exception' => get_class($e),
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => "Terjadi kesalahan server saat generate ringkasan: {$e->getMessage()}",
+                'provider' => $providerLabel,
+            ], 500);
+        }
+
+        if ($result === 'Ringkasan tidak tersedia.' || trim($result) === '') {
+            Log::error('Ringkasan eksekutif: AI tidak merespons', ['provider' => $provider, 'result_length' => strlen($result)]);
+
             return response()->json([
                 'success' => false,
                 'message' => "AI gagal merespons. Pastikan API key provider \"{$provider}\" sudah diisi di .env.\nCek storage/logs/laravel.log untuk detail error.",
@@ -93,11 +111,15 @@ class AiController extends Controller
             ]);
         }
 
-        Cache::put(CacheKeys::RINGKASAN_EKSEKUTIF, [
-            'text' => $result,
-            'provider' => $providerLabel,
-            'cached_at' => now()->isoFormat('D MMM Y, HH:mm'),
-        ], 21600);
+        try {
+            Cache::put(CacheKeys::RINGKASAN_EKSEKUTIF, [
+                'text' => $result,
+                'provider' => $providerLabel,
+                'cached_at' => now()->isoFormat('D MMM Y, HH:mm'),
+            ], 21600);
+        } catch (\Throwable $e) {
+            Log::warning('Ringkasan eksekutif: gagal menyimpan cache', ['error' => $e->getMessage()]);
+        }
 
         return response()->json([
             'success' => true,

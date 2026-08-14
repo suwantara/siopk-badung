@@ -62,14 +62,22 @@ class VerifikasiService
             ]);
 
             DB::commit();
-
-            LaporanVerified::dispatch($laporan, $target->value);
-            PetaDataService::invalidateCache();
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Gagal memverifikasi laporan', ['laporan_id' => $laporan->id, 'error' => $e->getMessage()]);
             throw $e;
+        }
+
+        try {
+            LaporanVerified::dispatch($laporan, $target->value);
+        } catch (\Throwable $e) {
+            Log::warning('Verifikasi sukses, tetapi event LaporanVerified gagal', ['laporan_id' => $laporan->id, 'error' => $e->getMessage()]);
+        }
+
+        try {
+            PetaDataService::invalidateCache();
+        } catch (\Throwable $e) {
+            Log::warning('Verifikasi sukses, tetapi invalidasi cache peta gagal', ['laporan_id' => $laporan->id, 'error' => $e->getMessage()]);
         }
     }
 }

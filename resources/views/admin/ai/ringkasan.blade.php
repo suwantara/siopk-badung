@@ -234,9 +234,19 @@ function showCached(data) {
 
 function loadCached() {
     fetch("{{ route('admin.ai.ringkasan') }}", {
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
     })
-    .then(r => r.json())
+    .then(async r => {
+        if (!r.ok) {
+            let msg = 'Server error (' + r.status + ')';
+            try { const d = await r.json(); if (d.message) msg = d.message; } catch (e) {}
+            throw new Error(msg);
+        }
+        return r.json();
+    })
     .then(data => {
         if (data.success && data.from_cache) {
             showCached(data);
@@ -244,6 +254,10 @@ function loadCached() {
             document.getElementById('ringkasanArea').innerHTML =
                 '<div style="opacity:0.5;text-align:center;margin-top:3rem" class="t-body">Belum ada ringkasan tersimpan. Klik Generate.</div>';
         }
+    })
+    .catch(() => {
+        document.getElementById('ringkasanArea').innerHTML =
+            '<div style="opacity:0.5;text-align:center;margin-top:3rem" class="t-body">Belum ada ringkasan tersimpan. Klik Generate.</div>';
     });
 }
 
@@ -257,9 +271,19 @@ function loadRingkasan() {
     area.innerHTML  = '<div style="opacity:0.5;text-align:center;margin-top:3rem" class="t-body">⏳ AI sedang menganalisis data OPK minggu ini...<br><small>Mohon tunggu 10–20 detik</small></div>';
 
     fetch("{{ route('admin.ai.ringkasan') }}", {
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
     })
-    .then(r => r.json())
+    .then(async r => {
+        if (!r.ok) {
+            let msg = 'Server error (' + r.status + ')';
+            try { const d = await r.json(); if (d.message) msg = d.message; } catch (e) {}
+            throw new Error(msg);
+        }
+        return r.json();
+    })
     .then(data => {
         if (data.success) {
             cleanMarkdown(data.ringkasan);
@@ -275,8 +299,12 @@ function loadRingkasan() {
             </div>`;
         }
     })
-    .catch(() => {
-        area.innerHTML = '<div style="color:var(--emas-muda)" class="t-body">Koneksi gagal. Periksa jaringan dan API key.</div>';
+    .catch((err) => {
+        area.innerHTML = `<div style="color:var(--emas-muda);text-align:center;margin-top:2rem" class="t-body">
+            <i class="bi bi-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>
+            Koneksi gagal: ${err.message}
+            <br><small style="color:var(--abu);margin-top:8px;display:block;">Kemungkinan: API AI timeout / lambat, atau koneksi jaringan.</small>
+        </div>`;
     })
     .finally(() => {
         btn.textContent = '⚡ Generate Baru';

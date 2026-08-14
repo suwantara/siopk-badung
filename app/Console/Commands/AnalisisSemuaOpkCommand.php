@@ -8,7 +8,9 @@ use Illuminate\Console\Command;
 
 class AnalisisSemuaOpkCommand extends Command
 {
-    protected $signature = 'siopk:analisis-semua {--force : Analisis ulang semua, termasuk yang sudah punya score}';
+    protected $signature = 'siopk:analisis-semua
+        {--force : Analisis ulang semua, termasuk yang sudah punya score}
+        {--fallback : Hanya analisis laporan yang sempat dilewati AI (tanda [Tanpa AI])}';
 
     protected $description = 'Jalankan AI analisis untuk semua laporan yang belum punya AI score';
 
@@ -16,7 +18,9 @@ class AnalisisSemuaOpkCommand extends Command
     {
         $query = OpkLaporan::whereIn('status_verifikasi', ['menunggu', 'review_dinas']);
 
-        if (! $this->option('force')) {
+        if ($this->option('fallback')) {
+            $query->where('ai_rekomendasi', 'like', '[Tanpa AI]%');
+        } elseif (! $this->option('force')) {
             $query->whereNull('ai_urgency_score');
         }
 

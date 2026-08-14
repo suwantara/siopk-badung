@@ -47,6 +47,32 @@ class AnalisisOpkJob implements ShouldQueue
         // Update status → sedang diproses AI
         $laporan->update(['status_verifikasi' => 'ai_review']);
 
+        // Skip AI jika API key tidak tersedia — pakai skor default heuristik
+        if (! $ai->isAvailable()) {
+            Log::info("AnalisisOpkJob: AI dilewati (API key tidak tersedia) untuk {$laporan->kode_laporan}.");
+
+            $hasil = $ai->defaultAnalysis($laporan);
+
+            $laporan->update([
+                'ai_urgency_score' => $hasil['urgency_score'],
+                'ai_duplikat_score' => $hasil['duplikat_score'],
+                'ai_duplikat_of' => $hasil['duplikat_id'],
+                'ai_rekomendasi' => '[Tanpa AI] '.$hasil['rekomendasi'],
+                'status_verifikasi' => 'review_dinas',
+            ]);
+
+            OpkRiwayatStatus::create([
+                'laporan_id' => $laporan->id,
+                'status_lama' => 'ai_review',
+                'status_baru' => 'review_dinas',
+                'catatan' => 'AI dilewati: API key tidak tersedia. Skor default dari kondisi OPK.',
+            ]);
+
+            AiAnalysisCompleted::dispatch($laporan);
+
+            return;
+        }
+
         try {
             Log::info("AI mulai analisis laporan: {$laporan->kode_laporan}");
 

@@ -34,6 +34,11 @@ class AiOpkAnalyzer
         );
     }
 
+    public function isAvailable(): bool
+    {
+        return $this->provider->isAvailable();
+    }
+
     // ─────────────────────────────────────────────
     //  1. ANALISIS UTAMA — dipanggil setelah laporan masuk
     // ─────────────────────────────────────────────
@@ -275,7 +280,7 @@ PROMPT;
         return is_array($data) ? $data : [];
     }
 
-    private function defaultAnalysis(OpkLaporan $laporan): array
+    public function defaultAnalysis(OpkLaporan $laporan): array
     {
         $nonBaik = Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
             return KondisiOpk::orderBy('urutan')->pluck('kode')

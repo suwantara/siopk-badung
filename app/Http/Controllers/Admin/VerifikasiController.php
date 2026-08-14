@@ -7,6 +7,7 @@ use App\Models\OpkLaporan;
 use App\Models\OpkRiwayatStatus;
 use App\Services\VerifikasiService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class VerifikasiController extends Controller
 {
@@ -55,7 +56,9 @@ class VerifikasiController extends Controller
             return redirect()->route('admin.verifikasi.index')
                 ->with('success', "Laporan {$laporan->kode_laporan} berhasil disetujui.");
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memverifikasi laporan. Silakan coba lagi.');
+            Log::error('Gagal menyetujui laporan', ['laporan_id' => $laporan->id, 'error' => $e->getMessage()]);
+
+            return back()->with('error', 'Gagal memverifikasi laporan: '.$e->getMessage());
         }
     }
 
@@ -74,7 +77,9 @@ class VerifikasiController extends Controller
             return redirect()->route('admin.verifikasi.index')
                 ->with('success', "Laporan {$laporan->kode_laporan} berhasil ditolak.");
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memverifikasi laporan. Silakan coba lagi.');
+            Log::error('Gagal menolak laporan', ['laporan_id' => $laporan->id, 'error' => $e->getMessage()]);
+
+            return back()->with('error', 'Gagal memverifikasi laporan: '.$e->getMessage());
         }
     }
 

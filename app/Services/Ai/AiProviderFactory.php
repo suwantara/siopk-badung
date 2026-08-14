@@ -13,6 +13,8 @@ class AiProviderFactory
             $config = config('services.ai.claude', []);
         }
 
+        $config['retries'] = $config['retries'] ?? config('services.ai.retries', 3);
+
         return match ($provider) {
             'claude' => new ClaudeProvider($config),
             'openai' => new OpenAiProvider($config),

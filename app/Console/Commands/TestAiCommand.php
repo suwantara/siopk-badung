@@ -20,19 +20,24 @@ class TestAiCommand extends Command
     {
         $this->info('');
         $this->info('╔═══════════════════════════════════════╗');
-        $this->info('║   SIOPK Badung — Test Claude AI       ║');
+        $this->info('║   SIOPK Badung — Test Koneksi AI      ║');
         $this->info('╚═══════════════════════════════════════╝');
         $this->info('');
 
-        // 1. Cek API key
-        $apiKey = config('services.ai.claude.api_key');
+        // 1. Cek API key provider aktif
+        $providerName = config('services.ai.provider', 'claude');
+        $apiKey = config("services.ai.{$providerName}.api_key");
+        $envVar = strtoupper($providerName).'_API_KEY';
+
+        $this->line("  Provider aktif : {$providerName}");
+
         if (empty($apiKey)) {
-            $this->error('✗ CLAUDE_API_KEY belum diset di .env!');
-            $this->line('  Tambahkan: CLAUDE_API_KEY=sk-ant-api03-xxxxx');
+            $this->error("✗ {$envVar} belum diset di .env!");
+            $this->line("  Tambahkan: {$envVar}=<key_asli>");
 
             return self::FAILURE;
         }
-        $this->info('✓ CLAUDE_API_KEY terdeteksi: '.substr($apiKey, 0, 20).'...');
+        $this->info("✓ {$envVar} terdeteksi: ".substr($apiKey, 0, 20).'...');
 
         // 2. Test klasifikasi sederhana
         $this->info('');

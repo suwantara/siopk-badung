@@ -19,6 +19,8 @@ return [
     'ai' => [
         'provider' => env('AI_PROVIDER', 'claude'),
 
+        'retries' => env('AI_RETRIES', 3),
+
         'claude' => [
             'api_key' => env('CLAUDE_API_KEY', ''),
             'api_url' => env('CLAUDE_API_URL', 'https://api.anthropic.com/v1/messages'),
@@ -38,9 +40,10 @@ return [
         'deepseek' => [
             'api_key' => env('DEEPSEEK_API_KEY', ''),
             'api_url' => env('DEEPSEEK_API_URL', 'https://api.deepseek.com/v1/chat/completions'),
-            'model' => env('DEEPSEEK_MODEL', 'deepseek-chat'),
+            'model' => env('DEEPSEEK_MODEL', 'deepseek-v4-flash'),
             'max_tokens' => env('DEEPSEEK_MAX_TOKENS', 1024),
             'timeout' => env('DEEPSEEK_TIMEOUT', 30),
+            'thinking' => env('DEEPSEEK_THINKING', 'disabled'),
         ],
 
         'groq' => [

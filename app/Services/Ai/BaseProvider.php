@@ -15,12 +15,15 @@ abstract class BaseProvider implements AiProviderInterface
 
     protected int $timeout;
 
+    protected int $retries;
+
     public function __construct(array $config)
     {
         $this->apiKey = $config['api_key'] ?? '';
         $this->apiUrl = $config['api_url'] ?? '';
         $this->model = $config['model'] ?? '';
         $this->timeout = (int) ($config['timeout'] ?? 30);
+        $this->retries = (int) ($config['retries'] ?? 3);
     }
 
     public function isAvailable(): bool
@@ -31,9 +34,11 @@ abstract class BaseProvider implements AiProviderInterface
     public function analyze(string $prompt, int $maxTokens): array
     {
         try {
+            $started = microtime(true);
+
             $response = Http::timeout($this->timeout)
                 ->connectTimeout(10)
-                ->retry(3, fn (int $attempt) => $attempt <= 3 ? $attempt * 500 : 2000)
+                ->retry($this->retries, fn (int $attempt) => $attempt * 500)
                 ->withHeaders($this->headers())
                 ->post($this->apiUrl, $this->buildBody($prompt, $maxTokens));
 
@@ -45,7 +50,8 @@ abstract class BaseProvider implements AiProviderInterface
 
             Log::error('AI Provider Error ['.static::class.']', [
                 'status' => $response->status(),
-                'body' => $response->body(),
+                'body' => mb_substr($response->body(), 0, 500),
+                'elapsed' => round(microtime(true) - $started, 1),
             ]);
 
             return ['success' => false, 'content' => '', 'error' => $response->body()];

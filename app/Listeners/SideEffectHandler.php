@@ -18,8 +18,8 @@ class SideEffectHandler
         Cache::forget(CacheKeys::RINGKASAN_EKSEKUTIF);
         Cache::forget(CacheKeys::LAPORAN_ADMIN);
         Cache::forget(CacheKeys::PUBLIK_DASHBOARD);
-        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kategori');
-        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS . '_kecamatan');
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS.'_kategori');
+        Cache::forget(CacheKeys::DAFTAR_OPK_FILTERS.'_kecamatan');
     }
 
     public function handleLaporanCreated(LaporanCreated $event): void
@@ -70,6 +70,6 @@ class SideEffectHandler
             return '***';
         }
 
-        return substr($number, 0, 3) . str_repeat('*', max(0, strlen($number) - 5)) . substr($number, -2);
+        return substr($number, 0, 3).str_repeat('*', max(0, strlen($number) - 5)).substr($number, -2);
     }
 }

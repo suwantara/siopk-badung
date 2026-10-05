@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\StatusVerifikasi;
-use App\Models\KondisiOpk;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -50,6 +49,7 @@ class OpkLaporan extends Model
     {
         return $this->belongsTo(KondisiOpk::class, 'kondisi', 'kode');
     }
+
     public function kategori()
     {
         return $this->belongsTo(OpkCategory::class, 'kategori_id');

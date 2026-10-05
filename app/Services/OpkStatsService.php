@@ -41,7 +41,7 @@ class OpkStatsService
         foreach ($kodus as $k) {
             $kondisiSelects[] = "SUM(CASE WHEN status_verifikasi = 'disetujui' AND kondisi = '{$k}' THEN 1 ELSE 0 END) as kondisi_{$k}";
         }
-        $kondisiSql = $kondisiSelects ? ', ' . implode(', ', $kondisiSelects) : '';
+        $kondisiSql = $kondisiSelects ? ', '.implode(', ', $kondisiSelects) : '';
 
         $row = DB::table('opk_laporans')
             ->selectRaw("
@@ -246,7 +246,7 @@ class OpkStatsService
             ->get();
     }
 
-    public static function kondisiPrioritasOrderRaw(): \Illuminate\Support\Facades\DB
+    public static function kondisiPrioritasOrderRaw(): DB
     {
         $kodes = Cache::remember(CacheKeys::KONDISI_KODES, now()->addHours(24), function () {
             return KondisiOpk::orderBy('urutan')->pluck('kode')->toArray();
@@ -256,7 +256,7 @@ class OpkStatsService
         $ordered = array_merge($nonBaik, $baik);
         $quoted = "'".implode("','", $ordered)."'";
 
-        return \Illuminate\Support\Facades\DB::raw("FIELD(kondisi, {$quoted})");
+        return DB::raw("FIELD(kondisi, {$quoted})");
     }
 
     public function trenBulanan(int $bulan = 6): \Illuminate\Support\Collection

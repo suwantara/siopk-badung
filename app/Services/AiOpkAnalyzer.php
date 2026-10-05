@@ -5,10 +5,10 @@ namespace App\Services;
 use App\Helpers\CacheKeys;
 use App\Models\KondisiOpk;
 use App\Models\OpkLaporan;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use App\Services\Ai\AiProviderFactory;
 use App\Services\Ai\AiProviderInterface;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * AiOpkAnalyzer

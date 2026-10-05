@@ -49,6 +49,6 @@ class SendWhatsAppNotifJob implements ShouldQueue
             return '***';
         }
 
-        return substr($this->nomorWa, 0, 3) . str_repeat('*', max(0, strlen($this->nomorWa) - 5)) . substr($this->nomorWa, -2);
+        return substr($this->nomorWa, 0, 3).str_repeat('*', max(0, strlen($this->nomorWa) - 5)).substr($this->nomorWa, -2);
     }
 }

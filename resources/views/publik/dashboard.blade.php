@@ -270,9 +270,8 @@ function selectOpk(id) {
     markers.forEach(m => m.setIcon(makeIcon(allData.find(o => o.id === m._opkId)?.kondisi || 'baik', m._opkId === id)));
 
     if (opk.lat && opk.lng) {
-        peta.flyTo([opk.lat, opk.lng], 15, { duration: 0.8 });
         const marker = markers.find(m => m._opkId === id);
-        if (marker) setTimeout(() => marker.openPopup(), 900);
+        if (marker) markerCluster.zoomToShowLayer(marker, () => marker.openPopup());
     }
 }
 window._selectOpk = selectOpk;

@@ -5,6 +5,11 @@
 @section('content')
 <x-ui.page-header title="Data OPK Kabupaten Badung" :subtitle="$laporans->total() . ' objek terdaftar · status: disetujui &amp; terverifikasi'">
     <x-slot:action>
+        @if(auth()->user()->isAdmin())
+        <a href="{{ route('admin.opk.import') }}" class="btn btn-sm btn-outline-secondary me-1" title="Impor massal dari CSV/Excel">
+            <i class="bi bi-upload me-1"></i>Impor
+        </a>
+        @endif
         <a href="{{ route('admin.opk.export') }}" class="btn btn-sm btn-outline-success me-1" title="Export ke Excel">
             <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export
         </a>

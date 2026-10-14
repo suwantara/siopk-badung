@@ -47,9 +47,14 @@
     <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
         <i class="bi bi-grid-1x2"></i> Dashboard
     </a>
-    <a href="{{ route('admin.opk.index') }}" class="sidebar-link {{ request()->routeIs('admin.opk.*') ? 'active' : '' }}">
+    <a href="{{ route('admin.opk.index') }}" class="sidebar-link {{ request()->routeIs('admin.opk.*') && !request()->routeIs('admin.opk.import*') ? 'active' : '' }}">
         <i class="bi bi-collection"></i> Data OPK
     </a>
+    @if(auth()->user()->isAdmin())
+    <a href="{{ route('admin.opk.import') }}" class="sidebar-link {{ request()->routeIs('admin.opk.import*') ? 'active' : '' }}">
+        <i class="bi bi-upload"></i> Impor OPK
+    </a>
+    @endif
     <a href="{{ route('admin.verifikasi.index') }}" class="sidebar-link {{ request()->routeIs('admin.verifikasi.*') ? 'active' : '' }}">
         <i class="bi bi-check2-circle"></i> Verifikasi
         @if(($sidebarAntrian ?? 0) > 0)

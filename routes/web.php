@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\KecamatanController;
 use App\Http\Controllers\Admin\KondisiController;
 use App\Http\Controllers\Admin\LaporanAdminController;
 use App\Http\Controllers\Admin\OpkController;
+use App\Http\Controllers\Admin\OpkImportController;
 use App\Http\Controllers\Admin\PenggunaController;
 use App\Http\Controllers\Admin\VerifikasiController;
 use App\Http\Controllers\Auth\AuthController;
@@ -78,6 +79,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/opk/export', [OpkController::class, 'exportForm'])->name('opk.export');
         Route::post('/opk/export', [OpkController::class, 'exportAll'])->name('opk.export.download');
         Route::get('/opk/peta', [OpkController::class, 'peta'])->name('opk.peta');
+
+        // Impor massal CSV/XLSX (khusus admin)
+        Route::middleware('role:superadmin,admin')->group(function () {
+            Route::get('/opk/import', [OpkImportController::class, 'index'])->name('opk.import');
+            Route::post('/opk/import', [OpkImportController::class, 'store'])->name('opk.import.store');
+            Route::get('/opk/import/template', [OpkImportController::class, 'template'])->name('opk.import.template');
+            Route::get('/opk/import/errors/{token}', [OpkImportController::class, 'errors'])->name('opk.import.errors');
+        });
+
         Route::get('/opk/arsip', [OpkController::class, 'arsip'])->name('opk.arsip')
             ->middleware('role:superadmin,admin');
         Route::get('/opk/{laporan}', [OpkController::class, 'show'])->name('opk.show');

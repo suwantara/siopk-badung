@@ -271,7 +271,15 @@ function selectOpk(id) {
 
     if (opk.lat && opk.lng) {
         const marker = markers.find(m => m._opkId === id);
-        if (marker) markerCluster.zoomToShowLayer(marker, () => marker.openPopup());
+        if (!marker) return;
+
+        const maxZoom = Math.min(peta.getMaxZoom(), 19);
+        if (peta.getZoom() < maxZoom) {
+            peta.flyTo([opk.lat, opk.lng], maxZoom, { duration: 0.8 });
+            setTimeout(() => markerCluster.zoomToShowLayer(marker, () => marker.openPopup()), 900);
+        } else {
+            markerCluster.zoomToShowLayer(marker, () => marker.openPopup());
+        }
     }
 }
 window._selectOpk = selectOpk;

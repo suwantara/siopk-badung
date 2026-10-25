@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class PetaDataService
 {
+    private const MAX_MARKERS = 2000;
+
     public function getPetaData(Request $request, bool $isAdmin = false): array
     {
         $version = (int) Cache::get('peta_data_version', 1);
@@ -46,12 +48,12 @@ class PetaDataService
         $this->applyFilters($query, $request);
         $this->applyBounds($query, $request);
 
-        $markers = $query->limit(500)->get()
+        $markers = $query->limit(self::MAX_MARKERS)->get()
             ->map(fn ($opk) => $this->formatMarker($opk, $isAdmin))
             ->all();
 
-        if (count($markers) >= 500) {
-            Log::warning('PetaDataService: marker count mencapai limit 500. Pertimbangkan filter bounds.');
+        if (count($markers) >= self::MAX_MARKERS) {
+            Log::warning('PetaDataService: marker count mencapai limit '.self::MAX_MARKERS.'. Pertimbangkan filter bounds.');
         }
 
         return $markers;

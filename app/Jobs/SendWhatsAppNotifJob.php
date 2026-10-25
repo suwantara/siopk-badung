@@ -28,6 +28,12 @@ class SendWhatsAppNotifJob implements ShouldQueue
 
     public function handle(WhatsAppService $wa): void
     {
+        if (trim($this->nomorWa) === '') {
+            Log::info("SendWhatsAppNotifJob: nomor WA kosong, notifikasi {$this->action} dilewati untuk {$this->kodeLaporan}");
+
+            return;
+        }
+
         Log::info("SendWhatsAppNotifJob: {$this->action} ke ".$this->maskWa()." untuk {$this->kodeLaporan}");
 
         match ($this->action) {

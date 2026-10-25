@@ -101,8 +101,8 @@ class OpkImportService
         'praktisi_kontak' => ['label' => 'Kontak Praktisi', 'required' => false, 'aliases' => ['kontak_praktisi', 'kontak']],
         'tipe_pelapor' => ['label' => 'Tipe Pelapor', 'required' => false, 'aliases' => []],
         'pelapor_nama' => ['label' => 'Nama Pelapor', 'required' => true, 'aliases' => ['nama_pelapor']],
-        'pelapor_nik' => ['label' => 'NIK Pelapor', 'required' => true, 'aliases' => ['nik', 'nik_pelapor']],
-        'pelapor_whatsapp' => ['label' => 'WhatsApp Pelapor', 'required' => true, 'aliases' => ['whatsapp', 'wa_pelapor', 'no_wa']],
+        'pelapor_nik' => ['label' => 'NIK Pelapor', 'required' => false, 'aliases' => ['nik', 'nik_pelapor']],
+        'pelapor_whatsapp' => ['label' => 'WhatsApp Pelapor', 'required' => false, 'aliases' => ['whatsapp', 'wa_pelapor', 'no_wa']],
         'pelapor_email' => ['label' => 'Email Pelapor', 'required' => false, 'aliases' => ['email']],
         'status_verifikasi' => ['label' => 'Status Verifikasi', 'required' => false, 'aliases' => []],
         'link_video' => ['label' => 'Link Video', 'required' => false, 'aliases' => []],
@@ -391,8 +391,6 @@ class OpkImportService
             'nama_desa_adat' => 'Nama Desa Adat',
             'deskripsi_umum' => 'Deskripsi Umum',
             'pelapor_nama' => 'Nama Pelapor',
-            'pelapor_nik' => 'NIK Pelapor',
-            'pelapor_whatsapp' => 'WhatsApp Pelapor',
         ];
         foreach ($required as $key => $label) {
             if (($row[$key] ?? '') === '') {
@@ -505,7 +503,6 @@ class OpkImportService
             $errors[] = 'WhatsApp Pelapor maksimal 20 karakter.';
         }
         $data['pelapor_whatsapp'] = $wa;
-
         $email = $row['pelapor_email'] ?? '';
         if ($email !== '' && ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Email Pelapor tidak valid.';
@@ -876,11 +873,12 @@ class OpkImportService
             ['1. Isi sheet "Data OPK". Jangan mengubah/menghapus nama kolom di baris pertama.'],
             ['2. Kolom wajib: '.implode(', ', array_map(fn ($k) => self::COLUMNS[$k]['label'], array_keys(array_filter(self::COLUMNS, fn ($c) => $c['required']))))],
             ['3. Deskripsi Umum minimal 50 karakter.'],
-            ['4. Format kolom NIK Pelapor, WhatsApp, Latitude, dan Longitude sebagai Teks agar angka tidak berubah.'],
-            ['5. Nilai yang diterima untuk tiap kolom ada di sheet "Referensi".'],
-            ['6. Maksimal '.number_format(self::MAX_ROWS, 0, ',', '.').' baris per file; pecah file jika lebih.'],
-            ['7. Baris yang tidak valid akan ditolak; unduh laporan kesalahan setelah impor.'],
-            ['8. Simpan sebagai .xlsx atau .csv (UTF-8) lalu unggah lewat menu Impor OPK.'],
+            ['4. NIK & WhatsApp Pelapor boleh dikosongkan untuk data administratif. Jika diisi, format kolomnya sebagai Teks.'],
+            ['5. Format kolom Latitude dan Longitude sebagai Teks agar angka tidak berubah.'],
+            ['6. Nilai yang diterima untuk tiap kolom ada di sheet "Referensi".'],
+            ['7. Maksimal '.number_format(self::MAX_ROWS, 0, ',', '.').' baris per file; pecah file jika lebih.'],
+            ['8. Baris yang tidak valid akan ditolak; unduh laporan kesalahan setelah impor.'],
+            ['9. Simpan sebagai .xlsx atau .csv (UTF-8) lalu unggah lewat menu Impor OPK.'],
         ];
         foreach ($lines as $line) {
             $writer->addRow(Row::fromValues($line));

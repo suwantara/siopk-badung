@@ -143,7 +143,8 @@
                     <li>Proses memakai <strong>bulk insert per 100 baris dalam satu transaksi</strong>; jika gagal di tengah, tidak ada data setengah jadi.</li>
                     <li>Hanya satu proses impor dapat berjalan bersamaan.</li>
                     <li>Baris duplikat (nama sama di kecamatan sama) otomatis ditolak.</li>
-                    <li>Untuk CSV dari Excel: pilih <em>CSV UTF-8</em>; format kolom NIK/WhatsApp/koordinat sebagai <em>Teks</em>.</li>
+                    <li>NIK &amp; WhatsApp Pelapor boleh kosong untuk data administratif; jika diisi, format kolomnya sebagai <em>Teks</em>.</li>
+                    <li>Untuk CSV dari Excel: pilih <em>CSV UTF-8</em>; format kolom koordinat sebagai <em>Teks</em>.</li>
                 </ul>
             </div>
         </div>

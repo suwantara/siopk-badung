@@ -134,6 +134,27 @@ class AdminOpkImportTest extends TestCase
         $this->assertSame(1, OpkLaporan::count());
     }
 
+    public function test_import_without_nik_and_whatsapp_is_allowed(): void
+    {
+        $csv = implode(',', [
+            'Nama OPK', 'Kategori', 'Kecamatan', 'Desa Dinas', 'Nama Desa Adat',
+            'Deskripsi Umum', 'Nama Pelapor',
+        ])."\n".implode(',', [
+            '"Tari Tanpa Kontak"', '"1 - Seni"', 'Mengwi', 'Mengwi', '"Desa Adat Test"',
+            '"Deskripsi lengkap objek pemajuan kebudayaan untuk pengujian impor massal."', '"Petugas Dinas"',
+        ])."\n";
+
+        $response = $this->actingAs($this->admin)
+            ->post('/admin/opk/import', ['file' => $this->csvFile($csv)]);
+
+        $response->assertSessionHas('import_result', fn ($r) => $r['imported'] === 1);
+
+        $opk = OpkLaporan::first();
+        $this->assertNotNull($opk);
+        $this->assertSame('', $opk->pelapor_nik);
+        $this->assertSame('', $opk->pelapor_whatsapp);
+    }
+
     public function test_blank_rows_are_ignored(): void
     {
         $csv = $this->csv().",,,,,,,,\n";

@@ -184,7 +184,11 @@ class AdminOpkImportTest extends TestCase
                 'dry_run' => 1,
             ]);
 
-        $response->assertSessionHas('import_result', fn ($r) => $r['total'] === 1 && $r['valid'] === 1 && $r['invalid'] === 0);
+        $response->assertSessionHas('import_result', fn ($r) => $r['total'] === 1
+            && $r['total_read'] === 2
+            && $r['blank'] === 1
+            && $r['valid'] === 1
+            && $r['invalid'] === 0);
     }
 
     public function test_non_admin_cannot_access_import_page(): void

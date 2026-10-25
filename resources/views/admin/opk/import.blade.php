@@ -30,8 +30,11 @@
     <div class="alert alert-info">
         <strong><i class="bi bi-clipboard-check me-1"></i>Validasi selesai (mode uji coba).</strong>
         <div class="mt-1" style="font-size:0.85rem;">
-            {{ number_format($result['total'], 0, ',', '.') }} baris dibaca:
-            <strong>{{ number_format($result['valid'], 0, ',', '.') }}</strong> valid,
+            {{ number_format($result['total_read'], 0, ',', '.') }} baris dibaca
+            @if($result['blank'] > 0)
+                ({{ number_format($result['blank'], 0, ',', '.') }} baris kosong dilewati)
+            @endif
+            : <strong>{{ number_format($result['valid'], 0, ',', '.') }}</strong> valid,
             <strong>{{ number_format($result['invalid'], 0, ',', '.') }}</strong> bermasalah.
             Hapus centang "Validasi saja" untuk benar-benar mengimpor.
         </div>
@@ -45,6 +48,7 @@
                 , {{ number_format($result['invalid'], 0, ',', '.') }} baris dilewati karena tidak valid
             @endif
             .
+            <br>{{ number_format($result['total_read'], 0, ',', '.') }} baris dibaca@if($result['blank'] > 0), {{ number_format($result['blank'], 0, ',', '.') }} baris kosong dilewati@endif.
             @if($result['schedule_hint'])
                 <br>{{ number_format($result['schedule_hint'], 0, ',', '.') }} data berstatus <em>menunggu</em> akan dianalisis AI oleh scheduler.
             @endif
@@ -53,7 +57,10 @@
     @else
     <div class="alert alert-warning">
         <strong><i class="bi bi-info-circle me-1"></i>Tidak ada data yang diimpor.</strong>
-        <div class="mt-1" style="font-size:0.85rem;">{{ number_format($result['invalid'], 0, ',', '.') }} baris bermasalah ditemukan.</div>
+        <div class="mt-1" style="font-size:0.85rem;">
+            {{ number_format($result['invalid'], 0, ',', '.') }} baris bermasalah ditemukan
+            dari {{ number_format($result['total_read'], 0, ',', '.') }} baris yang dibaca@if($result['blank'] > 0), {{ number_format($result['blank'], 0, ',', '.') }} baris kosong dilewati@endif.
+        </div>
     </div>
     @endif
 

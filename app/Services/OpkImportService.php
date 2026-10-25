@@ -132,6 +132,8 @@ class OpkImportService
             'dry_run' => $dryRun,
             'skip_invalid' => $skipInvalid,
             'total' => 0,
+            'total_read' => 0,
+            'blank' => 0,
             'valid' => 0,
             'invalid' => 0,
             'imported' => 0,
@@ -177,10 +179,13 @@ class OpkImportService
         $seen = [];
 
         foreach ($rows as $rowNumber => $cells) {
+            $result['total_read']++;
             $mapped = $this->mapRow($headerMap, $cells);
 
             // Lewati baris yang seluruh kolomnya kosong (mis. baris kosong di template)
             if (! array_filter($mapped, fn ($value) => $value !== '')) {
+                $result['blank']++;
+
                 continue;
             }
 
@@ -263,10 +268,6 @@ class OpkImportService
                     if ($headerMap === null) {
                         $headerMap = $this->resolveHeaderMap($row->toArray());
 
-                        continue;
-                    }
-
-                    if ($row->isEmpty()) {
                         continue;
                     }
 

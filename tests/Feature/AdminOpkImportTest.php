@@ -155,6 +155,25 @@ class AdminOpkImportTest extends TestCase
         $this->assertSame('', $opk->pelapor_whatsapp);
     }
 
+    public function test_same_name_in_different_desa_adat_is_allowed(): void
+    {
+        $header = implode(',', [
+            'Nama OPK', 'Kategori', 'Kecamatan', 'Desa Dinas', 'Nama Desa Adat',
+            'Deskripsi Umum', 'Nama Pelapor',
+        ]);
+        $deskripsi = 'Deskripsi lengkap objek pemajuan kebudayaan untuk pengujian impor massal.';
+
+        $csv = $header."\n"
+            .'"Tari Baris"'.',"1 - Seni",Mengwi,Mengwi,"Desa Adat A","'.$deskripsi.'","Petugas Dinas"'."\n"
+            .'"Tari Baris"'.',"1 - Seni",Mengwi,Mengwi,"Desa Adat B","'.$deskripsi.'","Petugas Dinas"'."\n";
+
+        $response = $this->actingAs($this->admin)
+            ->post('/admin/opk/import', ['file' => $this->csvFile($csv)]);
+
+        $response->assertSessionHas('import_result', fn ($r) => $r['imported'] === 2);
+        $this->assertSame(2, OpkLaporan::where('nama_opk', 'Tari Baris')->count());
+    }
+
     public function test_blank_rows_are_ignored(): void
     {
         $csv = $this->csv().",,,,,,,,\n";

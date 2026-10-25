@@ -523,11 +523,11 @@ class OpkImportService
 
         // === Duplikat (dalam file & di database) ===
         if ($kecamatanId !== null && $namaOpk !== '') {
-            $dupKey = $kecamatanId.'|'.$this->key($namaOpk);
+            $dupKey = $kecamatanId.'|'.$this->key($namaOpk).'|'.$this->key($row['nama_desa_adat'] ?? '');
             if (isset($seen[$dupKey])) {
-                $errors[] = "Duplikat dengan baris {$seen[$dupKey]} (nama & kecamatan sama).";
+                $errors[] = "Duplikat dengan baris {$seen[$dupKey]} (nama, kecamatan & desa adat sama).";
             } elseif (isset($lookup['existing'][$dupKey])) {
-                $errors[] = 'OPK dengan nama sama di kecamatan ini sudah ada di database.';
+                $errors[] = 'OPK dengan nama, kecamatan & desa adat sama sudah ada di database.';
             } elseif (! $errors) {
                 $seen[$dupKey] = $rowNumber;
             }
@@ -565,8 +565,8 @@ class OpkImportService
         }
 
         $existing = [];
-        foreach (OpkLaporan::select('nama_opk', 'kecamatan_id')->get() as $opk) {
-            $existing[$opk->kecamatan_id.'|'.$this->key($opk->nama_opk)] = true;
+        foreach (OpkLaporan::select('nama_opk', 'kecamatan_id', 'nama_desa_adat')->get() as $opk) {
+            $existing[$opk->kecamatan_id.'|'.$this->key($opk->nama_opk).'|'.$this->key($opk->nama_desa_adat ?? '')] = true;
         }
 
         return [

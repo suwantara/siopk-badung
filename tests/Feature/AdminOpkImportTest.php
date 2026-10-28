@@ -174,6 +174,108 @@ class AdminOpkImportTest extends TestCase
         $this->assertSame(2, OpkLaporan::where('nama_opk', 'Tari Baris')->count());
     }
 
+    public function test_upsert_updates_existing_record_by_name_key(): void
+    {
+        $existing = OpkLaporan::create([
+            'kode_laporan' => 'SIOPK-2026-UPSERT01',
+            'nama_opk' => 'Tari Test Impor',
+            'kategori_id' => 1,
+            'kondisi' => 'baik',
+            'kecamatan_id' => 1,
+            'desa_dinas_id' => 1,
+            'nama_desa_adat' => 'Desa Adat Test',
+            'deskripsi_umum' => 'Deskripsi lama yang akan diperbarui.',
+            'sejarah_asal_usul' => 'Sejarah asli yang tidak ada di file.',
+            'status_verifikasi' => 'disetujui',
+            'pelapor_nama' => 'Test',
+            'pelapor_nik' => '5103000000000099',
+            'pelapor_whatsapp' => '08123456789',
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->post('/admin/opk/import', [
+                'file' => $this->csvFile($this->csv()),
+                'mode' => 'upsert',
+            ]);
+
+        $response->assertSessionHas('import_result', fn ($r) => $r['imported'] === 0 && $r['updated'] === 1);
+
+        $existing->refresh();
+        $this->assertStringContainsString('pengujian impor massal', $existing->deskripsi_umum);
+        $this->assertSame('Sejarah asli yang tidak ada di file.', $existing->sejarah_asal_usul);
+        $this->assertSame(1, OpkLaporan::count());
+        $this->assertSame(1, OpkRiwayatStatus::where('laporan_id', $existing->id)->count());
+    }
+
+    public function test_upsert_by_kode_can_rename(): void
+    {
+        $existing = OpkLaporan::create([
+            'kode_laporan' => 'SIOPK-2026-KODE0001',
+            'nama_opk' => 'Nama Lama',
+            'kategori_id' => 1,
+            'kondisi' => 'baik',
+            'kecamatan_id' => 1,
+            'desa_dinas_id' => 1,
+            'nama_desa_adat' => 'Desa Adat Test',
+            'deskripsi_umum' => 'Deskripsi lama yang akan diperbarui.',
+            'status_verifikasi' => 'disetujui',
+            'pelapor_nama' => 'Test',
+            'pelapor_nik' => '5103000000000099',
+            'pelapor_whatsapp' => '08123456789',
+        ]);
+
+        $header = implode(',', [
+            'Kode Laporan', 'Nama OPK', 'Kategori', 'Kecamatan', 'Desa Dinas',
+            'Nama Desa Adat', 'Deskripsi Umum', 'Nama Pelapor',
+        ]);
+        $csv = $header."\n".implode(',', [
+            'SIOPK-2026-KODE0001', '"Nama Baru Hasil Impor"', '"1 - Seni"', 'Mengwi',
+            'Mengwi', '"Desa Adat Test"',
+            '"Deskripsi lengkap objek pemajuan kebudayaan untuk pengujian impor massal."',
+            '"Petugas Dinas"',
+        ])."\n";
+
+        $response = $this->actingAs($this->admin)
+            ->post('/admin/opk/import', [
+                'file' => $this->csvFile($csv),
+                'mode' => 'upsert',
+            ]);
+
+        $response->assertSessionHas('import_result', fn ($r) => $r['imported'] === 0 && $r['updated'] === 1);
+
+        $existing->refresh();
+        $this->assertSame('Nama Baru Hasil Impor', $existing->nama_opk);
+    }
+
+    public function test_upsert_dry_run_does_not_change_data(): void
+    {
+        $existing = OpkLaporan::create([
+            'kode_laporan' => 'SIOPK-2026-DRYRUN01',
+            'nama_opk' => 'Tari Test Impor',
+            'kategori_id' => 1,
+            'kondisi' => 'baik',
+            'kecamatan_id' => 1,
+            'desa_dinas_id' => 1,
+            'nama_desa_adat' => 'Desa Adat Test',
+            'deskripsi_umum' => 'Deskripsi lama yang tidak boleh berubah.',
+            'status_verifikasi' => 'disetujui',
+            'pelapor_nama' => 'Test',
+            'pelapor_nik' => '5103000000000099',
+            'pelapor_whatsapp' => '08123456789',
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->post('/admin/opk/import', [
+                'file' => $this->csvFile($this->csv()),
+                'mode' => 'upsert',
+                'dry_run' => 1,
+            ]);
+
+        $response->assertSessionHas('import_result', fn ($r) => $r['updated'] === 0 && $r['would_update'] === 1);
+
+        $this->assertSame('Deskripsi lama yang tidak boleh berubah.', $existing->fresh()->deskripsi_umum);
+    }
+
     public function test_blank_rows_are_ignored(): void
     {
         $csv = $this->csv().",,,,,,,,\n";

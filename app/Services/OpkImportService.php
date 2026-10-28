@@ -77,6 +77,7 @@ class OpkImportService
      */
     private const COLUMNS = [
         'nama_opk' => ['label' => 'Nama OPK', 'required' => true, 'aliases' => []],
+        'kode_laporan' => ['label' => 'Kode Laporan', 'required' => false, 'aliases' => ['kode']],
         'kategori' => ['label' => 'Kategori', 'required' => true, 'aliases' => ['jenis', 'jenis_opk', 'kategori_id']],
         'kecamatan' => ['label' => 'Kecamatan', 'required' => true, 'aliases' => []],
         'desa_dinas' => ['label' => 'Desa Dinas', 'required' => true, 'aliases' => ['desa']],
@@ -126,9 +127,12 @@ class OpkImportService
      * Proses impor. Mengembalikan ringkasan hasil (tidak melempar exception untuk
      * kesalahan file yang bisa diprediksi — semua dilaporkan lewat array hasil).
      */
-    public function import(UploadedFile $file, User $user, bool $dryRun = false, bool $skipInvalid = false): array
+    public function import(UploadedFile $file, User $user, bool $dryRun = false, bool $skipInvalid = false, string $mode = 'insert'): array
     {
+        $mode = $mode === 'upsert' ? 'upsert' : 'insert';
+
         $result = [
+            'mode' => $mode,
             'dry_run' => $dryRun,
             'skip_invalid' => $skipInvalid,
             'total' => 0,
@@ -137,6 +141,9 @@ class OpkImportService
             'valid' => 0,
             'invalid' => 0,
             'imported' => 0,
+            'updated' => 0,
+            'would_insert' => 0,
+            'would_update' => 0,
             'schedule_hint' => null,
             'errors' => [],
             'error_file' => null,
@@ -174,7 +181,8 @@ class OpkImportService
 
         $lookup = $this->buildLookups();
 
-        $validRows = [];
+        $inserts = [];
+        $updates = [];
         $errors = [];
         $seen = [];
 
@@ -202,7 +210,7 @@ class OpkImportService
                 return $result;
             }
 
-            [$data, $messages] = $this->validateRow($mapped, $rowNumber, $lookup, $seen);
+            [$data, $messages, $meta] = $this->validateRow($mapped, $rowNumber, $lookup, $seen, $mode);
 
             if ($messages) {
                 $errors[] = ['row' => $rowNumber, 'messages' => $messages];
@@ -210,10 +218,21 @@ class OpkImportService
                 continue;
             }
 
-            $validRows[] = $data;
+            if ($mode === 'upsert' && $meta['id'] !== null) {
+                $updates[] = [
+                    'id' => $meta['id'],
+                    'status' => $meta['status'],
+                    'data' => $data,
+                    'explicit' => $meta['explicit'],
+                ];
+            } else {
+                $inserts[] = $data;
+            }
         }
 
-        $result['valid'] = count($validRows);
+        $result['valid'] = count($inserts) + count($updates);
+        $result['would_insert'] = count($inserts);
+        $result['would_update'] = count($updates);
         $result['invalid'] = count($errors);
         $result['errors'] = array_slice($errors, 0, 100);
 
@@ -227,14 +246,15 @@ class OpkImportService
             return $result;
         }
 
-        if ($dryRun || ! $validRows) {
+        if ($dryRun || (! $inserts && ! $updates)) {
             return $result;
         }
 
-        $this->insertRows($validRows, $user);
+        $this->saveRows($inserts, $updates, $user);
 
-        $result['imported'] = count($validRows);
-        $result['schedule_hint'] = collect($validRows)->where('status_verifikasi', 'menunggu')->count() ?: null;
+        $result['imported'] = count($inserts);
+        $result['updated'] = count($updates);
+        $result['schedule_hint'] = collect($inserts)->where('status_verifikasi', 'menunggu')->count() ?: null;
 
         $this->clearCaches();
 
@@ -372,17 +392,22 @@ class OpkImportService
     }
 
     /**
-     * Validasi satu baris. Mengembalikan [data siap insert, daftar error].
+     * Validasi satu baris. Mengembalikan [data siap insert, daftar error, meta].
      *
      * @param  array<string, string>  $row
      * @param  array<string, mixed>  $lookup
      * @param  array<string, int>  $seen
-     * @return array{0: array<string, mixed>, 1: list<string>}
+     * @return array{0: array<string, mixed>, 1: list<string>, 2: array{id: ?int, status: ?string, explicit: list<string>}}
      */
-    private function validateRow(array $row, int $rowNumber, array $lookup, array &$seen): array
+    private function validateRow(array $row, int $rowNumber, array $lookup, array &$seen, string $mode): array
     {
         $errors = [];
         $data = ['status_verifikasi' => 'disetujui'];
+        $meta = [
+            'id' => null,
+            'status' => null,
+            'explicit' => array_keys(array_filter($row, fn ($value) => $value !== '')),
+        ];
 
         $required = [
             'nama_opk' => 'Nama OPK',
@@ -522,19 +547,45 @@ class OpkImportService
             $row['status_verifikasi'] ?? '', self::STATUS_VERIFIKASI_IMPORT, 'disetujui', 'Status Verifikasi', $errors
         );
 
-        // === Duplikat (dalam file & di database) ===
-        if ($kecamatanId !== null && $namaOpk !== '') {
+        // === Kode laporan, pencocokan data lama, dan duplikat ===
+        $kode = trim($row['kode_laporan'] ?? '');
+        if ($kode !== '' && mb_strlen($kode) > 30) {
+            $errors[] = 'Kode Laporan maksimal 30 karakter.';
+        }
+        $data['kode_laporan'] = $kode !== '' ? $kode : null;
+
+        $target = null;
+        $identity = null;
+
+        if ($kode !== '') {
+            $identity = 'kode:'.Str::upper($kode);
+            $target = $lookup['existing_by_kode'][Str::upper($kode)] ?? null;
+
+            if ($target === null && $mode === 'upsert') {
+                $errors[] = "Kode Laporan '{$kode}' tidak ditemukan. Kosongkan kolom Kode Laporan untuk mencocokkan lewat nama + kecamatan + desa adat, atau perbaiki kodenya.";
+            }
+        } elseif ($kecamatanId !== null && $namaOpk !== '') {
             $dupKey = $kecamatanId.'|'.$this->key($namaOpk).'|'.$this->key($row['nama_desa_adat'] ?? '');
-            if (isset($seen[$dupKey])) {
-                $errors[] = "Duplikat dengan baris {$seen[$dupKey]} (nama, kecamatan & desa adat sama).";
-            } elseif (isset($lookup['existing'][$dupKey])) {
-                $errors[] = 'OPK dengan nama, kecamatan & desa adat sama sudah ada di database.';
-            } elseif (! $errors) {
-                $seen[$dupKey] = $rowNumber;
+            $identity = 'key:'.$dupKey;
+            $target = $lookup['existing_by_key'][$dupKey] ?? null;
+        }
+
+        if ($identity !== null && isset($seen[$identity])) {
+            $errors[] = "Duplikat dengan baris {$seen[$identity]}.";
+        } elseif ($target !== null && $mode === 'insert') {
+            $errors[] = $kode !== ''
+                ? 'Kode Laporan sudah ada di database. Pilih mode "Perbarui data yang sudah ada" jika ingin memperbarui.'
+                : 'OPK dengan nama, kecamatan & desa adat sama sudah ada di database. Pilih mode "Perbarui data yang sudah ada" jika ingin memperbarui.';
+        } elseif (! $errors && $identity !== null) {
+            $seen[$identity] = $rowNumber;
+
+            if ($mode === 'upsert' && $target !== null) {
+                $meta['id'] = $target['id'];
+                $meta['status'] = $target['status'];
             }
         }
 
-        return [$data, $errors];
+        return [$data, $errors, $meta];
     }
 
     /**
@@ -565,9 +616,12 @@ class OpkImportService
             $kondisi[$this->key($k->nama)] = $k->kode;
         }
 
-        $existing = [];
-        foreach (OpkLaporan::select('nama_opk', 'kecamatan_id', 'nama_desa_adat')->get() as $opk) {
-            $existing[$opk->kecamatan_id.'|'.$this->key($opk->nama_opk).'|'.$this->key($opk->nama_desa_adat ?? '')] = true;
+        $existingByKey = [];
+        $existingByKode = [];
+        foreach (OpkLaporan::select('id', 'kode_laporan', 'nama_opk', 'kecamatan_id', 'nama_desa_adat', 'status_verifikasi')->get() as $opk) {
+            $entry = ['id' => $opk->id, 'status' => $opk->status_verifikasi];
+            $existingByKey[$opk->kecamatan_id.'|'.$this->key($opk->nama_opk).'|'.$this->key($opk->nama_desa_adat ?? '')] = $entry;
+            $existingByKode[Str::upper($opk->kode_laporan)] = $entry;
         }
 
         return [
@@ -576,7 +630,8 @@ class OpkImportService
             'kecamatan' => $kecamatan,
             'desa_dinas' => $desaDinas,
             'kondisi' => $kondisi,
-            'existing' => $existing,
+            'existing_by_key' => $existingByKey,
+            'existing_by_kode' => $existingByKode,
         ];
     }
 
@@ -700,19 +755,20 @@ class OpkImportService
     }
 
     /**
-     * Insert massal per chunk dalam satu transaksi (atomik).
+     * Simpan insert & update per chunk dalam satu transaksi (atomik).
      *
-     * @param  list<array<string, mixed>>  $rows
+     * @param  list<array<string, mixed>>  $inserts
+     * @param  list<array{id: int, status: ?string, data: array<string, mixed>, explicit: list<string>}>  $updates
      */
-    private function insertRows(array $rows, User $user): void
+    private function saveRows(array $inserts, array $updates, User $user): void
     {
         $now = now();
 
-        DB::transaction(function () use ($rows, $user, $now) {
-            foreach (array_chunk($rows, self::CHUNK_SIZE) as $chunk) {
+        DB::transaction(function () use ($inserts, $updates, $user, $now) {
+            foreach (array_chunk($inserts, self::CHUNK_SIZE) as $chunk) {
                 $insert = [];
                 foreach ($chunk as $row) {
-                    $row['kode_laporan'] = OpkLaporan::generateKode();
+                    $row['kode_laporan'] = $row['kode_laporan'] ?: OpkLaporan::generateKode();
                     $row['diverifikasi_oleh'] = $row['status_verifikasi'] === 'disetujui' ? $user->id : null;
                     $row['tanggal_verifikasi'] = $row['status_verifikasi'] === 'disetujui' ? $now : null;
                     $row['created_at'] = $now;
@@ -742,7 +798,74 @@ class OpkImportService
                     OpkRiwayatStatus::insert(array_values($riwayat));
                 }
             }
+
+            foreach (array_chunk($updates, self::CHUNK_SIZE) as $chunk) {
+                $riwayat = [];
+                foreach ($chunk as $item) {
+                    $payload = $this->buildUpdatePayload($item['data'], $item['explicit'], $user, $now);
+
+                    OpkLaporan::whereKey($item['id'])->update($payload);
+
+                    $riwayat[] = [
+                        'laporan_id' => $item['id'],
+                        'status_lama' => $item['status'] ?? '-',
+                        'status_baru' => $payload['status_verifikasi'] ?? ($item['status'] ?? '-'),
+                        'user_id' => $user->id,
+                        'catatan' => 'Data diperbarui via impor massal.',
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+
+                if ($riwayat) {
+                    OpkRiwayatStatus::insert($riwayat);
+                }
+            }
         });
+    }
+
+    /**
+     * Payload update parsial: hanya kolom yang diisi di file yang diterapkan,
+     * kolom kosong tidak menghapus data lama.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  list<string>  $explicit
+     * @return array<string, mixed>
+     */
+    private function buildUpdatePayload(array $data, array $explicit, User $user, \DateTimeInterface $now): array
+    {
+        $fieldMap = [
+            'kategori' => 'kategori_id',
+            'kecamatan' => 'kecamatan_id',
+            'desa_dinas' => 'desa_dinas_id',
+        ];
+
+        $payload = ['updated_at' => $now];
+
+        foreach ($explicit as $column) {
+            if ($column === 'kode_laporan') {
+                continue;
+            }
+
+            $field = $fieldMap[$column] ?? $column;
+            if (array_key_exists($field, $data)) {
+                $payload[$field] = $data[$field];
+            }
+        }
+
+        if (in_array('status_verifikasi', $explicit, true)) {
+            $payload['status_verifikasi'] = $data['status_verifikasi'];
+
+            if ($data['status_verifikasi'] === 'disetujui') {
+                $payload['diverifikasi_oleh'] = $user->id;
+                $payload['tanggal_verifikasi'] = $now;
+            } else {
+                $payload['diverifikasi_oleh'] = null;
+                $payload['tanggal_verifikasi'] = null;
+            }
+        }
+
+        return $payload;
     }
 
     /**
@@ -873,13 +996,15 @@ class OpkImportService
             ['PETUNJUK IMPOR DATA OPK'],
             ['1. Isi sheet "Data OPK". Jangan mengubah/menghapus nama kolom di baris pertama.'],
             ['2. Kolom wajib: '.implode(', ', array_map(fn ($k) => self::COLUMNS[$k]['label'], array_keys(array_filter(self::COLUMNS, fn ($c) => $c['required']))))],
-            ['3. Deskripsi Umum minimal 50 karakter.'],
-            ['4. NIK & WhatsApp Pelapor boleh dikosongkan untuk data administratif. Jika diisi, format kolomnya sebagai Teks.'],
-            ['5. Format kolom Latitude dan Longitude sebagai Teks agar angka tidak berubah.'],
-            ['6. Nilai yang diterima untuk tiap kolom ada di sheet "Referensi".'],
-            ['7. Maksimal '.number_format(self::MAX_ROWS, 0, ',', '.').' baris per file; pecah file jika lebih.'],
-            ['8. Baris yang tidak valid akan ditolak; unduh laporan kesalahan setelah impor.'],
-            ['9. Simpan sebagai .xlsx atau .csv (UTF-8) lalu unggah lewat menu Impor OPK.'],
+            ['3. Kolom Kode Laporan opsional: isi untuk memperbarui data lama secara presisi (boleh sekaligus mengubah nama). Kosongkan untuk pencocokan otomatis nama + kecamatan + desa adat pada mode Perbarui.'],
+            ['4. Deskripsi Umum minimal 50 karakter.'],
+            ['5. NIK & WhatsApp Pelapor boleh dikosongkan untuk data administratif. Jika diisi, format kolomnya sebagai Teks.'],
+            ['6. Format kolom Latitude dan Longitude sebagai Teks agar angka tidak berubah.'],
+            ['7. Nilai yang diterima untuk tiap kolom ada di sheet "Referensi".'],
+            ['8. Maksimal '.number_format(self::MAX_ROWS, 0, ',', '.').' baris per file; pecah file jika lebih.'],
+            ['9. Mode "Perbarui data yang sudah ada" hanya mengubah kolom yang diisi; kolom kosong tidak menghapus data lama.'],
+            ['10. Baris yang tidak valid akan ditolak; unduh laporan kesalahan setelah impor.'],
+            ['11. Simpan sebagai .xlsx atau .csv (UTF-8) lalu unggah lewat menu Impor OPK.'],
         ];
         foreach ($lines as $line) {
             $writer->addRow(Row::fromValues($line));
@@ -902,6 +1027,7 @@ class OpkImportService
 
         $contoh = [
             'nama_opk' => 'Contoh: Tari Baris Tunggal',
+            'kode_laporan' => '',
             'kategori' => $kategori ? $kategori->nomor.' - '.$kategori->nama : 'Seni',
             'kecamatan' => $kecamatan?->nama ?? 'Mengwi',
             'desa_dinas' => $desa?->nama ?? 'Mengwi',

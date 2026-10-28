@@ -27,6 +27,7 @@ class OpkImportController extends Controller
     {
         $validated = $request->validate([
             'file' => 'required|file|mimes:csv,txt,xlsx|max:10240',
+            'mode' => 'nullable|in:insert,upsert',
             'dry_run' => 'nullable|boolean',
             'skip_invalid' => 'nullable|boolean',
         ], [
@@ -34,6 +35,7 @@ class OpkImportController extends Controller
             'file.mimes' => 'Format file harus .csv, .txt, atau .xlsx.',
             'file.max' => 'Ukuran file maksimal 10MB.',
             'file.uploaded' => 'File gagal diunggah. Pastikan ukurannya tidak melebihi batas server.',
+            'mode.in' => 'Mode impor tidak valid.',
         ]);
 
         $lock = Cache::lock('opk_import_lock', 300);
@@ -50,6 +52,7 @@ class OpkImportController extends Controller
                 $request->user(),
                 $request->boolean('dry_run'),
                 $request->boolean('skip_invalid'),
+                $validated['mode'] ?? 'insert',
             );
         } finally {
             $lock->release();

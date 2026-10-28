@@ -36,19 +36,28 @@
             @endif
             : <strong>{{ number_format($result['valid'], 0, ',', '.') }}</strong> valid,
             <strong>{{ number_format($result['invalid'], 0, ',', '.') }}</strong> bermasalah.
-            Hapus centang "Validasi saja" untuk benar-benar mengimpor.
+            <br>{{ number_format($result['would_insert'] ?? 0, 0, ',', '.') }} akan ditambahkan,
+            {{ number_format($result['would_update'] ?? 0, 0, ',', '.') }} akan diperbarui.
+            Hapus centang "Validasi saja" untuk menjalankan.
         </div>
     </div>
-    @elseif($result['imported'] > 0)
+    @elseif(($result['imported'] ?? 0) + ($result['updated'] ?? 0) > 0)
     <div class="alert alert-success">
         <strong><i class="bi bi-check-circle me-1"></i>Impor berhasil.</strong>
         <div class="mt-1" style="font-size:0.85rem;">
-            {{ number_format($result['imported'], 0, ',', '.') }} data OPK ditambahkan
+            {{ number_format($result['imported'] ?? 0, 0, ',', '.') }} data OPK ditambahkan
+            @if(($result['updated'] ?? 0) > 0)
+                , {{ number_format($result['updated'], 0, ',', '.') }} data diperbarui
+            @endif
             @if($result['invalid'] > 0)
                 , {{ number_format($result['invalid'], 0, ',', '.') }} baris dilewati karena tidak valid
             @endif
             .
-            <br>{{ number_format($result['total_read'], 0, ',', '.') }} baris dibaca@if($result['blank'] > 0), {{ number_format($result['blank'], 0, ',', '.') }} baris kosong dilewati@endif.
+            <br>{{ number_format($result['total_read'], 0, ',', '.') }} baris dibaca
+            @if($result['blank'] > 0)
+                , {{ number_format($result['blank'], 0, ',', '.') }} baris kosong dilewati
+            @endif
+            .
             @if($result['schedule_hint'])
                 <br>{{ number_format($result['schedule_hint'], 0, ',', '.') }} data berstatus <em>menunggu</em> akan dianalisis AI oleh scheduler.
             @endif
@@ -59,7 +68,11 @@
         <strong><i class="bi bi-info-circle me-1"></i>Tidak ada data yang diimpor.</strong>
         <div class="mt-1" style="font-size:0.85rem;">
             {{ number_format($result['invalid'], 0, ',', '.') }} baris bermasalah ditemukan
-            dari {{ number_format($result['total_read'], 0, ',', '.') }} baris yang dibaca@if($result['blank'] > 0), {{ number_format($result['blank'], 0, ',', '.') }} baris kosong dilewati@endif.
+            dari {{ number_format($result['total_read'], 0, ',', '.') }} baris yang dibaca
+            @if($result['blank'] > 0)
+                , {{ number_format($result['blank'], 0, ',', '.') }} baris kosong dilewati
+            @endif
+            .
         </div>
     </div>
     @endif
@@ -111,6 +124,24 @@
                     @csrf
 
                     <div class="mb-3">
+                        <label class="form-label t-caption" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Mode Impor</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="mode" id="mode_insert" value="insert" checked>
+                            <label class="form-check-label t-body" for="mode_insert">
+                                Tambah data baru saja
+                                <span class="text-muted" style="font-size:0.72rem;">(baris yang sudah ada ditolak)</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="mode" id="mode_upsert" value="upsert">
+                            <label class="form-check-label t-body" for="mode_upsert">
+                                Perbarui data yang sudah ada
+                                <span class="text-muted" style="font-size:0.72rem;">(cocokkan lewat Kode Laporan, atau nama + kecamatan + desa adat)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="file" class="form-label t-caption" style="font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">File CSV / XLSX</label>
                         <input type="file" name="file" id="file" required accept=".csv,.txt,.xlsx"
                                class="form-control form-control-sm @error('file') is-invalid @enderror">
@@ -149,7 +180,7 @@
                     <li>Tidak memicu notifikasi WhatsApp dan tidak menjalankan analisis AI — aman untuk ribuan baris.</li>
                     <li>Proses memakai <strong>bulk insert per 100 baris dalam satu transaksi</strong>; jika gagal di tengah, tidak ada data setengah jadi.</li>
                     <li>Hanya satu proses impor dapat berjalan bersamaan.</li>
-                    <li>Baris duplikat (nama sama di kecamatan sama) otomatis ditolak.</li>
+                    <li>Mode <strong>Perbarui</strong> hanya mengubah kolom yang diisi di file; kolom kosong tidak menghapus data lama. Isi <strong>Kode Laporan</strong> untuk mencocokkan secara presisi (bisa sekaligus mengubah nama).</li>
                     <li>NIK &amp; WhatsApp Pelapor boleh kosong untuk data administratif; jika diisi, format kolomnya sebagai <em>Teks</em>.</li>
                     <li>Untuk CSV dari Excel: pilih <em>CSV UTF-8</em>; format kolom koordinat sebagai <em>Teks</em>.</li>
                 </ul>

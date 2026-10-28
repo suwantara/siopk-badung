@@ -168,9 +168,11 @@ class OpkImportService
         }
 
         $missing = [];
-        foreach (self::COLUMNS as $key => $col) {
-            if ($col['required'] && ! in_array($key, $headerMap, true)) {
-                $missing[] = $col['label'];
+        if ($mode === 'insert') {
+            foreach (self::COLUMNS as $key => $col) {
+                if ($col['required'] && ! in_array($key, $headerMap, true)) {
+                    $missing[] = $col['label'];
+                }
             }
         }
         if ($missing) {
@@ -409,6 +411,36 @@ class OpkImportService
             'explicit' => array_keys(array_filter($row, fn ($value) => $value !== '')),
         ];
 
+        // === Kode laporan & pencocokan data lama ===
+        $kode = trim($row['kode_laporan'] ?? '');
+        if ($kode !== '' && mb_strlen($kode) > 30) {
+            $errors[] = 'Kode Laporan maksimal 30 karakter.';
+        }
+        $data['kode_laporan'] = $kode !== '' ? $kode : null;
+
+        $namaOpkAwal = trim($row['nama_opk'] ?? '');
+        $kecamatanIdAwal = $lookup['kecamatan'][$this->key($row['kecamatan'] ?? '')] ?? null;
+
+        $target = null;
+        $identity = null;
+
+        if ($kode !== '') {
+            $identity = 'kode:'.Str::upper($kode);
+            $target = $lookup['existing_by_kode'][Str::upper($kode)] ?? null;
+
+            if ($target === null && $mode === 'upsert') {
+                $errors[] = "Kode Laporan '{$kode}' tidak ditemukan. Kosongkan kolom Kode Laporan untuk mencocokkan lewat nama + kecamatan + desa adat, atau perbaiki kodenya.";
+            }
+        } elseif ($kecamatanIdAwal !== null && $namaOpkAwal !== '') {
+            $dupKey = $kecamatanIdAwal.'|'.$this->key($namaOpkAwal).'|'.$this->key($row['nama_desa_adat'] ?? '');
+            $identity = 'key:'.$dupKey;
+            $target = $lookup['existing_by_key'][$dupKey] ?? null;
+        }
+
+        $matchedUpdate = $mode === 'upsert' && $target !== null;
+
+        // Kolom wajib hanya diberlakukan untuk data baru; baris yang cocok pada
+        // mode Perbarui boleh hanya mengisi kolom yang ingin diubah.
         $required = [
             'nama_opk' => 'Nama OPK',
             'kategori' => 'Kategori',
@@ -418,9 +450,26 @@ class OpkImportService
             'deskripsi_umum' => 'Deskripsi Umum',
             'pelapor_nama' => 'Nama Pelapor',
         ];
-        foreach ($required as $key => $label) {
-            if (($row[$key] ?? '') === '') {
-                $errors[] = "{$label} wajib diisi.";
+        if (! $matchedUpdate) {
+            foreach ($required as $key => $label) {
+                if (($row[$key] ?? '') === '') {
+                    $errors[] = "{$label} wajib diisi.";
+                }
+            }
+        }
+
+        if ($identity !== null && isset($seen[$identity])) {
+            $errors[] = "Duplikat dengan baris {$seen[$identity]}.";
+        } elseif ($target !== null && $mode === 'insert') {
+            $errors[] = $kode !== ''
+                ? 'Kode Laporan sudah ada di database. Pilih mode "Perbarui data yang sudah ada" jika ingin memperbarui.'
+                : 'OPK dengan nama, kecamatan & desa adat sama sudah ada di database. Pilih mode "Perbarui data yang sudah ada" jika ingin memperbarui.';
+        } elseif (! $errors && $identity !== null) {
+            $seen[$identity] = $rowNumber;
+
+            if ($mode === 'upsert' && $target !== null) {
+                $meta['id'] = $target['id'];
+                $meta['status'] = $target['status'];
             }
         }
 
@@ -546,44 +595,6 @@ class OpkImportService
         $data['status_verifikasi'] = $this->resolveEnum(
             $row['status_verifikasi'] ?? '', self::STATUS_VERIFIKASI_IMPORT, 'disetujui', 'Status Verifikasi', $errors
         );
-
-        // === Kode laporan, pencocokan data lama, dan duplikat ===
-        $kode = trim($row['kode_laporan'] ?? '');
-        if ($kode !== '' && mb_strlen($kode) > 30) {
-            $errors[] = 'Kode Laporan maksimal 30 karakter.';
-        }
-        $data['kode_laporan'] = $kode !== '' ? $kode : null;
-
-        $target = null;
-        $identity = null;
-
-        if ($kode !== '') {
-            $identity = 'kode:'.Str::upper($kode);
-            $target = $lookup['existing_by_kode'][Str::upper($kode)] ?? null;
-
-            if ($target === null && $mode === 'upsert') {
-                $errors[] = "Kode Laporan '{$kode}' tidak ditemukan. Kosongkan kolom Kode Laporan untuk mencocokkan lewat nama + kecamatan + desa adat, atau perbaiki kodenya.";
-            }
-        } elseif ($kecamatanId !== null && $namaOpk !== '') {
-            $dupKey = $kecamatanId.'|'.$this->key($namaOpk).'|'.$this->key($row['nama_desa_adat'] ?? '');
-            $identity = 'key:'.$dupKey;
-            $target = $lookup['existing_by_key'][$dupKey] ?? null;
-        }
-
-        if ($identity !== null && isset($seen[$identity])) {
-            $errors[] = "Duplikat dengan baris {$seen[$identity]}.";
-        } elseif ($target !== null && $mode === 'insert') {
-            $errors[] = $kode !== ''
-                ? 'Kode Laporan sudah ada di database. Pilih mode "Perbarui data yang sudah ada" jika ingin memperbarui.'
-                : 'OPK dengan nama, kecamatan & desa adat sama sudah ada di database. Pilih mode "Perbarui data yang sudah ada" jika ingin memperbarui.';
-        } elseif (! $errors && $identity !== null) {
-            $seen[$identity] = $rowNumber;
-
-            if ($mode === 'upsert' && $target !== null) {
-                $meta['id'] = $target['id'];
-                $meta['status'] = $target['status'];
-            }
-        }
 
         return [$data, $errors, $meta];
     }

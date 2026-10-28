@@ -276,6 +276,41 @@ class AdminOpkImportTest extends TestCase
         $this->assertSame('Deskripsi lama yang tidak boleh berubah.', $existing->fresh()->deskripsi_umum);
     }
 
+    public function test_upsert_allows_partial_update_with_only_kode_and_deskripsi(): void
+    {
+        $existing = OpkLaporan::create([
+            'kode_laporan' => 'SIOPK-2026-PARTIAL1',
+            'nama_opk' => 'Nama Tetap',
+            'kategori_id' => 1,
+            'kondisi' => 'baik',
+            'kecamatan_id' => 1,
+            'desa_dinas_id' => 1,
+            'nama_desa_adat' => 'Desa Adat Test',
+            'deskripsi_umum' => 'Deskripsi lama yang akan diganti.',
+            'status_verifikasi' => 'disetujui',
+            'pelapor_nama' => 'Test',
+            'pelapor_nik' => '5103000000000099',
+            'pelapor_whatsapp' => '08123456789',
+        ]);
+
+        $deskripsi = 'Deskripsi baru hasil impor parsial yang panjangnya memadai untuk validasi.';
+        $csv = "Kode Laporan,Deskripsi Umum\nSIOPK-2026-PARTIAL1,\"{$deskripsi}\"\n";
+
+        $response = $this->actingAs($this->admin)
+            ->post('/admin/opk/import', [
+                'file' => $this->csvFile($csv),
+                'mode' => 'upsert',
+            ]);
+
+        $response->assertSessionHas('import_result', fn ($r) => $r['imported'] === 0 && $r['updated'] === 1);
+
+        $existing->refresh();
+        $this->assertSame($deskripsi, $existing->deskripsi_umum);
+        $this->assertSame('Nama Tetap', $existing->nama_opk);
+        $this->assertSame(1, $existing->kategori_id);
+        $this->assertSame(1, $existing->kecamatan_id);
+    }
+
     public function test_blank_rows_are_ignored(): void
     {
         $csv = $this->csv().",,,,,,,,\n";
